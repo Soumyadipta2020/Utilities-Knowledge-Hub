@@ -87,6 +87,21 @@ def run_tests():
     assert "Sarah Jenkins" in lineage_response or "Sales_Funnel_Dataset" in lineage_response
     print("[PASS] ABC Enterprise Data Lineage & SME Attribution query verified.")
 
+    # Test Multi-Turn Conversational Context Retention
+    history = []
+    turn1_res = process_chat_message("What is sales conversion?", "user@abc.com", chat_history=history)
+    assert "sales_conversion" in turn1_res.lower()
+    history.extend([
+        {"role": "user", "content": "What is sales conversion?"},
+        {"role": "assistant", "content": turn1_res}
+    ])
+
+    turn2_res = process_chat_message("where I can get the data?", "user@abc.com", chat_history=history)
+    print("\n[Multi-Turn Context Resolution Output]:")
+    print(turn2_res)
+    assert "Business_Operations" in turn2_res or "Dataset Access Required" in turn2_res
+    print("[PASS] Multi-Turn Context Resolution verified (Sales Conversion -> Business_Operations dataset identified).")
+
     print("\n[SUCCESS] ALL AUTOMATED VERIFICATION TESTS PASSED SUCCESSFULLY!")
 
 

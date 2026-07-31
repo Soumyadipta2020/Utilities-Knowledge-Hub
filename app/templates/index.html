@@ -416,6 +416,46 @@
             align-items: center;
         }
 
+        .graph-controls-bar {
+            padding: 10px 24px;
+            background: rgba(15, 23, 42, 0.6);
+            border-bottom: 1px solid var(--panel-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .graph-filter-pills {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .filter-pill {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 20px;
+            padding: 5px 14px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #94a3b8;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .filter-pill:hover, .filter-pill.active {
+            background: rgba(56, 189, 248, 0.15);
+            border-color: #38bdf8;
+            color: #fff;
+        }
+
+        .filter-pill.dataset.active { border-color: #38bdf8; color: #38bdf8; background: rgba(56, 189, 248, 0.18); }
+        .filter-pill.sme.active { border-color: #c084fc; color: #c084fc; background: rgba(192, 132, 252, 0.18); }
+        .filter-pill.equipment.active { border-color: #10b981; color: #10b981; background: rgba(16, 185, 129, 0.18); }
+        .filter-pill.error.active { border-color: #f43f5e; color: #f43f5e; background: rgba(244, 63, 94, 0.18); }
+        .filter-pill.metric.active { border-color: #facc15; color: #facc15; background: rgba(250, 204, 21, 0.18); }
+
         #graphCanvas {
             width: 100%;
             height: 480px;
@@ -425,7 +465,7 @@
         .graph-inspector-panel {
             width: 100%;
             padding: 14px 24px;
-            background: rgba(15, 23, 42, 0.9);
+            background: rgba(15, 23, 42, 0.95);
             border-top: 1px solid var(--panel-border);
         }
 
@@ -1000,6 +1040,17 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
             }
         }
 
+        let activeCategoryFilter = 'All';
+
+        function filterGraphCategory(cat) {
+            activeCategoryFilter = cat;
+            document.querySelectorAll('.filter-pill').forEach(btn => {
+                const btnCat = btn.getAttribute('data-cat');
+                btn.classList.toggle('active', btnCat === cat);
+            });
+            initCanvasGraph();
+        }
+
         function initCanvasGraph() {
             const canvas = document.getElementById('graphCanvas');
             if (!canvas) return;
@@ -1007,71 +1058,141 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
             const width = canvas.width = canvas.clientWidth;
             const height = canvas.height = canvas.clientHeight;
 
-            const categoryColors = {
-                'Equipment': '#38bdf8',
-                'Dataset': '#10b981',
-                'SME': '#a855f7',
-                'Error': '#f43f5e',
-                'General': '#fbbf24'
+            const categoryConfig = {
+                'Dataset':   { color: '#38bdf8', bg: 'rgba(56, 189, 248, 0.12)', icon: '📊', label: 'Datasets' },
+                'SME':       { color: '#c084fc', bg: 'rgba(192, 132, 252, 0.12)', icon: '👤', label: 'SMEs' },
+                'Equipment': { color: '#10b981', bg: 'rgba(16, 185, 129, 0.12)', icon: '🔧', label: 'Equipment' },
+                'Error':     { color: '#f43f5e', bg: 'rgba(244, 63, 94, 0.12)', icon: '⚠️', label: 'Faults' },
+                'Metric':    { color: '#facc15', bg: 'rgba(250, 204, 21, 0.12)', icon: '📈', label: 'Metrics' }
+            };
+
+            const clusterCenters = {
+                'Equipment': { x: width * 0.22, y: height * 0.30 },
+                'Error':     { x: width * 0.22, y: height * 0.72 },
+                'Metric':    { x: width * 0.50, y: height * 0.50 },
+                'Dataset':   { x: width * 0.78, y: height * 0.30 },
+                'SME':       { x: width * 0.78, y: height * 0.72 }
             };
 
             const nodeMap = {};
-            const numNodes = graphData.nodes.length || 1;
-            graphData.nodes.forEach((n, idx) => {
-                const angle = (idx / numNodes) * 2 * Math.PI;
-                const radius = 170 + (idx % 3) * 35;
+            const nodesToRender = (graphData.nodes || []).filter(n => activeCategoryFilter === 'All' || n.category === activeCategoryFilter);
+
+            nodesToRender.forEach((n, idx) => {
+                const cat = n.category || 'Metric';
+                const center = clusterCenters[cat] || { x: width / 2, y: height / 2 };
+                const angle = (idx / Math.max(nodesToRender.length, 1)) * 2 * Math.PI;
+                const spreadRadius = 40 + (idx % 4) * 22;
                 nodeMap[n.id] = {
                     ...n,
-                    x: width / 2 + Math.cos(angle) * radius,
-                    y: height / 2 + Math.sin(angle) * radius,
-                    radius: 20,
-                    color: categoryColors[n.category] || categoryColors['General']
+                    x: center.x + Math.cos(angle) * spreadRadius,
+                    y: center.y + Math.sin(angle) * spreadRadius,
+                    cfg: categoryConfig[cat] || categoryConfig['Metric']
                 };
             });
+
+            // Physics repulsion so nodes never collide or overlap
+            const nList = Object.values(nodeMap);
+            for (let iter = 0; iter < 50; iter++) {
+                for (let i = 0; i < nList.length; i++) {
+                    for (let j = i + 1; j < nList.length; j++) {
+                        const a = nList[i];
+                        const b = nList[j];
+                        const dx = b.x - a.x;
+                        const dy = b.y - a.y;
+                        const dist = Math.hypot(dx, dy) || 1;
+                        const minDist = 75;
+                        if (dist < minDist) {
+                            const force = (minDist - dist) / dist * 0.18;
+                            a.x -= dx * force;
+                            a.y -= dy * force;
+                            b.x += dx * force;
+                            b.y += dy * force;
+                        }
+                    }
+                }
+            }
 
             function draw() {
                 if (!isGraphModalOpen) return;
                 ctx.clearRect(0, 0, width, height);
 
+                // Draw Cluster Background Regions
+                Object.entries(clusterCenters).forEach(([catKey, center]) => {
+                    const cfg = categoryConfig[catKey];
+                    if (!cfg) return;
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.arc(center.x, center.y, 105, 0, 2 * Math.PI);
+                    ctx.fillStyle = cfg.bg;
+                    ctx.fill();
+                    ctx.font = '600 10px Inter';
+                    ctx.fillStyle = cfg.color;
+                    ctx.textAlign = 'center';
+                    ctx.fillText(`${cfg.icon} ${cfg.label.toUpperCase()} CLUSTER`, center.x, center.y - 92);
+                    ctx.restore();
+                });
+
                 // Draw Edges
-                graphData.edges.forEach(e => {
+                (graphData.edges || []).forEach(e => {
                     const src = nodeMap[e.source];
                     const tgt = nodeMap[e.target];
                     if (src && tgt) {
                         ctx.beginPath();
                         ctx.moveTo(src.x, src.y);
                         ctx.lineTo(tgt.x, tgt.y);
-                        ctx.strokeStyle = 'rgba(255, 255, 255, 0.18)';
-                        ctx.lineWidth = 1.5;
+                        const isConnected = selectedNode && (selectedNode === src || selectedNode === tgt);
+                        ctx.strokeStyle = isConnected ? '#38bdf8' : 'rgba(255, 255, 255, 0.22)';
+                        ctx.lineWidth = isConnected ? 2.5 : 1.2;
                         ctx.stroke();
 
+                        // Relationship Label Badge
                         const midX = (src.x + tgt.x) / 2;
                         const midY = (src.y + tgt.y) / 2;
                         ctx.font = '9px Inter';
-                        ctx.fillStyle = '#64748b';
+                        const textW = ctx.measureText(e.relation).width + 8;
+                        ctx.fillStyle = 'rgba(11, 17, 32, 0.9)';
+                        ctx.fillRect(midX - textW / 2, midY - 7, textW, 14);
+                        ctx.fillStyle = isConnected ? '#38bdf8' : '#94a3b8';
                         ctx.textAlign = 'center';
-                        ctx.fillText(e.relation, midX, midY);
+                        ctx.fillText(e.relation, midX, midY + 3);
                     }
                 });
 
-                // Draw Nodes
+                // Draw Executive Pill Nodes
                 Object.values(nodeMap).forEach(n => {
-                    ctx.beginPath();
-                    ctx.arc(n.x, n.y, n.radius, 0, 2 * Math.PI);
-                    ctx.fillStyle = n.color;
-                    ctx.shadowColor = n.color;
-                    ctx.shadowBlur = selectedNode === n ? 15 : 6;
-                    ctx.fill();
-                    ctx.shadowBlur = 0;
+                    const isSelected = selectedNode === n;
+                    ctx.font = '600 11px Inter';
+                    const textW = ctx.measureText(`${n.icon || n.cfg.icon} ${n.label}`).width;
+                    const pillW = Math.max(textW + 20, 85);
+                    const pillH = 26;
+                    const rx = n.x - pillW / 2;
+                    const ry = n.y - pillH / 2;
 
-                    ctx.strokeStyle = selectedNode === n ? '#ffffff' : 'rgba(15, 23, 42, 0.8)';
-                    ctx.lineWidth = selectedNode === n ? 3 : 2;
+                    ctx.save();
+                    ctx.beginPath();
+                    if (ctx.roundRect) {
+                        ctx.roundRect(rx, ry, pillW, pillH, 13);
+                    } else {
+                        ctx.rect(rx, ry, pillW, pillH);
+                    }
+                    ctx.fillStyle = isSelected ? 'rgba(30, 41, 59, 0.98)' : 'rgba(15, 23, 42, 0.92)';
+                    ctx.fill();
+
+                    ctx.strokeStyle = n.cfg.color;
+                    ctx.lineWidth = isSelected ? 3 : 1.5;
                     ctx.stroke();
 
-                    ctx.font = '11px Inter';
+                    if (isSelected) {
+                        ctx.shadowColor = n.cfg.color;
+                        ctx.shadowBlur = 12;
+                        ctx.stroke();
+                    }
+
+                    // Label Text
                     ctx.fillStyle = '#f8fafc';
                     ctx.textAlign = 'center';
-                    ctx.fillText(n.label, n.x, n.y + n.radius + 14);
+                    ctx.fillText(`${n.icon || n.cfg.icon} ${n.label}`, n.x, n.y + 4);
+                    ctx.restore();
                 });
 
                 requestAnimationFrame(draw);
@@ -1086,8 +1207,7 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
 
                 let clicked = null;
                 Object.values(nodeMap).forEach(n => {
-                    const dist = Math.hypot(n.x - clickX, n.y - clickY);
-                    if (dist <= n.radius) {
+                    if (Math.abs(n.x - clickX) <= 45 && Math.abs(n.y - clickY) <= 15) {
                         clicked = n;
                     }
                 });
@@ -1097,14 +1217,14 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
                 const descEl = document.getElementById('inspectorNodeDesc');
 
                 if (clicked) {
-                    const connectedEdges = graphData.edges.filter(e => e.source === clicked.id || e.target === clicked.id);
-                    const relSummary = connectedEdges.map(e => `${e.source} --(${e.relation})--> ${e.target}`).join(' | ');
+                    const connectedEdges = (graphData.edges || []).filter(e => e.source === clicked.id || e.target === clicked.id);
+                    const relSummary = connectedEdges.map(e => `• ${e.source} --[ ${e.relation} ]--> ${e.target}`).join('\n');
 
-                    nameEl.innerText = `[${clicked.category}] ${clicked.label}`;
-                    descEl.innerText = `${clicked.description || 'Enterprise entity node.'} \n\nRelations: ${relSummary || 'None'}`;
+                    nameEl.innerText = `${clicked.icon || clicked.cfg.icon} [${clicked.category}] ${clicked.label}`;
+                    descEl.innerText = `${clicked.description || 'Enterprise Knowledge Graph Node'}\n\nConnected Relationships (${connectedEdges.length}):\n${relSummary || 'None'}`;
                 } else {
                     nameEl.innerText = 'Click any graph node to inspect relationships & attributes';
-                    descEl.innerText = 'Select a node from the network canvas above.';
+                    descEl.innerText = 'Select a node from the domain cluster canvas above to explore lineage, SMEs, and diagnostic trees.';
                 }
             };
         }
@@ -1137,15 +1257,15 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
         </div>
     </div>
 
-    <!-- Knowledge Graph Visualizer Modal -->
+    <!-- Executive Knowledge Graph Visualizer Modal -->
     <div class="graph-modal-overlay" id="graphModal" style="display: none;">
         <div class="graph-modal-content">
             <div class="graph-modal-header">
                 <div style="display: flex; align-items: center; gap: 12px;">
                     <div class="brand-icon" style="background: linear-gradient(135deg, #a855f7, #6366f1);">🕸️</div>
                     <div>
-                        <h3 style="font-family: 'Outfit', sans-serif; font-size: 18px; color: #fff;">ABC Knowledge Graph Explorer</h3>
-                        <p style="font-size: 12px; color: #94a3b8;">Powered by LangChain NetworkxEntityGraph & Lineage Explorer</p>
+                        <h3 style="font-family: 'Outfit', sans-serif; font-size: 18px; color: #fff;">ABC Executive Knowledge Graph Explorer</h3>
+                        <p style="font-size: 12px; color: #94a3b8;">Domain Clusters • Data Lineage • SME Ownership • Fault Remedies</p>
                     </div>
                 </div>
                 <div style="display: flex; align-items: center; gap: 14px;">
@@ -1155,13 +1275,25 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
                 </div>
             </div>
 
+            <!-- Executive Domain Filter Pills Bar -->
+            <div class="graph-controls-bar">
+                <div class="graph-filter-pills">
+                    <button class="filter-pill active" data-cat="All" onclick="filterGraphCategory('All')">All Domains</button>
+                    <button class="filter-pill dataset" data-cat="Dataset" onclick="filterGraphCategory('Dataset')">📊 Datasets & Lineage</button>
+                    <button class="filter-pill sme" data-cat="SME" onclick="filterGraphCategory('SME')">👤 SME Owners</button>
+                    <button class="filter-pill equipment" data-cat="Equipment" onclick="filterGraphCategory('Equipment')">🔧 Equipment Models</button>
+                    <button class="filter-pill error" data-cat="Error" onclick="filterGraphCategory('Error')">⚠️ Fault Errors</button>
+                    <button class="filter-pill metric" data-cat="Metric" onclick="filterGraphCategory('Metric')">📈 Metrics & Services</button>
+                </div>
+            </div>
+
             <div class="graph-modal-body">
-                <canvas id="graphCanvas" width="900" height="480"></canvas>
+                <canvas id="graphCanvas" width="920" height="460"></canvas>
 
                 <div class="graph-inspector-panel" id="graphInspector">
-                    <div style="font-size: 11px; font-weight: 700; color: #38bdf8; text-transform: uppercase;">Entity Inspector</div>
+                    <div style="font-size: 11px; font-weight: 700; color: #38bdf8; text-transform: uppercase;">Entity Inspector & Lineage Explorer</div>
                     <div style="font-size: 14px; font-weight: 600; color: #fff; margin-top: 4px;" id="inspectorNodeName">Click any graph node to inspect relationships & attributes</div>
-                    <div style="font-size: 12px; color: #94a3b8; margin-top: 4px;" id="inspectorNodeDesc">Select a node from the network canvas above.</div>
+                    <div style="font-size: 12px; color: #94a3b8; margin-top: 4px;" id="inspectorNodeDesc">Select a node from the domain clusters above.</div>
                 </div>
             </div>
         </div>

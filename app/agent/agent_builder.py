@@ -162,7 +162,35 @@ def build_agent_executor(
         return None
 
 
-def run_deterministic_agent_fallback(user_input: str, user_email: str) -> str:
+def _extract_recent_context(chat_history: Sequence[dict[str, str]] | None) -> dict[str, str]:
+    """Inspect previous turns in chat_history to extract active dataset/topic context."""
+    if not chat_history:
+        return {}
+
+    combined_text = ""
+    for turn in reversed(list(chat_history)):
+        combined_text += " " + turn.get("content", "").lower()
+
+    if any(k in combined_text for k in ["sales", "conversion", "lead", "appointment", "quote", "business_operations", "sales_funnel", "installation"]):
+        return {
+            "dataset": "Business_Operations",
+            "dataset_file": "Business_Operations.xlsx",
+            "topic": "sales conversion and commercial operational metrics"
+        }
+    if any(k in combined_text for k in ["pressure", "psi", "flame", "temp", "telemetry", "live_metrics", "sensor"]):
+        return {
+            "dataset": "Live_Metrics",
+            "dataset_file": "Live_Metrics.xlsx",
+            "topic": "live telemetry and grid pressure metrics"
+        }
+    return {}
+
+
+def run_deterministic_agent_fallback(
+    user_input: str,
+    user_email: str,
+    chat_history: Sequence[dict[str, str]] | None = None,
+) -> str:
     """
     Fallback agent execution engine.
     Implements deterministic routing for data lineage, public knowledge RAG, and IT access ticket escalation.
@@ -175,11 +203,33 @@ def run_deterministic_agent_fallback(user_input: str, user_email: str) -> str:
             return tool_fn.invoke(args_dict)
         return tool_fn(**args_dict)
 
+    # Rule 0: Follow-up question asking where to get data / dataset access for previous turn topic
+    followup_data_keywords = [
+        "where", "how can i get", "get the data", "get data", "find the data",
+        "access the data", "access it", "where to get", "where is it", "source", "dataset"
+    ]
+    if any(k in input_lower for k in followup_data_keywords):
+        ctx = _extract_recent_context(chat_history)
+        if ctx:
+            ds = ctx["dataset"]
+            file_name = ctx["dataset_file"]
+            topic = ctx["topic"]
+            return (
+                f"📊 **Dataset Identified:**\n"
+                f"The {topic} discussed in our previous turn is located in the **{ds}** dataset (`{file_name}`).\n\n"
+                f"⛔ **Dataset Access Required:**\n"
+                f"You currently do not have active access permissions for **{ds}**.\n\n"
+                f"👉 **Would you like me to raise an IT access request on your behalf to grant access to '{ds}'?**"
+            )
+
     # Rule 1: User confirms ticket request / wants to raise ticket for dataset
     ticket_keywords = ["ticket", "raise access", "raise ticket", "it request", "yes", "please raise", "submit ticket"]
     if any(k in input_lower for k in ticket_keywords):
         target_dataset = "Live_Metrics"
-        if "business" in input_lower or "funnel" in input_lower or "sales" in input_lower:
+        ctx = _extract_recent_context(chat_history)
+        if ctx:
+            target_dataset = ctx["dataset"]
+        elif "business" in input_lower or "funnel" in input_lower or "sales" in input_lower:
             target_dataset = "Business_Operations"
         ticket_res = call_tool(raise_access_request, {"user_email": user_email, "data_source": target_dataset})
         return f"🔒 **Access Escalation Procedure Initiated**\n\n{ticket_res}"
@@ -251,7 +301,7 @@ def process_chat_message(
     chat_history: Sequence[dict[str, str]] | None = None,
 ) -> str:
     """Process a chat message with automated IT access request assistance."""
-    verified_evidence = run_deterministic_agent_fallback(user_input, user_email)
+    verified_evidence = run_deterministic_agent_fallback(user_input, user_email, chat_history)
     if executor is None:
         return _history_fallback(user_input, chat_history) or verified_evidence
 

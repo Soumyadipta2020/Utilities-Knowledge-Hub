@@ -155,6 +155,20 @@ def run_pipeline_api():
         return jsonify({"success": False, "error": str(e)}), 500
 
 
+def classify_node_category(node_id: str) -> tuple[str, str]:
+    """Classify node into executive domain category and icon."""
+    nid = str(node_id).lower()
+    if any(k in nid for k in ["sme", "jenkins", "david ross", "marcus vance", "claire williams", "head of", "lead telemetry", "data scientist", "vp operations"]):
+        return "SME", "👤"
+    if any(k in nid for k in ["dataset", "snowflake", "sap", "crm", "platform", "dashboard", "network", "xlsx"]):
+        return "Dataset", "📊"
+    if any(k in nid for k in ["error", "low gas", "overheating", "electrode", "valve", "pump", "pipe"]):
+        return "Error", "⚠️"
+    if any(k in nid for k in ["worcester", "ideal", "baxi", "combi", "home energy services"]):
+        return "Equipment", "🔧"
+    return "Metric", "📈"
+
+
 @app.route("/api/graph/data", methods=["GET"])
 def get_graph_data_api():
     """
@@ -163,18 +177,18 @@ def get_graph_data_api():
     try:
         nodes = []
         for node_id, attrs in graph_service.graph.nodes(data=True):
-            category = attrs.get("category", "General")
-            description = attrs.get("description", "")
+            cat, icon = classify_node_category(node_id)
             nodes.append({
                 "id": str(node_id),
                 "label": str(node_id),
-                "category": category,
-                "description": description
+                "category": cat,
+                "icon": icon,
+                "description": attrs.get("details", attrs.get("description", f"Enterprise {cat} Entity Node"))
             })
 
         edges = []
         for src, tgt, attrs in graph_service.graph.edges(data=True):
-            relation = attrs.get("relation", "connected_to")
+            relation = attrs.get("relationship", attrs.get("relation", "connected_to"))
             details = attrs.get("details", "")
             edges.append({
                 "source": str(src),
