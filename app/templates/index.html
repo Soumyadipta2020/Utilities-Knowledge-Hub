@@ -11,18 +11,19 @@
     
     <style>
         :root {
-            --bg-dark: #0f172a;
-            --panel-bg: rgba(30, 41, 59, 0.7);
-            --panel-border: rgba(255, 255, 255, 0.1);
-            --accent-blue: #38bdf8;
-            --accent-indigo: #6366f1;
-            --accent-emerald: #10b981;
+            --bg-dark: #0d0d0d;
+            --panel-bg: rgba(18, 18, 18, 0.92);
+            --panel-border: rgba(255, 255, 255, 0.07);
+            --accent-orange: #D9662B;
+            --accent-orange-soft: rgba(217, 102, 43, 0.14);
+            --accent-orange-glow: rgba(217, 102, 43, 0.25);
+            --accent-emerald: #22c55e;
             --accent-rose: #f43f5e;
-            --text-primary: #f8fafc;
-            --text-muted: #94a3b8;
-            --user-msg-bg: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
-            --agent-msg-bg: rgba(30, 41, 59, 0.85);
-            --card-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+            --text-primary: #f5f5f5;
+            --text-muted: #6b7280;
+            --user-msg-bg: linear-gradient(135deg, #D9662B 0%, #A64719 100%);
+            --agent-msg-bg: rgba(22, 22, 22, 0.95);
+            --card-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.8);
         }
 
         * {
@@ -35,8 +36,8 @@
             font-family: 'Inter', sans-serif;
             background-color: var(--bg-dark);
             background-image: 
-                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
-                radial-gradient(at 100% 100%, rgba(56, 189, 248, 0.15) 0px, transparent 50%);
+                radial-gradient(at 5% 5%, rgba(217, 102, 43, 0.05) 0px, transparent 45%),
+                radial-gradient(at 95% 95%, rgba(217, 102, 43, 0.03) 0px, transparent 45%);
             color: var(--text-primary);
             height: 100vh;
             display: flex;
@@ -66,8 +67,8 @@
         .brand-icon {
             width: 40px;
             height: 40px;
-            border-radius: 12px;
-            background: linear-gradient(135deg, var(--accent-blue), var(--accent-indigo));
+            border-radius: 10px;
+            background: var(--accent-orange);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -75,7 +76,7 @@
             font-weight: 700;
             font-size: 20px;
             color: #fff;
-            box-shadow: 0 4px 14px rgba(56, 189, 248, 0.4);
+            box-shadow: 0 4px 14px var(--accent-orange-glow);
         }
 
         .brand-title h1 {
@@ -108,8 +109,8 @@
         select, input[type="email"] {
             width: 100%;
             padding: 12px 14px;
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px solid var(--panel-border);
+            background: rgba(8, 8, 8, 0.7);
+            border: 1px solid rgba(255,255,255,0.08);
             border-radius: 8px;
             color: var(--text-primary);
             font-size: 14px;
@@ -118,8 +119,8 @@
         }
 
         select:focus, input[type="email"]:focus {
-            border-color: var(--accent-blue);
-            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+            border-color: var(--accent-orange);
+            box-shadow: 0 0 0 3px var(--accent-orange-soft);
         }
 
         .role-badge {
@@ -134,13 +135,13 @@
             margin-top: 4px;
         }
 
-        .role-badge.Customer { background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); }
-        .role-badge.Employee { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
-        .role-badge.Admin { background: rgba(244, 63, 94, 0.15); color: #f43f5e; border: 1px solid rgba(244, 63, 94, 0.3); }
+        .role-badge.Customer { background: var(--accent-orange-soft); color: var(--accent-orange); border: 1px solid var(--accent-orange-glow); }
+        .role-badge.Employee { background: rgba(34, 197, 94, 0.12); color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.3); }
+        .role-badge.Admin { background: rgba(244, 63, 94, 0.12); color: #f43f5e; border: 1px solid rgba(244, 63, 94, 0.3); }
 
         .permissions-card {
-            background: rgba(15, 23, 42, 0.4);
-            border: 1px solid var(--panel-border);
+            background: rgba(10, 10, 10, 0.6);
+            border: 1px solid rgba(255,255,255,0.07);
             border-radius: 12px;
             padding: 16px;
             display: flex;
@@ -162,8 +163,8 @@
             font-weight: 600;
         }
 
-        .perm-status.allow { background: rgba(16, 185, 129, 0.2); color: #34d399; }
-        .perm-status.deny { background: rgba(244, 63, 94, 0.2); color: #fb7185; }
+        .perm-status.allow { background: rgba(34, 197, 94, 0.15); color: #22c55e; }
+        .perm-status.deny { background: rgba(244, 63, 94, 0.15); color: #fb7185; }
 
         .quick-prompts {
             display: flex;
@@ -173,8 +174,8 @@
         }
 
         .prompt-btn {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--panel-border);
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255,255,255,0.08);
             border-radius: 8px;
             padding: 10px 12px;
             color: var(--text-muted);
@@ -185,20 +186,20 @@
         }
 
         .prompt-btn:hover {
-            background: rgba(56, 189, 248, 0.1);
+            background: var(--accent-orange-soft);
             color: var(--text-primary);
-            border-color: rgba(56, 189, 248, 0.4);
+            border-color: var(--accent-orange);
         }
 
         /* Knowledge Pipeline Visualizer Panel */
         .pipeline-banner {
-            background: rgba(15, 23, 42, 0.95);
-            border-bottom: 1px solid var(--panel-border);
+            background: rgba(10, 10, 10, 0.97);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
             padding: 16px 24px;
             display: flex;
             flex-direction: column;
             gap: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.7);
         }
 
         .pipeline-header {
@@ -218,8 +219,8 @@
         }
 
         .pipeline-sidebar-panel {
-            background: rgba(15, 23, 42, 0.7);
-            border: 1px solid var(--panel-border);
+            background: rgba(14, 14, 14, 0.85);
+            border: 1px solid rgba(255,255,255,0.07);
             border-radius: 12px;
             padding: 12px;
             display: flex;
@@ -236,33 +237,34 @@
             gap: 4px;
             flex: 1;
             min-height: 0;
-            overflow-y: auto;
-            padding-right: 4px;
-            scrollbar-width: thin;
+            overflow: hidden;
+            padding-right: 0;
         }
 
         .sidebar-stage-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 4px 8px;
-            background: rgba(30, 41, 59, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 0 10px;
+            background: rgba(20, 20, 20, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.06);
             border-radius: 6px;
             transition: all 0.2s ease;
+            flex: 1;
+            min-height: 0;
         }
 
         .sidebar-stage-row.active {
-            background: rgba(16, 185, 129, 0.12);
-            border-color: rgba(16, 185, 129, 0.4);
+            background: var(--accent-orange-soft);
+            border-color: rgba(217, 102, 43, 0.35);
         }
 
         .stage-badge {
             width: 22px;
             height: 22px;
             border-radius: 50%;
-            background: rgba(15, 23, 42, 0.9);
-            border: 1.5px solid rgba(255, 255, 255, 0.2);
+            background: rgba(10, 10, 10, 0.9);
+            border: 1.5px solid rgba(255, 255, 255, 0.15);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -271,21 +273,21 @@
         }
 
         .stage-badge.done {
-            border-color: #10b981;
-            background: rgba(16, 185, 129, 0.2);
+            border-color: var(--accent-orange);
+            background: var(--accent-orange-soft);
         }
 
         .stage-title {
             font-size: 11px;
             font-weight: 600;
-            color: #f8fafc;
+            color: #e5e5e5;
         }
 
         .stage-status {
             font-size: 10px;
             font-weight: 600;
-            color: #34d399;
-            background: rgba(16, 185, 129, 0.15);
+            color: var(--accent-orange);
+            background: var(--accent-orange-soft);
             padding: 2px 6px;
             border-radius: 4px;
         }
@@ -314,52 +316,31 @@
         .progress-fill {
             height: 100%;
             width: 100%;
-            background: linear-gradient(90deg, #6366f1, #38bdf8, #10b981);
+            background: linear-gradient(90deg, #993b0f, var(--accent-orange), #d9824c);
             transition: width 0.3s ease;
         }
 
         .progress-percent {
             font-size: 11px;
             font-weight: 700;
-            color: #34d399;
+            color: var(--accent-orange);
             min-width: 32px;
         }
 
-        .live-log-box {
-            background: #090d16;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            padding: 6px 10px;
-            font-family: 'Consolas', 'Courier New', monospace;
-            font-size: 10px;
-            color: #a7f3d0;
-            max-height: 55px;
-            flex-shrink: 0;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-
-        .log-entry {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
 
         .toast-notification {
             position: fixed;
             bottom: 24px;
             right: 24px;
-            background: rgba(15, 23, 42, 0.95);
+            background: rgba(15, 15, 15, 0.97);
             backdrop-filter: blur(12px);
-            border: 1px solid rgba(16, 185, 129, 0.4);
+            border: 1px solid rgba(217, 102, 43, 0.35);
             border-radius: 12px;
             padding: 12px 18px;
             display: flex;
             align-items: center;
             gap: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
             z-index: 9999;
             transform: translateY(100px);
             opacity: 0;
@@ -378,7 +359,7 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: rgba(15, 23, 42, 0.85);
+            background: rgba(0, 0, 0, 0.88);
             backdrop-filter: blur(16px);
             z-index: 10000;
             display: flex;
@@ -390,10 +371,10 @@
         .graph-modal-content {
             width: 960px;
             max-width: 95vw;
-            background: rgba(30, 41, 59, 0.95);
-            border: 1px solid var(--panel-border);
+            background: rgba(14, 14, 14, 0.98);
+            border: 1px solid rgba(217, 102, 43, 0.18);
             border-radius: 16px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9);
             display: flex;
             flex-direction: column;
             overflow: hidden;
@@ -401,8 +382,8 @@
 
         .graph-modal-header {
             padding: 16px 24px;
-            background: rgba(15, 23, 42, 0.6);
-            border-bottom: 1px solid var(--panel-border);
+            background: rgba(10, 10, 10, 0.8);
+            border-bottom: 1px solid rgba(255,255,255,0.07);
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -410,7 +391,7 @@
 
         .graph-modal-body {
             position: relative;
-            background: #0b1120;
+            background: #080808;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -418,8 +399,8 @@
 
         .graph-controls-bar {
             padding: 10px 24px;
-            background: rgba(15, 23, 42, 0.6);
-            border-bottom: 1px solid var(--panel-border);
+            background: rgba(12, 12, 12, 0.8);
+            border-bottom: 1px solid rgba(255,255,255,0.07);
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -433,28 +414,28 @@
         }
 
         .filter-pill {
-            background: rgba(30, 41, 59, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: rgba(22, 22, 22, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.09);
             border-radius: 20px;
             padding: 5px 14px;
             font-size: 11px;
             font-weight: 600;
-            color: #94a3b8;
+            color: #6b7280;
             cursor: pointer;
             transition: all 0.2s ease;
         }
 
         .filter-pill:hover, .filter-pill.active {
-            background: rgba(56, 189, 248, 0.15);
-            border-color: #38bdf8;
+            background: var(--accent-orange-soft);
+            border-color: var(--accent-orange);
             color: #fff;
         }
 
-        .filter-pill.dataset.active { border-color: #38bdf8; color: #38bdf8; background: rgba(56, 189, 248, 0.18); }
-        .filter-pill.sme.active { border-color: #c084fc; color: #c084fc; background: rgba(192, 132, 252, 0.18); }
-        .filter-pill.equipment.active { border-color: #10b981; color: #10b981; background: rgba(16, 185, 129, 0.18); }
-        .filter-pill.error.active { border-color: #f43f5e; color: #f43f5e; background: rgba(244, 63, 94, 0.18); }
-        .filter-pill.metric.active { border-color: #facc15; color: #facc15; background: rgba(250, 204, 21, 0.18); }
+        .filter-pill.dataset.active { border-color: var(--accent-orange); color: var(--accent-orange); background: var(--accent-orange-soft); }
+        .filter-pill.sme.active { border-color: #c084fc; color: #c084fc; background: rgba(192, 132, 252, 0.15); }
+        .filter-pill.equipment.active { border-color: #22c55e; color: #22c55e; background: rgba(34, 197, 94, 0.15); }
+        .filter-pill.error.active { border-color: #f43f5e; color: #f43f5e; background: rgba(244, 63, 94, 0.15); }
+        .filter-pill.metric.active { border-color: #facc15; color: #facc15; background: rgba(250, 204, 21, 0.15); }
 
         #graphCanvas {
             width: 100%;
@@ -465,8 +446,8 @@
         .graph-inspector-panel {
             width: 100%;
             padding: 14px 24px;
-            background: rgba(15, 23, 42, 0.95);
-            border-top: 1px solid var(--panel-border);
+            background: rgba(10, 10, 10, 0.97);
+            border-top: 1px solid rgba(255,255,255,0.07);
         }
 
         /* Main Chat Container */
@@ -479,9 +460,9 @@
 
         .chat-header {
             padding: 20px 32px;
-            background: var(--panel-bg);
+            background: rgba(12, 12, 12, 0.95);
             backdrop-filter: blur(16px);
-            border-bottom: 1px solid var(--panel-border);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -511,24 +492,31 @@
             height: 8px;
             border-radius: 50%;
             background-color: var(--accent-emerald);
-            box-shadow: 0 0 10px var(--accent-emerald);
+            box-shadow: 0 0 10px rgba(34, 197, 94, 0.4);
+            animation: pulse-green 2s infinite;
+        }
+
+        @keyframes pulse-green {
+            0%, 100% { box-shadow: 0 0 6px rgba(34, 197, 94, 0.4); }
+            50% { box-shadow: 0 0 14px var(--accent-emerald); }
         }
 
         /* Chat Messages Window */
         .chat-messages {
             flex: 1;
             overflow-y: auto;
-            padding: 32px;
+            padding: 16px 24px;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 12px;
             scroll-behavior: smooth;
         }
 
         .message-row {
             display: flex;
-            gap: 14px;
-            max-width: 80%;
+            gap: 10px;
+            max-width: 70%;
+            align-items: flex-start;
         }
 
         .message-row.user {
@@ -541,46 +529,70 @@
         }
 
         .avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 600;
-            font-size: 14px;
+            font-size: 11px;
             flex-shrink: 0;
         }
 
         .avatar.user {
-            background: linear-gradient(135deg, #6366f1, #a855f7);
-            color: #fff;
+            background: rgba(30, 30, 30, 1);
+            border: 1.5px solid rgba(217, 102, 43, 0.4);
+            color: var(--accent-orange);
         }
 
         .avatar.agent {
-            background: linear-gradient(135deg, #0284c7, #2563eb);
-            color: #fff;
+            background: rgba(30, 30, 30, 1);
+            border: 1.5px solid rgba(217, 102, 43, 0.4);
+            color: var(--accent-orange);
         }
 
         .message-bubble {
-            padding: 16px 20px;
-            border-radius: 16px;
-            font-size: 14px;
-            line-height: 1.6;
-            white-space: pre-wrap;
+            padding: 9px 14px;
+            border-radius: 12px;
+            font-size: 13px;
+            line-height: 1.5;
             box-shadow: var(--card-shadow);
         }
 
+        .message-bubble p {
+            margin: 6px 0;
+        }
+
+        .message-bubble p:first-child {
+            margin-top: 0;
+        }
+
+        .message-bubble p:last-child {
+            margin-bottom: 0;
+        }
+
+        .message-bubble ul, .message-bubble ol {
+            margin: 6px 0;
+            padding-left: 20px;
+        }
+
+        .message-bubble li {
+            margin-bottom: 3px;
+        }
+
         .message-row.user .message-bubble {
-            background: var(--user-msg-bg);
-            color: #fff;
+            background: rgba(28, 20, 16, 0.95);
+            border: 1px solid rgba(217, 102, 43, 0.35);
+            color: #f5f5f5;
             border-bottom-right-radius: 4px;
         }
 
         .message-row.agent .message-bubble {
-            background: var(--agent-msg-bg);
+            background: rgba(18, 18, 18, 0.97);
             color: var(--text-primary);
-            border: 1px solid var(--panel-border);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-left: 2px solid rgba(217, 102, 43, 0.35);
             border-bottom-left-radius: 4px;
             backdrop-filter: blur(12px);
         }
@@ -588,8 +600,8 @@
         .ticket-cta-box {
             margin-top: 12px;
             padding: 12px 16px;
-            background: rgba(244, 63, 94, 0.1);
-            border: 1px solid rgba(244, 63, 94, 0.3);
+            background: var(--accent-orange-soft);
+            border: 1px solid rgba(217, 102, 43, 0.28);
             border-radius: 10px;
             display: flex;
             align-items: center;
@@ -598,7 +610,7 @@
         }
 
         .ticket-btn {
-            background: linear-gradient(135deg, #f43f5e, #e11d48);
+            background: var(--accent-orange);
             border: none;
             color: white;
             padding: 8px 14px;
@@ -606,52 +618,54 @@
             font-size: 12px;
             font-weight: 600;
             cursor: pointer;
-            transition: transform 0.2s;
+            transition: all 0.2s;
         }
 
         .ticket-btn:hover {
+            background: #c25620;
             transform: translateY(-1px);
+            box-shadow: 0 4px 12px var(--accent-orange-glow);
         }
 
         /* Input Bar */
         .chat-input-area {
-            padding: 24px 32px;
-            background: var(--panel-bg);
+            padding: 14px 24px;
+            background: rgba(10, 10, 10, 0.97);
             backdrop-filter: blur(16px);
-            border-top: 1px solid var(--panel-border);
+            border-top: 1px solid rgba(255,255,255,0.06);
         }
 
         .input-form {
             display: flex;
-            gap: 12px;
+            gap: 10px;
             position: relative;
         }
 
         .input-field {
             flex: 1;
-            padding: 16px 20px;
-            background: rgba(15, 23, 42, 0.8);
-            border: 1px solid var(--panel-border);
-            border-radius: 12px;
+            padding: 11px 16px;
+            background: rgba(18, 18, 18, 0.9);
+            border: 1px solid rgba(255,255,255,0.09);
+            border-radius: 10px;
             color: #fff;
-            font-size: 15px;
+            font-size: 13px;
             outline: none;
             transition: all 0.2s ease;
         }
 
         .input-field:focus {
-            border-color: var(--accent-blue);
-            box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.15);
+            border-color: var(--accent-orange);
+            box-shadow: 0 0 0 4px var(--accent-orange-soft);
         }
 
         .send-btn {
-            padding: 0 28px;
-            background: linear-gradient(135deg, var(--accent-blue), var(--accent-indigo));
+            padding: 0 20px;
+            background: var(--accent-orange);
             border: none;
-            border-radius: 12px;
+            border-radius: 10px;
             color: #fff;
             font-weight: 600;
-            font-size: 15px;
+            font-size: 13px;
             cursor: pointer;
             transition: all 0.2s ease;
             display: flex;
@@ -660,9 +674,9 @@
         }
 
         .send-btn:hover {
-            opacity: 0.95;
+            background: #c25620;
             transform: translateY(-1px);
-            box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+            box-shadow: 0 4px 14px var(--accent-orange-glow);
         }
     </style>
 </head>
@@ -671,7 +685,9 @@
     <!-- Left Control Sidebar -->
     <aside class="sidebar">
         <div class="brand-header">
-            <div class="brand-icon">A</div>
+            <div class="brand-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L9.5 9.5 2 12l7.5 2.5L12 22l2.5-7.5L22 12l-7.5-2.5L12 2z"/></svg>
+            </div>
             <div class="brand-title">
                 <h1>ABC AI Hub</h1>
                 <p>Enterprise Agentic Knowledge Hub</p>
@@ -689,8 +705,8 @@
                 <div>
                     <h3 style="font-size: 15px; font-weight: 600; color: #fff;">OEM Knowledge Base</h3>
                 </div>
-                <button class="ticket-btn" style="background: linear-gradient(135deg, #38bdf8, #6366f1); padding: 5px 10px; font-size: 11px;" onclick="triggerPipeline()">
-                    ⚡ Run Pipeline
+                <button class="ticket-btn" style="background: var(--accent-orange); padding: 5px 10px; font-size: 11px; display: inline-flex; align-items: center; gap: 4px;" onclick="triggerPipeline()">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Run Pipeline
                 </button>
             </div>
 
@@ -702,32 +718,14 @@
                 <span class="progress-percent" id="progressPercent" style="font-size: 10px;">100%</span>
             </div>
 
-            <!-- 12 Stage Stepper Grid -->
-            <div class="pipeline-stepper-grid" id="stepperContainer">
+            <!-- 12 Stage Stepper -->
+            <div class="pipeline-stepper-list" id="stepperContainer">
                 <!-- Dynamically rendered 12 stage cards -->
-            </div>
-
-            <!-- Live Log Terminal -->
-            <div class="control-label" style="font-size: 10px; margin-top: 4px;">LIVE INGESTION LOG</div>
-            <div class="live-log-box" id="liveLogBox">
-                <div class="log-entry">Information harnessing started - streaming 12 layers...</div>
-                <div class="log-entry">📥 Uploading OEM manuals & datasets.. Complete.</div>
-                <div class="log-entry">📑 Extracting error codes & content.. Complete.</div>
-                <div class="log-entry">🧹 Cleaning & normalising text.. Complete.</div>
-                <div class="log-entry">✂️ Chunking into semantic segments.. Complete.</div>
-                <div class="log-entry">🏷️ Enriching metadata & SME attribution.. Complete.</div>
-                <div class="log-entry">🔗 Extracting entity & relationship paths.. Linked.</div>
-                <div class="log-entry">🧬 Training domain embeddings.. Ready.</div>
-                <div class="log-entry">📊 Calculating EDA metrics.. Calculated.</div>
-                <div class="log-entry">✅ ML diagnostic validation.. 99.4% precision.</div>
-                <div class="log-entry">🏛️ Ontology & ServiceNow mapping.. Complete.</div>
-                <div class="log-entry">✳️ Canonicalizing entity nodes.. Complete.</div>
-                <div class="log-entry">🕸️ Knowledge graph built into NetworkX graph.</div>
             </div>
         </div>
 
-        <button class="prompt-btn" style="background: rgba(99, 102, 241, 0.18); border-color: rgba(99, 102, 241, 0.5); color: #a5b4fc; margin-top: auto;" onclick="toggleGraphModal()">
-            🕸️ View Interactive Knowledge Graph
+        <button class="prompt-btn" style="background: var(--accent-orange-soft); border-color: rgba(217, 102, 43, 0.35); color: #e2a37e; margin-top: auto; display: flex; align-items: center; gap: 8px;" onclick="toggleGraphModal()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg> View Interactive Knowledge Graph
         </button>
     </aside>
 
@@ -747,7 +745,7 @@
         <!-- Message Window -->
         <div class="chat-messages" id="chatMessages">
             <div class="message-row agent">
-                <div class="avatar agent">AI</div>
+                <div class="avatar agent"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4"/><circle cx="12" cy="2" r="1"/><rect x="4" y="8" width="16" height="12" rx="3"/><circle cx="9" cy="13" r="1" fill="currentColor"/><circle cx="15" cy="13" r="1" fill="currentColor"/><path d="M10 17h4"/></svg></div>
                 <div class="message-bubble" id="welcomeBubble">
 Welcome to **ABC's Enterprise Agentic Knowledge Hub**! ⚡
 
@@ -772,17 +770,22 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
 
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script>
+        const BOT_ICON_SVG = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4"/><circle cx="12" cy="2" r="1"/><rect x="4" y="8" width="16" height="12" rx="3"/><circle cx="9" cy="13" r="1" fill="currentColor"/><circle cx="15" cy="13" r="1" fill="currentColor"/><path d="M10 17h4"/></svg>`;
+
+        const USER_ICON_SVG = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
+
         function parseMarkdown(text) {
             if (!text) return '';
+            let cleanText = text.trim().replace(/\n{3,}/g, '\n\n');
             try {
                 if (typeof marked !== 'undefined' && marked.parse) {
-                    return marked.parse(text);
+                    return marked.parse(cleanText);
                 }
             } catch (e) {
                 console.warn("Marked.js parse warning:", e);
             }
             // Fallback lightweight Markdown renderer
-            let html = text
+            let html = cleanText
                 .replace(/&/g, "&amp;")
                 .replace(/</g, "&lt;")
                 .replace(/>/g, "&gt;")
@@ -799,10 +802,15 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
                 if (trimmed.startsWith('• ') || trimmed.startsWith('* ') || trimmed.startsWith('- ')) {
                     let content = trimmed.substring(2).trim();
                     if (!inList) {
-                        formatted.push('<ul style="margin: 8px 0; padding-left: 20px;">');
+                        formatted.push('<ul style="margin: 6px 0; padding-left: 20px;">');
                         inList = true;
                     }
-                    formatted.push(`<li style="margin-bottom: 4px;">${content}</li>`);
+                    formatted.push(`<li style="margin-bottom: 2px;">${content}</li>`);
+                } else if (trimmed === '') {
+                    if (inList) {
+                        formatted.push('</ul>');
+                        inList = false;
+                    }
                 } else {
                     if (inList) {
                         formatted.push('</ul>');
@@ -812,7 +820,7 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
                 }
             }
             if (inList) formatted.push('</ul>');
-            return formatted.join('<br>').replace(/(<br>\s*){3,}/g, '<br><br>');
+            return formatted.join('<br>').replace(/(<br>\s*){2,}/g, '<br>');
         }
 
         function appendMessage(sender, text, showTicketCTA = false, responseGraph = null) {
@@ -822,7 +830,7 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
 
             const avatar = document.createElement('div');
             avatar.className = `avatar ${sender}`;
-            avatar.innerText = sender === 'user' ? 'YOU' : 'AI';
+            avatar.innerHTML = sender === 'user' ? USER_ICON_SVG : BOT_ICON_SVG;
 
             const bubble = document.createElement('div');
             bubble.className = 'message-bubble';
@@ -840,7 +848,7 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
 
             if (sender === 'agent' && responseGraph && responseGraph.nodes && responseGraph.nodes.length > 0) {
                 const graphBox = document.createElement('div');
-                graphBox.style.cssText = 'margin-top: 10px; padding: 8px 12px; background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 8px; display: flex; align-items: center; justify-content: space-between; gap: 12px;';
+                graphBox.style.cssText = 'margin-top: 10px; padding: 8px 12px; background: rgba(22, 22, 22, 0.8); border: 1px solid rgba(217, 102, 43, 0.28); border-radius: 8px; display: flex; align-items: center; justify-content: space-between; gap: 12px;';
                 
                 window.lastResponseGraphs = window.lastResponseGraphs || {};
                 const graphId = 'graph_' + Math.random().toString(36).substr(2, 9);
@@ -848,12 +856,12 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
 
                 graphBox.innerHTML = `
                     <div style="display: flex; align-items: center; gap: 8px; overflow: hidden;">
-                        <span style="font-size: 13px;">🕸️</span>
-                        <span style="font-size: 11px; font-weight: 600; color: #a5b4fc; white-space: nowrap;">Grounding Lineage</span>
-                        <span style="font-size: 10px; background: rgba(99, 102, 241, 0.2); color: #818cf8; padding: 2px 6px; border-radius: 4px; font-weight: 600; white-space: nowrap;">${responseGraph.nodes.length} nodes • ${responseGraph.edges.length} edges</span>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#D9662B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                        <span style="font-size: 11px; font-weight: 600; color: #D9662B; white-space: nowrap;">Grounding Lineage</span>
+                        <span style="font-size: 10px; background: rgba(217, 102, 43, 0.14); color: #e2a37e; padding: 2px 6px; border-radius: 4px; font-weight: 600; white-space: nowrap;">${responseGraph.nodes.length} nodes • ${responseGraph.edges.length} edges</span>
                     </div>
-                    <button class="ticket-btn" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.3), rgba(56, 189, 248, 0.3)); border: 1px solid rgba(99, 102, 241, 0.5); color: #e0e7ff; padding: 4px 10px; font-size: 11px; white-space: nowrap; flex-shrink: 0;" onclick="showReplyGraphModal('${graphId}')">
-                        🔍 Inspect Lineage
+                    <button class="ticket-btn" style="background: rgba(217, 102, 43, 0.18); border: 1px solid rgba(217, 102, 43, 0.35); color: #e2a37e; padding: 4px 10px; font-size: 11px; white-space: nowrap; flex-shrink: 0; display: inline-flex; align-items: center; gap: 4px;" onclick="showReplyGraphModal('${graphId}')">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Inspect Lineage
                     </button>
                 `;
                 bubble.appendChild(graphBox);
@@ -912,18 +920,18 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
         }
 
         const PIPELINE_STAGES = [
-            { id: 1, name: "File Upload", icon: "📥", log: "📥 Uploading and validating documents.." },
-            { id: 2, name: "Ingestion & Extraction", icon: "📑", log: "📑 Extracting text and structured content from all files.." },
-            { id: 3, name: "Cleaning & Normalization", icon: "🧹", log: "🧹 Removing duplicates and normalising text.." },
-            { id: 4, name: "Chunking & Segmentation", icon: "✂️", log: "✂️ Chunking documents into semantic segments.." },
-            { id: 5, name: "Metadata Intelligence", icon: "🏷️", log: "🏷️ Enriching metadata and source attribution.." },
-            { id: 6, name: "Entity & Relationship", icon: "🔗", log: "🔗 Linking entity relationship paths.." },
-            { id: 7, name: "Semantic Learning", icon: "🧬", log: "🧬 Learning domain semantic embeddings.." },
-            { id: 8, name: "EDA Intelligence", icon: "📊", log: "📊 Calculating EDA metric distributions.." },
-            { id: 9, name: "ML Validation & Accuracy", icon: "✅", log: "✅ Validating diagnostic accuracy & thresholds.." },
-            { id: 10, name: "Ontology & Governance", icon: "🏛️", log: "🏛️ Applying ontology governance policies.." },
-            { id: 11, name: "Canonicalization", icon: "✳️", log: "✳️ Canonicalizing enterprise entity nodes.." },
-            { id: 12, name: "Knowledge Graph", icon: "🕸️", log: "🕸️ Building NetworkX Knowledge Graph.." }
+            { id: 1, name: "File Upload", icon: `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>` },
+            { id: 2, name: "Ingestion & Extraction", icon: `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>` },
+            { id: 3, name: "Cleaning & Normalization", icon: `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4"/><path d="M12 18v4"/><path d="M4.93 4.93l2.83 2.83"/><path d="M16.24 16.24l2.83 2.83"/><path d="M2 12h4"/><path d="M18 12h4"/></svg>` },
+            { id: 4, name: "Chunking & Segmentation", icon: `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg>` },
+            { id: 5, name: "Metadata Intelligence", icon: `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>` },
+            { id: 6, name: "Entity & Relationship", icon: `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>` },
+            { id: 7, name: "Semantic Learning", icon: `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 15c6.667-6 13.333 0 20-6"/><path d="M2 9c6.667 6 13.333 0 20 6"/></svg>` },
+            { id: 8, name: "EDA Intelligence", icon: `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>` },
+            { id: 9, name: "ML Validation & Accuracy", icon: `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>` },
+            { id: 10, name: "Ontology & Governance", icon: `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M3 10h18"/><path d="M5 6l7-3 7 3"/><path d="M4 10v11"/><path d="M20 10v11"/><path d="M8 10v11"/><path d="M12 10v11"/><path d="M16 10v11"/></svg>` },
+            { id: 11, name: "Canonicalization", icon: `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>` },
+            { id: 12, name: "Knowledge Graph", icon: `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>` }
         ];
 
         function renderStepper(completedCount = PIPELINE_STAGES.length) {
@@ -935,8 +943,8 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
                 html += `
                     <div class="sidebar-stage-row ${isDone ? 'active' : ''}">
                         <div style="display: flex; align-items: center; gap: 10px;">
-                            <div class="stage-badge ${isDone ? 'done' : ''}">
-                                <span>${stage.icon}</span>
+                            <div class="stage-badge ${isDone ? 'done' : ''}" style="display: flex; align-items: center; justify-content: center;">
+                                ${stage.icon}
                             </div>
                             <span class="stage-title">${stage.name}</span>
                         </div>
@@ -950,28 +958,18 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
         async function triggerPipeline() {
             const fill = document.getElementById('progressFill');
             const percent = document.getElementById('progressPercent');
-            const logBox = document.getElementById('liveLogBox');
             const toast = document.getElementById('toastBox');
 
-            logBox.innerHTML = '<div class="log-entry">Information harnessing started - streaming all 12 layers...</div>';
             renderStepper(0);
             fill.style.width = '0%';
             percent.innerText = '0%';
 
             for (let i = 0; i < PIPELINE_STAGES.length; i++) {
                 await new Promise(r => setTimeout(r, 150));
-                const stage = PIPELINE_STAGES[i];
                 const pct = Math.round(((i + 1) / PIPELINE_STAGES.length) * 100);
                 fill.style.width = pct + '%';
                 percent.innerText = pct + '%';
-
                 renderStepper(i + 1);
-
-                const entry = document.createElement('div');
-                entry.className = 'log-entry';
-                entry.innerText = stage.log;
-                logBox.appendChild(entry);
-                logBox.scrollTop = logBox.scrollHeight;
             }
 
             try {
@@ -1059,11 +1057,11 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
             const height = canvas.height = canvas.clientHeight;
 
             const categoryConfig = {
-                'Dataset':   { color: '#38bdf8', bg: 'rgba(56, 189, 248, 0.12)', icon: '📊', label: 'Datasets' },
-                'SME':       { color: '#c084fc', bg: 'rgba(192, 132, 252, 0.12)', icon: '👤', label: 'SMEs' },
-                'Equipment': { color: '#10b981', bg: 'rgba(16, 185, 129, 0.12)', icon: '🔧', label: 'Equipment' },
-                'Error':     { color: '#f43f5e', bg: 'rgba(244, 63, 94, 0.12)', icon: '⚠️', label: 'Faults' },
-                'Metric':    { color: '#facc15', bg: 'rgba(250, 204, 21, 0.12)', icon: '📈', label: 'Metrics' }
+                'Dataset':   { color: '#D9662B', bg: 'rgba(217, 102, 43, 0.08)', icon: '📊', label: 'Datasets' },
+                'SME':       { color: '#c084fc', bg: 'rgba(192, 132, 252, 0.08)', icon: '👤', label: 'SMEs' },
+                'Equipment': { color: '#22c55e', bg: 'rgba(34, 197, 94, 0.08)', icon: '🔧', label: 'Equipment' },
+                'Error':     { color: '#f43f5e', bg: 'rgba(244, 63, 94, 0.08)', icon: '⚠️', label: 'Faults' },
+                'Metric':    { color: '#facc15', bg: 'rgba(250, 204, 21, 0.08)', icon: '📈', label: 'Metrics' }
             };
 
             const clusterCenters = {
@@ -1141,8 +1139,8 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
                         ctx.moveTo(src.x, src.y);
                         ctx.lineTo(tgt.x, tgt.y);
                         const isConnected = selectedNode && (selectedNode === src || selectedNode === tgt);
-                        ctx.strokeStyle = isConnected ? '#38bdf8' : 'rgba(255, 255, 255, 0.22)';
-                        ctx.lineWidth = isConnected ? 2.5 : 1.2;
+                        ctx.strokeStyle = isConnected ? '#D9662B' : 'rgba(255, 255, 255, 0.14)';
+                        ctx.lineWidth = isConnected ? 2.5 : 1.0;
                         ctx.stroke();
 
                         // Relationship Label Badge
@@ -1150,9 +1148,9 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
                         const midY = (src.y + tgt.y) / 2;
                         ctx.font = '9px Inter';
                         const textW = ctx.measureText(e.relation).width + 8;
-                        ctx.fillStyle = 'rgba(11, 17, 32, 0.9)';
+                        ctx.fillStyle = 'rgba(6, 6, 6, 0.92)';
                         ctx.fillRect(midX - textW / 2, midY - 7, textW, 14);
-                        ctx.fillStyle = isConnected ? '#38bdf8' : '#94a3b8';
+                        ctx.fillStyle = isConnected ? '#D9662B' : '#4b5563';
                         ctx.textAlign = 'center';
                         ctx.fillText(e.relation, midX, midY + 3);
                     }
@@ -1175,7 +1173,7 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
                     } else {
                         ctx.rect(rx, ry, pillW, pillH);
                     }
-                    ctx.fillStyle = isSelected ? 'rgba(30, 41, 59, 0.98)' : 'rgba(15, 23, 42, 0.92)';
+                    ctx.fillStyle = isSelected ? 'rgba(28, 28, 28, 0.98)' : 'rgba(14, 14, 14, 0.95)';
                     ctx.fill();
 
                     ctx.strokeStyle = n.cfg.color;
@@ -1184,7 +1182,7 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
 
                     if (isSelected) {
                         ctx.shadowColor = n.cfg.color;
-                        ctx.shadowBlur = 12;
+                        ctx.shadowBlur = 14;
                         ctx.stroke();
                     }
 
@@ -1248,12 +1246,12 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
 
     <!-- Toast Notification -->
     <div class="toast-notification" id="toastBox">
-        <div style="width: 36px; height: 36px; border-radius: 50%; background: rgba(16, 185, 129, 0.2); border: 1px solid #10b981; display: flex; align-items: center; justify-content: center; font-size: 18px;">
+        <div style="width: 36px; height: 36px; border-radius: 50%; background: var(--accent-orange-soft); border: 1px solid var(--accent-orange); display: flex; align-items: center; justify-content: center; font-size: 18px;">
             🕸️
         </div>
         <div>
             <div style="font-size: 13px; font-weight: 700; color: #fff;">Knowledge graph built</div>
-            <div style="font-size: 11px; color: #94a3b8;">Entities and relationships linked</div>
+            <div style="font-size: 11px; color: var(--text-muted);">Entities and relationships linked</div>
         </div>
     </div>
 
@@ -1262,7 +1260,7 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
         <div class="graph-modal-content">
             <div class="graph-modal-header">
                 <div style="display: flex; align-items: center; gap: 12px;">
-                    <div class="brand-icon" style="background: linear-gradient(135deg, #a855f7, #6366f1);">🕸️</div>
+                    <div class="brand-icon" style="background: var(--accent-orange);">🕸️</div>
                     <div>
                         <h3 style="font-family: 'Outfit', sans-serif; font-size: 18px; color: #fff;">ABC Executive Knowledge Graph Explorer</h3>
                         <p style="font-size: 12px; color: #94a3b8;">Domain Clusters • Data Lineage • SME Ownership • Fault Remedies</p>
@@ -1270,7 +1268,7 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
                 </div>
                 <div style="display: flex; align-items: center; gap: 14px;">
                     <span class="perm-status allow" id="graphNodeCount">0 Nodes</span>
-                    <span class="perm-status allow" style="background: rgba(56, 189, 248, 0.2); color: #38bdf8;" id="graphEdgeCount">0 Edges</span>
+                    <span class="perm-status allow" style="background: var(--accent-orange-soft); color: var(--accent-orange);" id="graphEdgeCount">0 Edges</span>
                     <button onclick="toggleGraphModal()" style="background: none; border: none; color: #94a3b8; font-size: 20px; cursor: pointer; padding: 4px 8px;">✕</button>
                 </div>
             </div>
@@ -1291,7 +1289,7 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
                 <canvas id="graphCanvas" width="920" height="460"></canvas>
 
                 <div class="graph-inspector-panel" id="graphInspector">
-                    <div style="font-size: 11px; font-weight: 700; color: #38bdf8; text-transform: uppercase;">Entity Inspector & Lineage Explorer</div>
+                    <div style="font-size: 11px; font-weight: 700; color: var(--accent-orange); text-transform: uppercase;">Entity Inspector &amp; Lineage Explorer</div>
                     <div style="font-size: 14px; font-weight: 600; color: #fff; margin-top: 4px;" id="inspectorNodeName">Click any graph node to inspect relationships & attributes</div>
                     <div style="font-size: 12px; color: #94a3b8; margin-top: 4px;" id="inspectorNodeDesc">Select a node from the domain clusters above.</div>
                 </div>
