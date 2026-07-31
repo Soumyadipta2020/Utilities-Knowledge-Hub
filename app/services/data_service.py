@@ -1,105 +1,112 @@
-"""
-Data Service using Pandas.
-Handles interaction with Live_Metrics.xlsx and Metadata_Access.xlsx Excel silos.
-"""
+"""Pandas access layer for the local Excel data silos."""
 
-from typing import Dict, Any, List, Optional
-import pandas as pd
 from pathlib import Path
+from typing import Any
+import re
+
+import pandas as pd
 
 
 class DataService:
-    """Service to interact with structured Excel datasets via Pandas."""
+    """Read operational, telemetry, and metadata workbooks for the chatbot."""
 
-    def __init__(self, metrics_path: Path, access_path: Path):
+    def __init__(self, metrics_path: Path, access_path: Path, operations_path: Path) -> None:
         self.metrics_path = metrics_path
         self.access_path = access_path
+        self.operations_path = operations_path
 
-    def check_access_permission(self, user_role: str, data_source: str) -> Dict[str, Any]:
-        """
-        Check Metadata_Access.xlsx to determine if user_role has permission for data_source.
-        Rules:
-        - Customer: Knowledge_Base only.
-        - Employee: Knowledge_Base + Live_Metrics.
-        - Admin: All data sources.
-        """
-        if not self.access_path.exists():
-            raise FileNotFoundError(f"Metadata Access Excel file missing at: {self.access_path}")
+    @staticmethod
+    def _require_file(path: Path, label: str) -> None:
+        if not path.exists():
+            raise FileNotFoundError(f"{label} is missing at {path}. Run app/data/generate_mock_data.py.")
 
-        df = pd.read_excel(self.access_path)
-        role_clean = str(user_role).strip().capitalize()
-        source_clean = str(data_source).strip()
-
-        # Direct match or case-insensitive match in dataframe
-        matches = df[
-            (df["required_role"].str.lower() == role_clean.lower()) &
-            (df["data_source"].str.lower().str.contains(source_clean.lower()))
+    def check_access_permission(self, user_role: str, data_source: str) -> dict[str, Any]:
+        """Return the metadata-backed permission decision for one data source."""
+        self._require_file(self.access_path, "Metadata Access workbook")
+        data_frame = pd.read_excel(self.access_path)
+        role = user_role.strip().capitalize()
+        source = data_source.strip()
+        matches = data_frame[
+            (data_frame["required_role"].str.casefold() == role.casefold())
+            & (data_frame["data_source"].str.casefold() == source.casefold())
         ]
-
         if not matches.empty:
-            match_row = matches.iloc[0]
+            record = matches.iloc[0]
             return {
                 "access_granted": True,
                 "status": "Access Granted",
-                "user_role": role_clean,
-                "data_source": match_row["data_source"],
-                "access_level": match_row["access_level"],
-                "description": match_row["description"],
+                "user_role": role,
+                "data_source": str(record["data_source"]),
+                "access_level": str(record["access_level"]),
+                "description": str(record["description"]),
             }
-
-        # Handle Admin fallback rule (Admin has all access)
-        if role_clean.lower() == "admin":
-            return {
-                "access_granted": True,
-                "status": "Access Granted",
-                "user_role": "Admin",
-                "data_source": source_clean,
-                "access_level": "Full-Access",
-                "description": "Administrator master privilege",
-            }
-
-        # Otherwise access is denied
         return {
             "access_granted": False,
             "status": "Access Denied",
-            "user_role": role_clean,
-            "data_source": source_clean,
-            "reason": f"Role '{role_clean}' is not authorized to access data source '{source_clean}'.",
+            "user_role": role,
+            "data_source": source,
+            "reason": f"Role '{role}' is not authorized to access data source '{source}'.",
         }
 
-    def get_live_metrics(self, metric_name: str = "all") -> Dict[str, Any]:
-        """
-        Query Live_Metrics.xlsx using pandas.
-        """
-        if not self.metrics_path.exists():
-            raise FileNotFoundError(f"Live Metrics Excel file missing at: {self.metrics_path}")
+    def get_live_metrics(self, metric_name: str = "all") -> dict[str, Any]:
+        """Query the Live_Metrics workbook by metric name."""
+        self._require_file(self.metrics_path, "Live Metrics workbook")
+        data_frame = pd.read_excel(self.metrics_path)
+        if metric_name.strip().casefold() in {"all", "", "list"}:
+            records = data_frame.to_dict(orient="records")
+        else:
+            records = data_frame[
+                data_frame["metric_name"].str.casefold().str.contains(metric_name.strip().casefold(), regex=False)
+            ].to_dict(orient="records")
+        if not records:
+            return {"success": False, "error": f"No metric matches '{metric_name}'.", "available_metrics": data_frame["metric_name"].tolist()}
+        return {"success": True, "count": len(records), "metrics": records}
 
-        df = pd.read_excel(self.metrics_path)
+    def get_business_data(self, query: str) -> dict[str, Any]:
+        """Return matching aggregated business data from the operations workbook."""
+        self._require_file(self.operations_path, "Business Operations workbook")
+        query_terms = set(query.casefold().replace("_", " ").split())
+        matches: list[dict[str, Any]] = []
+        for sheet_name in ("Sales_Funnel", "Service_Activity"):
+            data_frame = pd.read_excel(self.operations_path, sheet_name=sheet_name)
+            for record in data_frame.to_dict(orient="records"):
+                searchable = " ".join(str(value) for value in record.values()).casefold()
+                if query_terms.intersection(searchable.split()) or any(term in searchable for term in query_terms if len(term) > 3):
+                    matches.append({"dataset": sheet_name, **record})
+        if not matches:
+            return {"success": False, "error": "No business records match that query."}
+        return {"success": True, "count": len(matches), "records": matches}
 
-        if metric_name.lower() in ["all", "", "list"]:
-            records = df.to_dict(orient="records")
-            return {
-                "success": True,
-                "metric_requested": "all",
-                "count": len(records),
-                "metrics": records,
-            }
+    def get_metric_definitions(self, query: str) -> dict[str, Any]:
+        """Return definitions for requested operational or commercial metrics."""
+        self._require_file(self.operations_path, "Business Operations workbook")
+        data_frame = pd.read_excel(self.operations_path, sheet_name="Metric_Definitions")
+        query_tokens = set(re.findall(r"[a-z0-9]+", query.casefold().replace("_", " ")))
+        records = data_frame[
+            data_frame["metric_name"].str.casefold().apply(
+                lambda name: set(name.replace("_", " ").split()).difference({"pct"}).issubset(query_tokens)
+            )
+        ].to_dict(orient="records")
+        return {"success": bool(records), "definitions": records}
 
-        query_clean = metric_name.lower().strip()
-        matches = df[df["metric_name"].str.lower().str.contains(query_clean)]
-
-        if matches.empty:
-            return {
-                "success": False,
-                "metric_requested": metric_name,
-                "error": f"No metric found matching '{metric_name}'.",
-                "available_metrics": df["metric_name"].tolist(),
-            }
-
-        records = matches.to_dict(orient="records")
+    def forecast_installations(self) -> dict[str, Any]:
+        """Create a transparent directional installation forecast from the active pipeline."""
+        self._require_file(self.operations_path, "Business Operations workbook")
+        funnel = pd.read_excel(self.operations_path, sheet_name="Sales_Funnel")
+        installations = funnel[funnel["service_line"].str.casefold() == "heating installation"]
+        if installations.empty:
+            return {"success": False, "error": "No heating-installation pipeline records are available."}
+        leads = int(installations["leads"].sum())
+        appointments = int(installations["net_appointments"].sum())
+        quotes = int(installations["quotes_issued"].sum())
+        conversion = float(installations["sales_conversion_pct"].mean())
+        projected_sales = round(leads * conversion / 100)
         return {
             "success": True,
-            "metric_requested": metric_name,
-            "count": len(records),
-            "metrics": records,
+            "leads": leads,
+            "net_appointments": appointments,
+            "quotes_issued": quotes,
+            "conversion_pct": conversion,
+            "projected_installations": projected_sales,
+            "note": "Directional estimate based on the current installation lead volume and observed conversion rate; additional historical periods improve forecast reliability.",
         }

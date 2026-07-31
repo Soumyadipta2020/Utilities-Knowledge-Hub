@@ -1,193 +1,110 @@
-"""
-Mock Data Generator Script for Utilities Knowledge Hub.
-Generates Knowledge_Base.xlsx, Live_Metrics.xlsx, and Metadata_Access.xlsx.
-"""
+"""Generate the local Excel silos used by the Utilities Knowledge Hub demo."""
 
 from pathlib import Path
+
 import pandas as pd
 
 
 def generate_all_mock_data(data_dir: Path) -> None:
-    """Generate Excel mock files inside data_dir if they do not exist."""
+    """Create the knowledge, telemetry, access, and business-operation workbooks."""
     data_dir.mkdir(parents=True, exist_ok=True)
-
     kb_file = data_dir / "Knowledge_Base.xlsx"
     metrics_file = data_dir / "Live_Metrics.xlsx"
     access_file = data_dir / "Metadata_Access.xlsx"
+    operations_file = data_dir / "Business_Operations.xlsx"
 
-    # 1. Knowledge Base Data (Graph Nodes & Relationships)
-    kb_data = [
-        {
-            "source": "Worcester Bosch 4000",
-            "relationship": "displays_error",
-            "target": "EA_Error",
-            "details": "Flame not detected after ignition attempt.",
-        },
-        {
-            "source": "EA_Error",
-            "relationship": "requires_part",
-            "target": "Ignition Electrode",
-            "details": "Inspect lead connection, clean electrode or replace if worn.",
-        },
-        {
-            "source": "EA_Error",
-            "relationship": "requires_part",
-            "target": "Gas Supply Valve",
-            "details": "Check gas inlet pressure and solenoid valve coil resistance.",
-        },
-        {
-            "source": "EA_Error",
-            "relationship": "caused_by",
-            "target": "Low Gas Pressure",
-            "details": "Gas supply pressure at meter is below 18 mbar.",
-        },
-        {
-            "source": "Low Gas Pressure",
-            "relationship": "remedy_step",
-            "target": "Check Emergency Control Valve",
-            "details": "Ensure main ECV valve handle is aligned parallel to gas pipe.",
-        },
-        {
-            "source": "Worcester Bosch 4000",
-            "relationship": "displays_error",
-            "target": "224_Error",
-            "details": "Primary flue thermostat or safety limiter tripped (>105°C).",
-        },
-        {
-            "source": "224_Error",
-            "relationship": "caused_by",
-            "target": "Overheating",
-            "details": "System water flow restricted or pump air locked.",
-        },
-        {
-            "source": "Overheating",
-            "relationship": "requires_part",
-            "target": "Circulating Pump",
-            "details": "Verify pump impeller spin and clear air bleed valve.",
-        },
-        {
-            "source": "Ideal Logic Combi",
-            "relationship": "displays_error",
-            "target": "F2_Error",
-            "details": "Flame loss during operation.",
-        },
-        {
-            "source": "F2_Error",
-            "relationship": "requires_part",
-            "target": "Condensate Pipe",
-            "details": "Check for external ice blockage or kinked discharge pipe.",
-        },
-        {
-            "source": "Baxi 800 Combi",
-            "relationship": "displays_error",
-            "target": "E119_Error",
-            "details": "System operating pressure below minimum threshold (<0.5 bar).",
-        },
-        {
-            "source": "E119_Error",
-            "relationship": "remedy_step",
-            "target": "Re-pressurise Filling Loop",
-            "details": "Attach filling loop hose and repressurise system gauge to 1.5 bar.",
-        },
+    knowledge_records = [
+        ("Centrica Enterprise Platform", "powers", "Agentic Knowledge Hub", "Unified AI-powered intelligence layer for Centrica business knowledge, datasets, dashboards, and operational insights."),
+        ("Sales_Funnel_Dataset", "managed_by_sme", "Sarah Jenkins (Head of Commercial Analytics)", "Owner of commercial sales funnel, lead attribution, and conversion metrics in Snowflake."),
+        ("Sales_Funnel_Dataset", "lineage_source", "SAP IS-U & Salesforce CRM", "Aggregates raw customer leads and survey appointments from Salesforce into Snowflake data lake."),
+        ("Live_Metrics_Dataset", "managed_by_sme", "David Ross (Lead Telemetry Engineer)", "Maintains IoT grid pressure and thermal telemetry sensors across UK regions."),
+        ("Live_Metrics_Dataset", "lineage_source", "Grid Mon Substation IoT Network", "Real-time telemetry ingested via Kafka into Snowflake Operational Data Store."),
+        ("Boiler_Installation_Forecast_v2", "managed_by_sme", "Marcus Vance (Principal Data Scientist)", "Predictive installation model using pipeline conversion, seasonal demand, and engineer capacity."),
+        ("Boiler_Installation_Forecast_v2", "consumes_dataset", "Sales_Funnel_Dataset", "Uses qualified lead volume, kept appointment ratios, and quote conversion rates."),
+        ("Centrica_Executive_Dashboard", "managed_by_sme", "Claire Williams (VP Operations)", "PowerBI dashboard providing real-time visibility into sales conversion, telemetry alerts, and service activity."),
+        ("Centrica_Executive_Dashboard", "displays_metrics", "Sales Conversion & Grid Telemetry", "Unified view combining Commercial Sales Funnel and Live Telemetry Metrics."),
+        ("Worcester Bosch 4000", "displays_error", "EA_Error", "Flame was not detected after an ignition attempt."),
+        ("EA_Error", "requires_part", "Ignition Electrode", "Inspect the lead, clean the electrode, or replace it if worn."),
+        ("EA_Error", "requires_part", "Gas Supply Valve", "Check inlet pressure and the solenoid valve coil resistance."),
+        ("EA_Error", "caused_by", "Low Gas Pressure", "Gas pressure at the meter is below 18 mbar."),
+        ("Low Gas Pressure", "remedy_step", "Check Emergency Control Valve", "Ensure the main valve handle is parallel to the pipe."),
+        ("Worcester Bosch 4000", "displays_error", "224_Error", "The primary flue thermostat or safety limiter has tripped."),
+        ("224_Error", "caused_by", "Overheating", "Water flow may be restricted or the pump may be air locked."),
+        ("Overheating", "requires_part", "Circulating Pump", "Verify impeller movement and bleed trapped air."),
+        ("Ideal Logic Combi", "displays_error", "F2_Error", "Flame loss during operation."),
+        ("F2_Error", "requires_part", "Condensate Pipe", "Check for external ice blockage or a kinked discharge pipe."),
+        ("Baxi 800 Combi", "displays_error", "E119_Error", "System pressure is below the minimum operating threshold."),
+        ("E119_Error", "remedy_step", "Re-pressurise Filling Loop", "Repressurise the system gauge to 1.5 bar."),
+        ("Home Energy Services", "provides", "Heating Installation", "Design and fit replacement boilers, heating controls, and compatible system upgrades."),
+        ("Home Energy Services", "provides", "Heating Repair", "Diagnose and repair boiler, radiator, thermostat, and hot-water faults."),
+        ("Home Energy Services", "provides", "Annual Maintenance", "Carry out planned appliance servicing and safety checks."),
+        ("Home Energy Services", "provides", "Plumbing And Drains", "Repair leaks, taps, toilets, pipework, and common drainage issues."),
+        ("Home Energy Services", "provides", "Electrical Support", "Provide domestic electrical checks, fault diagnosis, and selected repairs."),
+        ("Home Energy Services", "provides", "Appliance Care", "Repair and maintain selected kitchen and laundry appliances."),
+        ("Lead", "converts_to", "Net Appointment", "A qualified prospect that results in a kept consultation or survey appointment."),
+        ("Net Appointment", "converts_to", "Net Sale", "A kept appointment that results in a completed, non-cancelled sale."),
+        ("Net Sale", "measured_by", "Sales Conversion", "Net sales divided by qualified leads, expressed as a percentage."),
+        ("Quote", "supports", "Net Sale", "A priced proposal issued for an installation, repair, or service plan."),
     ]
+    pd.DataFrame(knowledge_records, columns=["source", "relationship", "target", "details"]).to_excel(kb_file, index=False)
 
-    pd.DataFrame(kb_data).to_excel(kb_file, index=False)
-    print(f"Generated: {kb_file}")
-
-    # 2. Live Metrics Data
-    metrics_data = [
-        {
-            "metric_name": "grid_pressure_psi",
-            "value": 42.5,
-            "unit": "PSI",
-            "status": "Normal",
-            "description": "Main regional gas distribution pressure.",
-        },
-        {
-            "metric_name": "boiler_flame_current_ua",
-            "value": 4.2,
-            "unit": "uA",
-            "status": "Normal",
-            "description": "Ionization flame sensor current signal.",
-        },
-        {
-            "metric_name": "pump_flow_rate_lpm",
-            "value": 14.8,
-            "unit": "L/min",
-            "status": "Optimal",
-            "description": "Primary central heating loop flow velocity.",
-        },
-        {
-            "metric_name": "system_temp_c",
-            "value": 68.2,
-            "unit": "°C",
-            "status": "Normal",
-            "description": "Appliance flow header temperature.",
-        },
-        {
-            "metric_name": "active_substation_alerts",
-            "value": 3,
-            "unit": "Alerts",
-            "status": "Warning",
-            "description": "Substation telemetry warnings active in Sector 4.",
-        },
-        {
-            "metric_name": "customer_outages_count",
-            "value": 0,
-            "unit": "Outages",
-            "status": "Normal",
-            "description": "Active unplanned outage count across network.",
-        },
+    telemetry_records = [
+        ("grid_pressure_psi", 42.5, "PSI", "Normal", "Main regional gas distribution pressure."),
+        ("boiler_flame_current_ua", 4.2, "uA", "Normal", "Ionisation flame sensor current signal."),
+        ("pump_flow_rate_lpm", 14.8, "L/min", "Optimal", "Primary heating-loop flow velocity."),
+        ("system_temp_c", 68.2, "°C", "Normal", "Appliance flow-header temperature."),
+        ("active_substation_alerts", 3, "Alerts", "Warning", "Active substation telemetry warnings in sector 4."),
+        ("customer_outages_count", 0, "Outages", "Normal", "Active unplanned outages across the network."),
     ]
+    pd.DataFrame(telemetry_records, columns=["metric_name", "value", "unit", "status", "description"]).to_excel(metrics_file, index=False)
 
-    pd.DataFrame(metrics_data).to_excel(metrics_file, index=False)
-    print(f"Generated: {metrics_file}")
-
-    # 3. Metadata Access Data
-    # Rules: Customer -> KB only. Employee -> KB + basic metrics. Admin -> All access.
-    access_data = [
-        {
-            "data_source": "Knowledge_Base",
-            "required_role": "Customer",
-            "access_level": "Read-Only",
-            "description": "Public troubleshooting & user manual graph",
-        },
-        {
-            "data_source": "Knowledge_Base",
-            "required_role": "Employee",
-            "access_level": "Read-Only",
-            "description": "Public troubleshooting & user manual graph",
-        },
-        {
-            "data_source": "Knowledge_Base",
-            "required_role": "Admin",
-            "access_level": "Read-Write",
-            "description": "Full access to edit knowledge base graph",
-        },
-        {
-            "data_source": "Live_Metrics",
-            "required_role": "Employee",
-            "access_level": "Read-Only",
-            "description": "Operational live telemetry & grid pressure metrics",
-        },
-        {
-            "data_source": "Live_Metrics",
-            "required_role": "Admin",
-            "access_level": "Read-Write",
-            "description": "Full access to live metrics telemetry",
-        },
-        {
-            "data_source": "System_Logs",
-            "required_role": "Admin",
-            "access_level": "Full-Access",
-            "description": "Sensitive infrastructure system logs",
-        },
+    access_records = [
+        ("Knowledge_Base", "Customer", "Read-Only", "Troubleshooting, service catalogue, and business metric definitions."),
+        ("Knowledge_Base", "Employee", "Read-Only", "Troubleshooting, service catalogue, and business metric definitions."),
+        ("Knowledge_Base", "Admin", "Read-Write", "Full knowledge graph administration."),
+        ("Live_Metrics", "Employee", "Read-Only", "Operational telemetry and network readings."),
+        ("Live_Metrics", "Admin", "Read-Write", "Full telemetry access."),
+        ("Business_Operations", "Employee", "Read-Only", "Aggregated commercial, service, and sales-performance records."),
+        ("Business_Operations", "Admin", "Read-Write", "Full operational dataset access."),
+        ("Metadata_Access", "Admin", "Full-Access", "Access-policy administration and audit."),
+        ("System_Logs", "Admin", "Full-Access", "Sensitive infrastructure system logs."),
     ]
+    pd.DataFrame(access_records, columns=["data_source", "required_role", "access_level", "description"]).to_excel(access_file, index=False)
 
-    pd.DataFrame(access_data).to_excel(access_file, index=False)
-    print(f"Generated: {access_file}")
+    funnel_records = [
+        ("2026-07-01", "Heating Installation", "North", 126, 78, 31, 39, 24.6),
+        ("2026-07-01", "Heating Repair", "North", 94, 62, 27, 18, 28.7),
+        ("2026-07-01", "Annual Maintenance", "Central", 110, 81, 42, 36, 32.7),
+        ("2026-07-01", "Plumbing And Drains", "Central", 88, 55, 19, 16, 21.6),
+        ("2026-07-01", "Electrical Support", "South", 64, 41, 14, 11, 21.9),
+        ("2026-07-01", "Appliance Care", "South", 72, 46, 17, 13, 18.1),
+    ]
+    activity_records = [
+        ("2026-07-01", "Heating Installation", "Boiler installation", 24, 21, 3, "North"),
+        ("2026-07-01", "Heating Repair", "Boiler breakdown repair", 57, 49, 8, "North"),
+        ("2026-07-01", "Annual Maintenance", "Boiler service", 103, 98, 5, "Central"),
+        ("2026-07-01", "Plumbing And Drains", "Plumbing repair", 68, 61, 7, "Central"),
+        ("2026-07-01", "Electrical Support", "Electrical safety check", 38, 36, 2, "South"),
+        ("2026-07-01", "Appliance Care", "Appliance repair", 46, 39, 7, "South"),
+    ]
+    definition_records = [
+        ("leads", "Count", "New qualified prospects created in the reporting period."),
+        ("net_appointments", "Count", "Kept consultation or survey appointments after exclusions and cancellations."),
+        ("quotes_issued", "Count", "Priced customer proposals issued during the reporting period."),
+        ("net_sales", "Count", "Completed sales after cancellations and reversals are removed."),
+        ("sales_conversion_pct", "Percent", "Net sales divided by qualified leads, expressed as a percentage."),
+        ("jobs_booked", "Count", "Service, repair, maintenance, and installation visits scheduled."),
+        ("jobs_completed", "Count", "Booked jobs successfully completed in the reporting period."),
+        ("jobs_requiring_follow_up", "Count", "Jobs requiring a return visit, parts, or additional customer contact."),
+    ]
+    with pd.ExcelWriter(operations_file) as writer:
+        pd.DataFrame(funnel_records, columns=["report_date", "service_line", "region", "leads", "net_appointments", "quotes_issued", "net_sales", "sales_conversion_pct"]).to_excel(writer, sheet_name="Sales_Funnel", index=False)
+        pd.DataFrame(activity_records, columns=["report_date", "service_line", "activity_type", "jobs_booked", "jobs_completed", "jobs_requiring_follow_up", "region"]).to_excel(writer, sheet_name="Service_Activity", index=False)
+        pd.DataFrame(definition_records, columns=["metric_name", "unit", "definition"]).to_excel(writer, sheet_name="Metric_Definitions", index=False)
+
+    for file_path in (kb_file, metrics_file, access_file, operations_file):
+        print(f"Generated: {file_path}")
 
 
 if __name__ == "__main__":
-    base_dir = Path(__file__).parent
-    generate_all_mock_data(base_dir)
+    generate_all_mock_data(Path(__file__).parent)

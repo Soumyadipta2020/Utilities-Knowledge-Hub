@@ -15,6 +15,7 @@ class KnowledgeGraphService:
     def __init__(self, excel_path: Path):
         self.excel_path = excel_path
         self.graph = nx.DiGraph()
+        self.df = None
         self.load_graph()
 
     def load_graph(self) -> None:
@@ -22,10 +23,10 @@ class KnowledgeGraphService:
         if not self.excel_path.exists():
             raise FileNotFoundError(f"Knowledge Base Excel file not found at: {self.excel_path}")
 
-        df = pd.read_excel(self.excel_path)
+        self.df = pd.read_excel(self.excel_path)
         self.graph.clear()
 
-        for _, row in df.iterrows():
+        for _, row in self.df.iterrows():
             source = str(row["source"]).strip()
             relationship = str(row["relationship"]).strip()
             target = str(row["target"]).strip()
@@ -37,9 +38,90 @@ class KnowledgeGraphService:
 
     def find_matching_nodes(self, query: str) -> List[str]:
         """Case-insensitive search for node names matching a query string."""
-        query_lower = query.lower().strip()
-        matches = [node for node in self.graph.nodes if query_lower in node.lower()]
+        import re
+        clean_query = re.sub(r"[^\w\s]", " ", query).lower().strip()
+        query_words = set(clean_query.split())
+
+        matches = []
+        for node in self.graph.nodes:
+            clean_node = re.sub(r"[^\w\s]", " ", node).lower().strip()
+            node_words = set(clean_node.split())
+            if node_words and (node_words.issubset(query_words) or clean_node in clean_query or clean_query in clean_node):
+                matches.append(node)
         return matches
+
+    def rag_search(self, query: str, top_k: int = 5) -> List[Dict[str, Any]]:
+        """
+        RAG (Retrieval-Augmented Generation) document search over Knowledge Base records.
+        Scores each record by keyword overlap and substring matching with query tokens.
+        """
+        if self.df is None or self.df.empty:
+            return []
+
+        query_tokens = set(query.lower().strip().split())
+        scored_records = []
+
+        for _, row in self.df.iterrows():
+            source = str(row.get("source", ""))
+            relationship = str(row.get("relationship", ""))
+            target = str(row.get("target", ""))
+            details = str(row.get("details", ""))
+
+            full_text = f"{source} {relationship} {target} {details}".lower()
+            text_tokens = set(full_text.split())
+
+            # Score based on token overlap & substring matching
+            overlap_score = len(query_tokens.intersection(text_tokens))
+            substring_bonus = sum(2 for t in query_tokens if t in full_text and len(t) > 2)
+            total_score = overlap_score + substring_bonus
+
+            if total_score > 0:
+                scored_records.append((total_score, {
+                    "source": source,
+                    "relationship": relationship,
+                    "target": target,
+                    "details": details,
+                    "content": f"Entity '{source}' {relationship} '{target}'. Details: {details}",
+                    "score": total_score,
+                }))
+
+        scored_records.sort(key=lambda x: x[0], reverse=True)
+        return [r[1] for r in scored_records[:top_k]]
+
+    def hybrid_graph_rag_search(self, query: str) -> Dict[str, Any]:
+        """
+        Perform unified Graph-RAG retrieval: combines RAG context retrieval with Knowledge Graph path traversal.
+        """
+        rag_results = self.rag_search(query, top_k=5)
+
+        # Identify entities for graph traversal
+        matched_nodes = self.find_matching_nodes(query)
+        graph_results = []
+        seen_entities = set()
+
+        if matched_nodes:
+            for node in matched_nodes[:3]:
+                if node not in seen_entities:
+                    seen_entities.add(node)
+                    t_res = self.traverse_graph(node)
+                    if t_res.get("found"):
+                        graph_results.append(t_res)
+
+        # Fallback to candidate entities from RAG results if no direct node match found
+        if not graph_results and rag_results:
+            for item in rag_results[:3]:
+                node_candidate = item.get("source")
+                if node_candidate and node_candidate not in seen_entities:
+                    seen_entities.add(node_candidate)
+                    t_res = self.traverse_graph(node_candidate)
+                    if t_res.get("found"):
+                        graph_results.append(t_res)
+
+        return {
+            "query": query,
+            "rag_context_documents": rag_results,
+            "graph_traversals": graph_results,
+        }
 
     def traverse_graph(self, entity_name: str) -> Dict[str, Any]:
         """

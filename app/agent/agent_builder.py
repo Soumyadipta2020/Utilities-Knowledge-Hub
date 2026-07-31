@@ -4,168 +4,281 @@ Constructs LangChain agent executor with system prompt and tools, plus determini
 """
 
 import os
-from typing import Dict, Any, List
+from typing import Any, Callable, Sequence
 
 try:
     from langchain_openai import ChatOpenAI
-    from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-    from langchain.agents import create_tool_calling_agent, AgentExecutor
+    from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
     HAS_LANGCHAIN = True
 except ImportError:
     HAS_LANGCHAIN = False
     ChatOpenAI = None
-    ChatPromptTemplate = None
-    MessagesPlaceholder = None
-    create_tool_calling_agent = None
-    AgentExecutor = None
+    HumanMessage = None
+    SystemMessage = None
+    AIMessage = None
 
 from app.agent.tools import (
-    get_all_tools,
     check_data_access,
     query_knowledge_graph,
+    search_knowledge_base_rag,
+    query_graph_rag,
     query_live_metrics,
+    query_business_operations,
+    query_metric_definitions,
+    forecast_boiler_installations,
     raise_access_request,
 )
 
 
-SYSTEM_PROMPT = """You are an AI Agentic Chatbot for an Enterprise Utilities Company.
-You assist customers, field technicians, and system administrators with equipment troubleshooting, live telemetry metrics, and IT access management.
+def _is_greeting(message: str) -> bool:
+    """Return whether a short message is a conversational greeting."""
+    normalized = message.strip().lower().strip("!?. ")
+    return normalized in {"hi", "hello", "hey", "good morning", "good afternoon", "good evening"}
+
+
+def _is_capability_question(message: str) -> bool:
+    """Identify questions about available data, access, or chatbot capabilities."""
+    normalized = message.lower()
+    capability_terms = (
+        "what can you do", "help", "available data", "where can i", "where do i",
+        "where i can", "access data", "view data", "see data", "what data",
+        "permissions", "my access", "lead data", "leads data", "where leads",
+    )
+    return any(term in normalized for term in capability_terms)
+
+
+def _capability_response() -> str:
+    """Provide a useful response explaining chatbot capabilities and project dataset access assistance."""
+    return (
+        "Hello! I am Centrica's AI Agentic Knowledge Hub.\n\n"
+        "I assist you when kickstarting new projects by discovering required enterprise datasets, "
+        "providing data lineage and SME attribution, and assisting you to raise IT access requests for restricted datasets.\n\n"
+        "• Ask about equipment troubleshooting & error code diagnostic guidance.\n"
+        "• Ask about data lineage, SME owners, or required datasets for your project.\n"
+        "• Request live telemetry or operational datasets, and I will assist you in raising an IT access request."
+    )
+
+
+def _is_business_request(message: str) -> bool:
+    """Identify requests for the commercial and service-operations dataset."""
+    terms = (
+        "lead", "appointment", "quote", "sales", "conversion", "installation",
+        "breakdown", "service done", "services done", "jobs completed", "repair performance",
+    )
+    normalized = message.casefold()
+    return any(term in normalized for term in terms)
+
+
+def _is_definition_request(message: str) -> bool:
+    """Identify questions asking what a business metric means."""
+    normalized = message.casefold()
+    return any(term in normalized for term in ("what is", "define", "definition", "meaning of", "what does"))
+
+
+def _is_installation_forecast_request(message: str) -> bool:
+    """Identify future-looking installation questions that need a pipeline forecast."""
+    normalized = message.casefold()
+    return "installation" in normalized and any(term in normalized for term in ("future", "forecast", "will", "project"))
+
+
+def _definition_entity(message: str) -> str:
+    """Map a business-definition question to its public knowledge-graph entity."""
+    normalized = message.casefold()
+    if "appointment" in normalized:
+        return "Net Appointment"
+    if "quote" in normalized:
+        return "Quote"
+    if "conversion" in normalized:
+        return "Sales Conversion"
+    if "sale" in normalized:
+        return "Net Sale"
+    return "Lead"
+
+
+def _history_fallback(user_input: str, chat_history: Sequence[dict[str, str]] | None) -> str | None:
+    """Keep a follow-up coherent if the external model is temporarily unavailable."""
+    follow_up_phrases = ("what happens after", "and then", "tell me more", "what about that", "what next")
+    if not chat_history or not any(phrase in user_input.casefold() for phrase in follow_up_phrases):
+        return None
+    for turn in reversed(chat_history):
+        if turn.get("role") == "assistant" and turn.get("content", "").strip():
+            return f"Based on our previous answer:\n\n{turn['content']}"
+    return None
+
+
+SYSTEM_PROMPT = """You are an AI Agentic Chatbot for Centrica's Enterprise Knowledge Hub.
+You assist teams kickstarting new projects with dataset discovery, data lineage, SME attribution, and automated IT access requests.
 
 CURRENT SESSION CONTEXT:
-- Active User Role: {user_role}
 - User Email: {user_email}
 
-CRITICAL RULES FOR DATA ACCESS & PERMISSIONS:
-1. BEFORE querying or fetching restricted data (such as 'Live_Metrics' or 'System_Logs'), you MUST ALWAYS call the tool `check_data_access(user_role='{user_role}', data_source='...')`.
-2. IF `check_data_access` returns "Access Denied":
-   - You MUST NOT display or query the restricted metric/data.
-   - Politely inform the user that their role ('{user_role}') lacks authorization for that data source.
-   - You MUST proactively offer: "Would you like me to raise an IT access request on your behalf?"
-3. IF the user asks to raise a ticket, requests IT access, or confirms YES to raising a ticket:
-   - Execute the tool `raise_access_request(user_email='{user_email}', data_source='...')`.
-   - Return the generated ticket number and details to the user.
-4. For troubleshooting boiler issues, error codes (e.g. 'EA_Error', 'Worcester Bosch 4000', 'F2_Error', 'E119_Error'), or maintenance:
-   - Execute `query_knowledge_graph(entity_name='...')` to find graph paths and diagnostic steps.
-   - Summarize the graph traversal findings clearly.
-
-Be helpful, concise, and adhere strictly to security access control policies!
+CRITICAL RULES FOR DATA RETRIEVAL & AI ANSWER GENERATION:
+1. When responding to user questions about equipment troubleshooting, error codes, appliance models, or maintenance procedures:
+   - Use RAG tools (`search_knowledge_base_rag` or `query_graph_rag`) to retrieve documentation snippets and remedy facts.
+   - Synthesize the retrieved RAG context into a clear, accurate AI answer.
+2. CRITICAL RULES FOR DATASETS & ACCESS REQUESTS:
+   - Users do not have default access to raw operational datasets (`Live_Metrics`, `Business_Operations`, `System_Logs`).
+   - When a user asks to access or view operational dataset records, inform them that access to the dataset is required for their project and ask if they would like you to raise an IT access request.
+3. IF the user requests or confirms raising an access ticket:
+   - Execute `raise_access_request(user_email='{user_email}', data_source='...')`.
+   - Return the generated ticket number and approval details to the user.
 """
 
 
-def build_agent_executor(api_key: str = "", model_name: str = "gpt-4o-mini") -> Any:
-    """Build LangChain AgentExecutor if OpenAI API Key & LangChain packages are available."""
+def build_agent_executor(
+    api_key: str = "",
+    model_name: str = "",
+    base_url: str = "",
+) -> Any:
+    """Build LangChain AgentExecutor for OpenRouter / OpenAI models if API key is provided."""
     if not HAS_LANGCHAIN:
         return None
 
-    key = api_key or os.getenv("OPENAI_API_KEY", "")
-    if not key:
+    key = api_key or os.getenv("OPENROUTER_API_KEY") or os.getenv("OPENAI_API_KEY", "")
+    if not key or key.strip() in ("your_openrouter_api_key_here", "your_openai_api_key_here"):
+        print("[AgentBuilder] Info: No valid OpenRouter API key provided. Using deterministic fallback engine.")
         return None
+
+    model = model_name or os.getenv("OPENROUTER_MODEL_NAME") or os.getenv("LLM_MODEL", "openai/gpt-4o-mini")
+    url = base_url or os.getenv("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1")
 
     try:
-        llm = ChatOpenAI(api_key=key, model=model_name, temperature=0.1)
-        tools = get_all_tools()
+        kwargs = {
+            "api_key": key,
+            "model": model,
+            "temperature": 0.1,
+            "base_url": url,
+        }
+        if "openrouter.ai" in url:
+            kwargs["default_headers"] = {
+                "HTTP-Referer": "https://utilities-knowledge-hub.local",
+                "X-Title": "Utilities Knowledge Hub Chatbot",
+            }
 
-        prompt = ChatPromptTemplate.from_messages([
-            ("system", SYSTEM_PROMPT),
-            MessagesPlaceholder(variable_name="chat_history", optional=True),
-            ("human", "{input}"),
-            MessagesPlaceholder(variable_name="agent_scratchpad"),
-        ])
-
-        agent = create_tool_calling_agent(llm, tools, prompt)
-        executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
-        return executor
+        llm = ChatOpenAI(**kwargs)
+        return llm
     except Exception as e:
-        print(f"[AgentBuilder] Warning: Could not initialize OpenAI ChatAgent ({e}). Using rule-based engine.")
+        print(f"[AgentBuilder] Warning: Could not initialize OpenRouter ChatAgent ({e}). Using rule-based engine.")
         return None
 
 
-def run_deterministic_agent_fallback(user_input: str, user_role: str, user_email: str) -> str:
+def run_deterministic_agent_fallback(user_input: str, user_email: str) -> str:
     """
-    Fallback agent execution engine when OpenAI API key is not configured or in offline mode.
-    Implements the exact agentic tool routing logic and policy checks deterministically.
+    Fallback agent execution engine.
+    Implements deterministic routing for data lineage, public knowledge RAG, and IT access ticket escalation.
     """
     input_lower = user_input.lower()
 
     # Helper function to invoke tool regardless of decorator wrapper type
-    def call_tool(tool_fn, args_dict):
+    def call_tool(tool_fn: Callable[..., str], args_dict: dict[str, str]) -> str:
         if hasattr(tool_fn, "invoke"):
             return tool_fn.invoke(args_dict)
         return tool_fn(**args_dict)
 
-    # Rule 1: User wants to raise ticket / confirms ticket request
-    if any(k in input_lower for k in ["ticket", "raise access", "raise ticket", "it request", "yes", "please raise"]):
-        source = "Live_Metrics" if any(x in input_lower for x in ["metric", "telemetry", "grid"]) else "Live_Metrics"
-        res = call_tool(raise_access_request, {"user_email": user_email, "data_source": source})
-        return f"🔒 **Access Escalation Procedure Initiated**\n\n{res}"
+    # Rule 1: User confirms ticket request / wants to raise ticket for dataset
+    ticket_keywords = ["ticket", "raise access", "raise ticket", "it request", "yes", "please raise", "submit ticket"]
+    if any(k in input_lower for k in ticket_keywords):
+        target_dataset = "Live_Metrics"
+        if "business" in input_lower or "funnel" in input_lower or "sales" in input_lower:
+            target_dataset = "Business_Operations"
+        ticket_res = call_tool(raise_access_request, {"user_email": user_email, "data_source": target_dataset})
+        return f"🔒 **Access Escalation Procedure Initiated**\n\n{ticket_res}"
 
-    # Rule 2: Querying Live Metrics or Grid Pressure or Telemetry
-    if any(k in input_lower for k in ["metric", "pressure", "psi", "flame", "temp", "telemetry", "flow", "outage"]):
-        # Step A: Check access permission
-        access_check = call_tool(check_data_access, {"user_role": user_role, "data_source": "Live_Metrics"})
-        
-        if "Access Granted" in str(access_check):
-            # Determine metric name
-            metric_target = "all"
-            if "pressure" in input_lower or "psi" in input_lower or "grid" in input_lower:
-                metric_target = "grid_pressure_psi"
-            elif "flame" in input_lower:
-                metric_target = "boiler_flame_current_ua"
-            elif "flow" in input_lower:
-                metric_target = "pump_flow_rate_lpm"
-            elif "temp" in input_lower:
-                metric_target = "system_temp_c"
+    # Rule 2: Data Lineage, SME Ownership & Governance queries
+    if any(k in input_lower for k in ["sme", "lineage", "managed_by", "data owner", "owner", "governance", "dashboard"]):
+        rag_kg_res = call_tool(query_graph_rag, {"query": user_input})
+        return f"🕸️ **Centrica Data Lineage & SME Governance:**\n\n{rag_kg_res}"
 
-            metrics_res = call_tool(query_live_metrics, {"metric_name": metric_target})
-            return (
-                f"✅ **Security Verification:** {access_check}\n\n"
-                f"📊 **Telemetry Results:**\n{metrics_res}"
-            )
-        else:
-            return (
-                f"⛔ **Access Denied!**\n"
-                f"{access_check}\n\n"
-                f"Your active role (**{user_role}**) is not permitted to view live operational metrics directly.\n\n"
-                f"👉 **Would you like me to raise an IT access request on your behalf?**"
-            )
+    # Rule 3: Live Metrics / Telemetry dataset access request
+    if any(k in input_lower for k in ["pressure", "psi", "flame", "temp", "telemetry", "flow", "outage"]):
+        return (
+            f"📊 **Dataset Identified:**\n"
+            f"The operational telemetry data required for your query/project is located in the **Live_Metrics** dataset (`Live_Metrics.xlsx`).\n\n"
+            f"⛔ **Dataset Access Required:**\n"
+            f"You currently do not have active access permissions for **Live_Metrics**.\n\n"
+            f"👉 **Would you like me to raise an IT access request on your behalf to grant access to 'Live_Metrics'?**"
+        )
 
-    # Rule 3: Knowledge Graph / Troubleshooting Queries
-    access_check = call_tool(check_data_access, {"user_role": user_role, "data_source": "Knowledge_Base"})
-    
-    entity_target = "EA_Error"
-    if "worcester" in input_lower or "4000" in input_lower:
-        entity_target = "Worcester Bosch 4000"
-    elif "ea" in input_lower:
-        entity_target = "EA_Error"
-    elif "224" in input_lower:
-        entity_target = "224_Error"
-    elif "ideal" in input_lower or "f2" in input_lower:
-        entity_target = "F2_Error"
-    elif "baxi" in input_lower or "e119" in input_lower or "pressure" in input_lower:
-        entity_target = "E119_Error"
-    elif "electrode" in input_lower:
-        entity_target = "Ignition Electrode"
+    # Rule 4: Predictive installation forecast, service jobs, scheduling, or operational dataset queries
+    if _is_installation_forecast_request(user_input) or _is_business_request(user_input) or any(k in input_lower for k in ["job", "service", "schedule", "scheduling", "forecast", "forecasting"]):
+        if _is_definition_request(user_input):
+            def_res = call_tool(query_metric_definitions, {"query": user_input})
+            if "No metric definition" not in def_res:
+                return f"📖 **Metric Definition (RAG Knowledge Base):**\n\n{def_res}"
+            definition = call_tool(query_knowledge_graph, {"entity_name": _definition_entity(user_input)})
+            return f"📖 **Knowledge Base Definition:**\n\n{definition}"
 
-    kg_res = call_tool(query_knowledge_graph, {"entity_name": entity_target})
+        return (
+            f"📊 **Dataset Identified:**\n"
+            f"The service job activity and commercial operational data required for your query/project is located in the **Business_Operations** dataset (`Business_Operations.xlsx`).\n\n"
+            f"⛔ **Dataset Access Required:**\n"
+            f"You currently do not have active access permissions for **Business_Operations**.\n\n"
+            f"👉 **Would you like me to raise an IT access request on your behalf to grant access to 'Business_Operations'?**"
+        )
+
+    # Rule 5: Standalone metric / term definitions
+    if _is_definition_request(user_input):
+        def_res = call_tool(query_metric_definitions, {"query": user_input})
+        if "No metric definition" not in def_res:
+            return f"📖 **Metric Definition (RAG Knowledge Base):**\n\n{def_res}"
+        definition = call_tool(query_knowledge_graph, {"entity_name": _definition_entity(user_input)})
+        return f"📖 **Knowledge Base Definition:**\n\n{definition}"
+
+    # Rule 6: Greetings & Capability questions
+    if _is_greeting(user_input) or _is_capability_question(user_input):
+        return _capability_response()
+
+    # Rule 7: Knowledge Graph & RAG Troubleshooting Queries
+    rag_kg_res = call_tool(query_graph_rag, {"query": user_input})
+    if rag_kg_res.startswith("No Graph-RAG information found"):
+        return (
+            "I couldn't find that in Centrica's enterprise knowledge base. I can help with boiler "
+            "models, fault codes, repair components, data lineage, SMEs, and dataset access requests.\n\n"
+            "For example, ask: 'Who is the SME for Sales_Funnel_Dataset?' or 'Why is my Worcester Bosch 4000 showing EA Error?'"
+        )
+
     return (
-        f"🔍 **Knowledge Base Traversal:**\n\n"
-        f"Verified Access Policy for **{user_role}**: Granted.\n\n"
-        f"```text\n{kg_res}\n```\n"
-        f"If you need further telemetry metrics or assistance, please specify!"
+        f"🤖 **Centrica AI Knowledge Retrieval (Graph-RAG):**\n\n"
+        f"{rag_kg_res}\n\n"
+        f"If you need dataset access for a new project, please let me know!"
     )
 
 
-def process_chat_message(user_input: str, user_role: str, user_email: str, executor: Any = None) -> str:
-    """Entrypoint to run chat interaction via LangChain executor or fallback."""
-    if executor is not None:
-        try:
-            response = executor.invoke({
-                "input": user_input,
-                "user_role": user_role,
-                "user_email": user_email,
-            })
-            return response.get("output", "No response generated by agent.")
-        except Exception as err:
-            print(f"[AgentExecutor] Execution failed: {err}. Switching to fallback.")
+def process_chat_message(
+    user_input: str,
+    user_email: str,
+    executor: Any = None,
+    chat_history: Sequence[dict[str, str]] | None = None,
+) -> str:
+    """Process a chat message with automated IT access request assistance."""
+    verified_evidence = run_deterministic_agent_fallback(user_input, user_email)
+    if executor is None:
+        return _history_fallback(user_input, chat_history) or verified_evidence
 
-    return run_deterministic_agent_fallback(user_input, user_role, user_email)
+    try:
+        messages: list[Any] = [
+            SystemMessage(content=(
+                "You are a helpful utilities-company assistant. Answer naturally and directly, "
+                "using only the verified evidence supplied by the application. Never invent data, "
+                "and assist users to raise IT access requests when dataset access is required."
+            ))
+        ]
+        for turn in (chat_history or [])[-6:]:
+            content = turn.get("content", "").strip()
+            if not content:
+                continue
+            if turn.get("role") == "assistant":
+                messages.append(AIMessage(content=content[:700]))
+            else:
+                messages.append(HumanMessage(content=content[:700]))
+
+        messages.append(HumanMessage(content=(
+            f"User question: {user_input}\nUser email: {user_email}\n\n"
+            f"Verified evidence:\n{verified_evidence}"
+        )))
+        response = executor.invoke(messages)
+        content = getattr(response, "content", "")
+        return content if isinstance(content, str) and content.strip() else verified_evidence
+    except Exception as error:
+        print(f"[AgentExecutor] API response failed; returning verified local answer: {error}")
+        return _history_fallback(user_input, chat_history) or verified_evidence

@@ -390,56 +390,53 @@
     <!-- Left Control Sidebar -->
     <aside class="sidebar">
         <div class="brand-header">
-            <div class="brand-icon">UG</div>
+            <div class="brand-icon">C</div>
             <div class="brand-title">
-                <h1>Utilitech Agent</h1>
-                <p>Knowledge & Telemetry Hub</p>
+                <h1>Centrica AI Hub</h1>
+                <p>Enterprise Agentic Knowledge Hub</p>
             </div>
         </div>
 
         <div class="control-group">
-            <label class="control-label" for="roleSelect">Active User Role</label>
-            <select id="roleSelect" onchange="updateRoleDisplay()">
-                <option value="Customer" selected>Customer</option>
-                <option value="Employee">Employee / Engineer</option>
-                <option value="Admin">System Admin</option>
-            </select>
-            <div id="roleBadge" class="role-badge Customer">Role: Customer</div>
+            <label class="control-label" for="userEmail">User Identity Email</label>
+            <input type="email" id="userEmail" value="project.lead@centrica.com" placeholder="email@centrica.com">
         </div>
 
         <div class="control-group">
-            <label class="control-label" for="userEmail">User Email</label>
-            <input type="email" id="userEmail" value="user@utilities-company.com" placeholder="Enter email for IT ticket dispatch">
-        </div>
-
-        <!-- Permissions Overview -->
-        <div class="permissions-card">
-            <div class="control-label" style="margin-bottom: 4px;">Role Permissions</div>
-            <div class="perm-item">
-                <span>Knowledge Graph</span>
-                <span id="permKB" class="perm-status allow">Granted</span>
-            </div>
-            <div class="perm-item">
-                <span>Live Telemetry</span>
-                <span id="permMetrics" class="perm-status deny">Restricted</span>
-            </div>
-            <div class="perm-item">
-                <span>System Logs</span>
-                <span id="permLogs" class="perm-status deny">Restricted</span>
+            <label class="control-label">Project Kickstart Status</label>
+            <div class="permissions-card">
+                <div class="perm-item">
+                    <span>Knowledge Base RAG</span>
+                    <span class="perm-status allow">AVAILABLE</span>
+                </div>
+                <div class="perm-item">
+                    <span>Operational Datasets</span>
+                    <span class="perm-status deny">REQUEST REQUIRED</span>
+                </div>
+                <div class="perm-item">
+                    <span>ServiceNow Escalation</span>
+                    <span class="perm-status allow">AUTOMATED</span>
+                </div>
             </div>
         </div>
 
         <!-- Quick Prompts -->
         <div class="quick-prompts">
-            <div class="control-label">Demo Scenarios</div>
+            <div class="control-label">Centrica Intelligence Demos</div>
             <button class="prompt-btn" onclick="sendQuickPrompt('Why is my Worcester Bosch 4000 displaying an EA Error?')">
-                🔧 Boiler EA Error Diagnostic
+                🔧 Equipment & Fault Diagnosis
             </button>
             <button class="prompt-btn" onclick="sendQuickPrompt('What is the current live grid pressure PSI?')">
-                📊 Check Live Grid Pressure (Metrics)
+                📊 Request Live_Metrics Dataset Access
             </button>
-            <button class="prompt-btn" onclick="sendQuickPrompt('Raise an IT access request for Live_Metrics data source.')">
-                🎟️ Request IT ServiceNow Ticket
+            <button class="prompt-btn" onclick="sendQuickPrompt('How many boiler installations were completed?')">
+                📈 Request Business_Operations Dataset
+            </button>
+            <button class="prompt-btn" onclick="sendQuickPrompt('Who is the SME for Sales_Funnel_Dataset and what is its data lineage?')">
+                🕸️ Data Lineage & SME Attribution
+            </button>
+            <button class="prompt-btn" onclick="sendQuickPrompt('Raise an IT access request for Live_Metrics data source for my new project.')">
+                🎟️ Submit IT Access Request
             </button>
         </div>
     </aside>
@@ -448,12 +445,12 @@
     <main class="chat-container">
         <header class="chat-header">
             <div class="header-title">
-                <h2>Dynamic Agentic Assistant</h2>
-                <p>Knowledge Graph Traversal • Metadata Access Enforcement • Automated IT Ticket Escalation</p>
+                <h2>Centrica Unified Intelligence Hub</h2>
+                <p>Dataset Discovery • Business Lineage • SME Attribution • Automated Access Request Escalation</p>
             </div>
             <div class="status-indicator">
                 <span class="status-dot"></span>
-                <span>Agent Online</span>
+                <span>AI Agent Active</span>
             </div>
         </header>
 
@@ -461,13 +458,13 @@
         <div class="chat-messages" id="chatMessages">
             <div class="message-row agent">
                 <div class="avatar agent">AI</div>
-                <div class="message-bubble">
-Welcome to the **Utilities Knowledge Hub Chatbot**! 👋
+                <div class="message-bubble" id="welcomeBubble">
+Welcome to **Centrica's Enterprise Agentic Knowledge Hub**! ⚡
 
-I am equipped to perform dynamic knowledge graph traversals, check live telemetry metrics, and evaluate role-based access permissions.
+Kickstarting a new project? I help teams discover required enterprise datasets, understand data lineage & SME contacts, and raise automated IT access requests.
 
-• Try selecting a role (**Customer**, **Employee**, or **Admin**) in the sidebar to see how access permissions are enforced!
-• Ask me about boiler error codes (e.g. *Worcester Bosch EA Error*) or operational metrics.
+• **Natural Language Search**: Explore equipment troubleshooting, metric definitions, and knowledge lineage.
+• **Project Dataset Access**: Ask for restricted telemetry or business datasets, and I will assist you in raising an IT access request on your behalf.
                 </div>
             </div>
         </div>
@@ -475,7 +472,7 @@ I am equipped to perform dynamic knowledge graph traversals, check live telemetr
         <!-- Input Area -->
         <div class="chat-input-area">
             <form class="input-form" onsubmit="handleSend(event)">
-                <input type="text" id="userInput" class="input-field" placeholder="Ask a troubleshooting question or request live telemetry metrics..." required autocomplete="off">
+                <input type="text" id="userInput" class="input-field" placeholder="Discover datasets, ask about data lineage, or request dataset access for your project..." required autocomplete="off">
                 <button type="submit" class="send-btn" id="sendBtn">
                     <span>Send Query</span>
                 </button>
@@ -483,34 +480,49 @@ I am equipped to perform dynamic knowledge graph traversals, check live telemetr
         </div>
     </main>
 
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script>
-        const rolePermissionsMap = {
-            Customer: { kb: 'allow', metrics: 'deny', logs: 'deny' },
-            Employee: { kb: 'allow', metrics: 'allow', logs: 'deny' },
-            Admin: { kb: 'allow', metrics: 'allow', logs: 'allow' }
-        };
-
-        function updateRoleDisplay() {
-            const role = document.getElementById('roleSelect').value;
-            const badge = document.getElementById('roleBadge');
-            badge.className = `role-badge ${role}`;
-            badge.innerText = `Role: ${role}`;
-
-            const perms = rolePermissionsMap[role];
-            updatePermBadge('permKB', perms.kb);
-            updatePermBadge('permMetrics', perms.metrics);
-            updatePermBadge('permLogs', perms.logs);
-        }
-
-        function updatePermBadge(id, state) {
-            const el = document.getElementById(id);
-            if (state === 'allow') {
-                el.className = 'perm-status allow';
-                el.innerText = 'Granted';
-            } else {
-                el.className = 'perm-status deny';
-                el.innerText = 'Restricted';
+        function parseMarkdown(text) {
+            if (!text) return '';
+            try {
+                if (typeof marked !== 'undefined' && marked.parse) {
+                    return marked.parse(text);
+                }
+            } catch (e) {
+                console.warn("Marked.js parse warning:", e);
             }
+            // Fallback lightweight Markdown renderer
+            let html = text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/__(.*?)__/g, '<strong>$1</strong>')
+                .replace(/`(.*?)`/g, '<code style="background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px;">$1</code>');
+
+            const lines = html.split('\n');
+            let inList = false;
+            let formatted = [];
+
+            for (let line of lines) {
+                let trimmed = line.trim();
+                if (trimmed.startsWith('• ') || trimmed.startsWith('* ') || trimmed.startsWith('- ')) {
+                    let content = trimmed.substring(2).trim();
+                    if (!inList) {
+                        formatted.push('<ul style="margin: 8px 0; padding-left: 20px;">');
+                        inList = true;
+                    }
+                    formatted.push(`<li style="margin-bottom: 4px;">${content}</li>`);
+                } else {
+                    if (inList) {
+                        formatted.push('</ul>');
+                        inList = false;
+                    }
+                    formatted.push(line);
+                }
+            }
+            if (inList) formatted.push('</ul>');
+            return formatted.join('<br>').replace(/(<br>\s*){3,}/g, '<br><br>');
         }
 
         function appendMessage(sender, text, showTicketCTA = false) {
@@ -524,14 +536,14 @@ I am equipped to perform dynamic knowledge graph traversals, check live telemetr
 
             const bubble = document.createElement('div');
             bubble.className = 'message-bubble';
-            bubble.innerText = text;
+            bubble.innerHTML = parseMarkdown(text);
 
             if (showTicketCTA && sender === 'agent') {
                 const ticketBox = document.createElement('div');
                 ticketBox.className = 'ticket-cta-box';
                 ticketBox.innerHTML = `
-                    <span style="font-size: 12px; color: #f8fafc;">Access blocked by security policy. Raise ServiceNow ticket?</span>
-                    <button class="ticket-btn" onclick="raiseTicketDirectly()">Submit Ticket</button>
+                    <span style="font-size: 12px; color: #f8fafc;">Dataset access required for your project. Raise IT request?</span>
+                    <button class="ticket-btn" onclick="raiseTicketDirectly()">Submit Access Request</button>
                 `;
                 bubble.appendChild(ticketBox);
             }
@@ -548,8 +560,7 @@ I am equipped to perform dynamic knowledge graph traversals, check live telemetr
             const text = inputEl.value.trim();
             if (!text) return;
 
-            const role = document.getElementById('roleSelect').value;
-            const email = document.getElementById('userEmail').value || 'user@utilities-company.com';
+            const email = document.getElementById('userEmail').value || 'project.lead@centrica.com';
 
             appendMessage('user', text);
             inputEl.value = '';
@@ -564,13 +575,12 @@ I am equipped to perform dynamic knowledge graph traversals, check live telemetr
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         message: text,
-                        user_role: role,
                         user_email: email
                     })
                 });
 
                 const data = await response.json();
-                const showCTA = data.access_denied || (data.response && data.response.includes('Access Denied'));
+                const showCTA = data.access_required || (data.response && (data.response.includes('Dataset Access Required') || data.response.includes('Access Denied')));
                 appendMessage('agent', data.response, showCTA);
 
             } catch (err) {
@@ -581,18 +591,28 @@ I am equipped to perform dynamic knowledge graph traversals, check live telemetr
             }
         }
 
+        function raiseTicketDirectly() {
+            sendQuickPrompt("Yes please raise an IT access request ticket.");
+        }
+
         function sendQuickPrompt(promptText) {
             document.getElementById('userInput').value = promptText;
             handleSend();
         }
 
-        function raiseTicketDirectly() {
-            document.getElementById('userInput').value = "Yes, please raise an IT access request for Live_Metrics.";
-            handleSend();
-        }
+        // Initialize welcome message rendering
+        document.addEventListener('DOMContentLoaded', () => {
+            const welcomeBubble = document.getElementById('welcomeBubble');
+            if (welcomeBubble) {
+                const initialText = `Welcome to **Centrica's Enterprise Agentic Knowledge Hub**! ⚡
 
-        // Initialize state
-        updateRoleDisplay();
+Kickstarting a new project? I help teams discover required enterprise datasets, understand data lineage & SME contacts, and raise automated IT access requests.
+
+• **Natural Language Search**: Explore equipment troubleshooting, metric definitions, and knowledge lineage.
+• **Project Dataset Access**: Ask for restricted telemetry or business datasets, and I will assist you in raising an IT access request on your behalf.`;
+                welcomeBubble.innerHTML = parseMarkdown(initialText);
+            }
+        });
     </script>
 </body>
 </html>

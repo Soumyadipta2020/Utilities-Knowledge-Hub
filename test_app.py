@@ -12,7 +12,7 @@ if hasattr(sys.stdout, "reconfigure"):
 # Ensure project root is in sys.path
 sys.path.insert(0, str(Path(__file__).parent))
 
-from app.config import KB_FILE_PATH, METRICS_FILE_PATH, ACCESS_FILE_PATH
+from app.config import KB_FILE_PATH, METRICS_FILE_PATH, ACCESS_FILE_PATH, OPERATIONS_FILE_PATH
 from app.services.graph_service import KnowledgeGraphService
 from app.services.data_service import DataService
 from app.agent.tools import register_services
@@ -22,13 +22,20 @@ from app.agent.agent_builder import process_chat_message
 def run_tests():
     print("--- 1. Testing Services ---")
     kg = KnowledgeGraphService(KB_FILE_PATH)
-    ds = DataService(METRICS_FILE_PATH, ACCESS_FILE_PATH)
+    ds = DataService(METRICS_FILE_PATH, ACCESS_FILE_PATH, OPERATIONS_FILE_PATH)
     register_services(kg, ds)
 
     # Test Graph Traversal
     kg_res = kg.traverse_graph("EA_Error")
     assert kg_res["found"] is True
-    print(f"[PASS] Knowledge Graph traversal successful! Found entity: {kg_res['matched_entity']}")
+    # Test RAG Search & Hybrid Graph-RAG
+    rag_docs = kg.rag_search("Worcester Bosch EA error electrode")
+    assert len(rag_docs) > 0
+    print(f"[PASS] RAG Search retrieved {len(rag_docs)} context documents. Top match: {rag_docs[0]['source']} -> {rag_docs[0]['target']}")
+
+    hybrid_res = kg.hybrid_graph_rag_search("How to fix EA Error on Worcester Bosch?")
+    assert len(hybrid_res["rag_context_documents"]) > 0 or len(hybrid_res["graph_traversals"]) > 0
+    print(f"[PASS] Hybrid Graph-RAG Search retrieved context documents & graph traversal paths.")
 
     # Test Data Access Permissions
     customer_check = ds.check_access_permission("Customer", "Live_Metrics")
@@ -44,29 +51,41 @@ def run_tests():
     assert metrics_res["success"] is True
     print(f"[PASS] Live Metrics Query: {metrics_res['metrics'][0]['metric_name']} = {metrics_res['metrics'][0]['value']} {metrics_res['metrics'][0]['unit']}")
 
+    business_res = ds.get_business_data("boiler installation")
+    assert business_res["success"] is True
+    definition_res = ds.get_metric_definitions("What is sales conversion?")
+    assert definition_res["success"] is True
+    print("[PASS] Business Operations and metric-definition datasets queried successfully.")
+
     print("\n--- 2. Testing Agentic Workflows ---")
     
-    # Customer asks for Live Metrics -> Must be DENIED & prompt for IT Ticket
-    cust_response = process_chat_message("What is the grid pressure PSI?", "Customer", "customer@test.com")
-    print("\n[Customer Query Output]:")
-    print(cust_response)
-    assert "Access Denied" in cust_response or "Access Denied!" in cust_response
-    assert "IT access request" in cust_response or "raise an IT" in cust_response
-    print("[PASS] Customer Access Denial & Ticket Offer verified.")
+    # Troubleshooting query utilizing RAG + Knowledge Graph
+    trouble_response = process_chat_message("How do I troubleshoot EA Error on Worcester Bosch 4000?", "user@centrica.com")
+    print("\n[Troubleshooting RAG + Graph Query Output]:")
+    print(trouble_response)
+    assert "RAG Document Snippets" in trouble_response or "Knowledge Graph" in trouble_response or "EA_Error" in trouble_response
+    print("[PASS] RAG + Knowledge Graph query response verified.")
 
-    # Employee asks for Live Metrics -> Must be GRANTED & return metric data
-    emp_response = process_chat_message("What is the grid pressure PSI?", "Employee", "employee@test.com")
-    print("\n[Employee Query Output]:")
-    print(emp_response)
-    assert "42.5 PSI" in emp_response or "grid_pressure_psi" in emp_response
-    print("[PASS] Employee Access Grant & Metric telemetry output verified.")
+    # User asks for Live Metrics -> Must require dataset access & prompt for IT Ticket
+    metrics_req_response = process_chat_message("What is the grid pressure PSI?", "user@centrica.com")
+    print("\n[Dataset Access Required Output]:")
+    print(metrics_req_response)
+    assert "Dataset Access Required" in metrics_req_response or "IT access request" in metrics_req_response
+    print("[PASS] Dataset Access Requirement & Ticket Offer verified.")
 
-    # Customer confirms IT Ticket creation -> Ticket generated
-    ticket_response = process_chat_message("Yes please raise an IT access request ticket.", "Customer", "customer@test.com")
+    # User confirms IT Ticket creation -> Ticket generated
+    ticket_response = process_chat_message("Yes please raise an IT access request ticket.", "user@centrica.com")
     print("\n[Ticket Creation Output]:")
     print(ticket_response)
     assert "TICK-" in ticket_response
     print("[PASS] Ticket Generation (TICK-XXXX) verified.")
+
+    # Lineage & SME query
+    lineage_response = process_chat_message("Who is the SME for Sales_Funnel_Dataset?", "user@centrica.com")
+    print("\n[Lineage & SME Query Output]:")
+    print(lineage_response)
+    assert "Sarah Jenkins" in lineage_response or "Sales_Funnel_Dataset" in lineage_response
+    print("[PASS] Centrica Enterprise Data Lineage & SME Attribution query verified.")
 
     print("\n[SUCCESS] ALL AUTOMATED VERIFICATION TESTS PASSED SUCCESSFULLY!")
 

@@ -98,26 +98,135 @@ def check_data_access(user_role: str, data_source: str) -> str:
 @tool
 def raise_access_request(user_email: str, data_source: str) -> str:
     """
-    Generate an IT Access Ticket (ServiceNow) for a user whose access was denied.
-    Input user_email and the requested data_source.
+    Generate an IT Access Ticket (ServiceNow) for a user requesting dataset access.
     Returns the generated ticket number and approval details.
     """
     ticket_num = f"TICK-{random.randint(1000, 9999)}"
     return (
-        f"IT Access Ticket Created Successfully!\n"
-        f"• Ticket Number: {ticket_num}\n"
-        f"• Requested Resource: {data_source}\n"
-        f"• User Email: {user_email}\n"
-        f"• Status: Pending IT Security Review & Manager Approval.\n"
-        f"An email notification has been dispatched to {user_email}."
+        f"✅ **IT Access Ticket Created Successfully!**\n\n"
+        f"• **Ticket Number:** {ticket_num}\n"
+        f"• **Requested Dataset:** {data_source}\n"
+        f"• **User Email:** {user_email}\n"
+        f"• **Status:** Pending IT Security Review & Manager Approval.\n\n"
+        f"An email notification has been dispatched to **{user_email}**. Please monitor your inbox for further updates regarding your access."
+    )
+
+
+@tool
+def search_knowledge_base_rag(query: str) -> str:
+    """
+    RAG (Retrieval-Augmented Generation) search over the enterprise Knowledge Base.
+    Retrieves relevant documentation snippets, manual excerpts, error descriptions, and remedy steps.
+    Use this tool when answering general user questions, troubleshooting procedures, or looking up solutions.
+    """
+    if _GRAPH_SERVICE is None:
+        return "Error: Knowledge Base RAG Service is not initialized."
+
+    docs = _GRAPH_SERVICE.rag_search(query, top_k=5)
+    if not docs:
+        return f"No RAG documents retrieved matching '{query}'."
+
+    formatted = []
+    for d in docs:
+        formatted.append(f"• [{d['source']} -> {d['relationship']} -> {d['target']}]: {d['details']}")
+    return "RAG Retrieved Context Documents:\n" + "\n".join(formatted)
+
+
+@tool
+def query_graph_rag(query: str) -> str:
+    """
+    Combined Graph-RAG Search: performs RAG context retrieval AND Knowledge Graph path traversal together.
+    Use this tool for complex queries requiring both document context snippets and relationship graph traversal.
+    """
+    if _GRAPH_SERVICE is None:
+        return "Error: Knowledge Graph Service is not initialized."
+
+    res = _GRAPH_SERVICE.hybrid_graph_rag_search(query)
+    docs = res.get("rag_context_documents", [])
+    traversals = res.get("graph_traversals", [])
+
+    output_parts = []
+    if docs:
+        doc_str = "\n".join([f"  • {d['content']}" for d in docs])
+        output_parts.append(f"📄 RAG Document Snippets:\n{doc_str}")
+
+    if traversals:
+        graph_strs = []
+        for t in traversals:
+            paths = t.get("formatted_paths", [])
+            if paths:
+                graph_strs.append(f"Entity '{t['matched_entity']}':\n  " + "\n  ".join(paths))
+        if graph_strs:
+            output_parts.append("🕸️ Knowledge Graph Traversal Paths:\n" + "\n\n".join(graph_strs))
+
+    if not output_parts:
+        return f"No Graph-RAG information found for '{query}'."
+
+    return "\n\n".join(output_parts)
+
+
+@tool
+def query_business_operations(query: str) -> str:
+    """Query aggregated leads, appointments, quotes, sales, installations, repairs, and services.
+
+    Always call check_data_access for Business_Operations before this tool.
+    """
+    if _DATA_SERVICE is None:
+        return "Error: Data Service is not initialized."
+    result = _DATA_SERVICE.get_business_data(query)
+    if not result.get("success"):
+        return f"Business data query failed: {result.get('error')}"
+    lines = []
+    for record in result["records"]:
+        dataset = record.pop("dataset")
+        details = ", ".join(f"{key}: {value}" for key, value in record.items())
+        lines.append(f"[{dataset}] {details}")
+    return "Business Operations Results:\n" + "\n".join(lines)
+
+
+@tool
+def query_metric_definitions(query: str) -> str:
+    """Explain definitions for leads, net appointments, quotes, net sales, conversion, and service metrics."""
+    if _DATA_SERVICE is None:
+        return "Error: Data Service is not initialized."
+    result = _DATA_SERVICE.get_metric_definitions(query)
+    if not result.get("success"):
+        return "No metric definition matches that question."
+    return "Metric Definitions:\n" + "\n".join(
+        f"- {record['metric_name']} ({record['unit']}): {record['definition']}"
+        for record in result["definitions"]
+    )
+
+
+@tool
+def forecast_boiler_installations() -> str:
+    """Create a directional forecast for future boiler installations from the sales pipeline."""
+    if _DATA_SERVICE is None:
+        return "Error: Data Service is not initialized."
+    result = _DATA_SERVICE.forecast_installations()
+    if not result.get("success"):
+        return f"Installation forecast failed: {result.get('error')}"
+    return (
+        "Installation Forecast:\n"
+        f"- Active leads: {result['leads']}\n"
+        f"- Net appointments: {result['net_appointments']}\n"
+        f"- Quotes issued: {result['quotes_issued']}\n"
+        f"- Observed conversion: {result['conversion_pct']:.1f}%\n"
+        f"- Directional projected installations: {result['projected_installations']}\n"
+        f"- Note: {result['note']}"
     )
 
 
 def get_all_tools():
     """Return list of tool functions for LangChain agent."""
     return [
+        search_knowledge_base_rag,
         query_knowledge_graph,
+        query_graph_rag,
         query_live_metrics,
+        query_business_operations,
+        query_metric_definitions,
+        forecast_boiler_installations,
         check_data_access,
         raise_access_request,
     ]
