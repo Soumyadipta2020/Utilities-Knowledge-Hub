@@ -45,14 +45,16 @@
 
         /* Sidebar Styling */
         .sidebar {
-            width: 320px;
+            width: 330px;
+            height: 100vh;
             background: var(--panel-bg);
             backdrop-filter: blur(16px);
             border-right: 1px solid var(--panel-border);
             display: flex;
             flex-direction: column;
-            padding: 24px;
-            gap: 24px;
+            padding: 16px;
+            gap: 12px;
+            overflow: hidden;
         }
 
         .brand-header {
@@ -215,19 +217,25 @@
             gap: 8px;
         }
 
-        .pipeline-sublabel {
-            font-size: 11px;
-            color: var(--accent-blue);
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            font-weight: 600;
+        .pipeline-sidebar-panel {
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid var(--panel-border);
+            border-radius: 12px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex: 1;
+            min-height: 0;
+            overflow: hidden;
         }
 
         .pipeline-stepper-list {
             display: flex;
             flex-direction: column;
-            gap: 6px;
-            max-height: 250px;
+            gap: 4px;
+            flex: 1;
+            min-height: 0;
             overflow-y: auto;
             padding-right: 4px;
             scrollbar-width: thin;
@@ -237,10 +245,10 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 6px 10px;
+            padding: 4px 8px;
             background: rgba(30, 41, 59, 0.5);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 8px;
+            border-radius: 6px;
             transition: all 0.2s ease;
         }
 
@@ -250,15 +258,15 @@
         }
 
         .stage-badge {
-            width: 24px;
-            height: 24px;
+            width: 22px;
+            height: 22px;
             border-radius: 50%;
             background: rgba(15, 23, 42, 0.9);
             border: 1.5px solid rgba(255, 255, 255, 0.2);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 12px;
+            font-size: 11px;
             flex-shrink: 0;
         }
 
@@ -321,15 +329,16 @@
             background: #090d16;
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 8px;
-            padding: 8px 12px;
+            padding: 6px 10px;
             font-family: 'Consolas', 'Courier New', monospace;
-            font-size: 11px;
+            font-size: 10px;
             color: #a7f3d0;
-            max-height: 70px;
+            max-height: 55px;
+            flex-shrink: 0;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 3px;
+            gap: 2px;
         }
 
         .log-entry {
@@ -690,8 +699,6 @@
                 <p>Dataset Discovery • Business Lineage • SME Attribution • Automated Access Request Escalation</p>
             </div>
             <div class="status-indicator">
-                <button class="ticket-btn" style="background: rgba(99, 102, 241, 0.2); border: 1px solid rgba(99, 102, 241, 0.5); color: #a5b4fc; margin-right: 10px; padding: 6px 12px;" onclick="toggleGraphModal()">🕸️ Knowledge Graph</button>
-                <button class="ticket-btn" style="background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.4); color: #38bdf8; margin-right: 10px; padding: 6px 12px;" onclick="triggerPipeline()">⚡ Run Pipeline</button>
                 <span class="status-dot"></span>
                 <span>AI Agent Active</span>
             </div>
