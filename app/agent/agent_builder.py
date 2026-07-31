@@ -50,7 +50,7 @@ def _is_capability_question(message: str) -> bool:
 def _capability_response() -> str:
     """Provide a useful response explaining chatbot capabilities and project dataset access assistance."""
     return (
-        "Hello! I am Centrica's AI Agentic Knowledge Hub.\n\n"
+        "Hello! I am ABC's AI Agentic Knowledge Hub.\n\n"
         "I assist you when kickstarting new projects by discovering required enterprise datasets, "
         "providing data lineage and SME attribution, and assisting you to raise IT access requests for restricted datasets.\n\n"
         "• Ask about equipment troubleshooting & error code diagnostic guidance.\n"
@@ -106,7 +106,7 @@ def _history_fallback(user_input: str, chat_history: Sequence[dict[str, str]] | 
     return None
 
 
-SYSTEM_PROMPT = """You are an AI Agentic Chatbot for Centrica's Enterprise Knowledge Hub.
+SYSTEM_PROMPT = """You are an AI Agentic Chatbot for ABC's Enterprise Knowledge Hub.
 You assist teams kickstarting new projects with dataset discovery, data lineage, SME attribution, and automated IT access requests.
 
 CURRENT SESSION CONTEXT:
@@ -187,7 +187,7 @@ def run_deterministic_agent_fallback(user_input: str, user_email: str) -> str:
     # Rule 2: Data Lineage, SME Ownership & Governance queries
     if any(k in input_lower for k in ["sme", "lineage", "managed_by", "data owner", "owner", "governance", "dashboard"]):
         rag_kg_res = call_tool(query_graph_rag, {"query": user_input})
-        return f"🕸️ **Centrica Data Lineage & SME Governance:**\n\n{rag_kg_res}"
+        return f"🕸️ **ABC Data Lineage & SME Governance:**\n\n{rag_kg_res}"
 
     # Rule 3: Live Metrics / Telemetry dataset access request
     if any(k in input_lower for k in ["pressure", "psi", "flame", "temp", "telemetry", "flow", "outage"]):
@@ -232,13 +232,13 @@ def run_deterministic_agent_fallback(user_input: str, user_email: str) -> str:
     rag_kg_res = call_tool(query_graph_rag, {"query": user_input})
     if rag_kg_res.startswith("No Graph-RAG information found"):
         return (
-            "I couldn't find that in Centrica's enterprise knowledge base. I can help with boiler "
+            "I couldn't find that in ABC's enterprise knowledge base. I can help with boiler "
             "models, fault codes, repair components, data lineage, SMEs, and dataset access requests.\n\n"
             "For example, ask: 'Who is the SME for Sales_Funnel_Dataset?' or 'Why is my Worcester Bosch 4000 showing EA Error?'"
         )
 
     return (
-        f"🤖 **Centrica AI Knowledge Retrieval (Graph-RAG):**\n\n"
+        f"🤖 **ABC AI Knowledge Retrieval (Graph-RAG):**\n\n"
         f"{rag_kg_res}\n\n"
         f"If you need dataset access for a new project, please let me know!"
     )

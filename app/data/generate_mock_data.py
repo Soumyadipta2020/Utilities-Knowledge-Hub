@@ -14,15 +14,15 @@ def generate_all_mock_data(data_dir: Path) -> None:
     operations_file = data_dir / "Business_Operations.xlsx"
 
     knowledge_records = [
-        ("Centrica Enterprise Platform", "powers", "Agentic Knowledge Hub", "Unified AI-powered intelligence layer for Centrica business knowledge, datasets, dashboards, and operational insights."),
+        ("ABC Enterprise Platform", "powers", "Agentic Knowledge Hub", "Unified AI-powered intelligence layer for ABC business knowledge, datasets, dashboards, and operational insights."),
         ("Sales_Funnel_Dataset", "managed_by_sme", "Sarah Jenkins (Head of Commercial Analytics)", "Owner of commercial sales funnel, lead attribution, and conversion metrics in Snowflake."),
         ("Sales_Funnel_Dataset", "lineage_source", "SAP IS-U & Salesforce CRM", "Aggregates raw customer leads and survey appointments from Salesforce into Snowflake data lake."),
         ("Live_Metrics_Dataset", "managed_by_sme", "David Ross (Lead Telemetry Engineer)", "Maintains IoT grid pressure and thermal telemetry sensors across UK regions."),
         ("Live_Metrics_Dataset", "lineage_source", "Grid Mon Substation IoT Network", "Real-time telemetry ingested via Kafka into Snowflake Operational Data Store."),
         ("Boiler_Installation_Forecast_v2", "managed_by_sme", "Marcus Vance (Principal Data Scientist)", "Predictive installation model using pipeline conversion, seasonal demand, and engineer capacity."),
         ("Boiler_Installation_Forecast_v2", "consumes_dataset", "Sales_Funnel_Dataset", "Uses qualified lead volume, kept appointment ratios, and quote conversion rates."),
-        ("Centrica_Executive_Dashboard", "managed_by_sme", "Claire Williams (VP Operations)", "PowerBI dashboard providing real-time visibility into sales conversion, telemetry alerts, and service activity."),
-        ("Centrica_Executive_Dashboard", "displays_metrics", "Sales Conversion & Grid Telemetry", "Unified view combining Commercial Sales Funnel and Live Telemetry Metrics."),
+        ("ABC_Executive_Dashboard", "managed_by_sme", "Claire Williams (VP Operations)", "PowerBI dashboard providing real-time visibility into sales conversion, telemetry alerts, and service activity."),
+        ("ABC_Executive_Dashboard", "displays_metrics", "Sales Conversion & Grid Telemetry", "Unified view combining Commercial Sales Funnel and Live Telemetry Metrics."),
         ("Worcester Bosch 4000", "displays_error", "EA_Error", "Flame was not detected after an ignition attempt."),
         ("EA_Error", "requires_part", "Ignition Electrode", "Inspect the lead, clean the electrode, or replace it if worn."),
         ("EA_Error", "requires_part", "Gas Supply Valve", "Check inlet pressure and the solenoid valve coil resistance."),

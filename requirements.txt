@@ -1,0 +1,9 @@
+flask
+pandas
+openpyxl
+networkx
+langchain
+langchain-community
+langchain-openai
+python-dotenv
+gunicorn

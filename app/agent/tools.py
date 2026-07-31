@@ -135,8 +135,9 @@ def search_knowledge_base_rag(query: str) -> str:
 @tool
 def query_graph_rag(query: str) -> str:
     """
-    Combined Graph-RAG Search: performs RAG context retrieval AND Knowledge Graph path traversal together.
-    Use this tool for complex queries requiring both document context snippets and relationship graph traversal.
+    Combined Graph-RAG Search powered by LangChain NetworkxEntityGraph.
+    Performs RAG context retrieval AND Knowledge Graph path traversal together.
+    Use this tool for complex queries requiring document context snippets, relationship graph traversal, and LangChain knowledge triples.
     """
     if _GRAPH_SERVICE is None:
         return "Error: Knowledge Graph Service is not initialized."
@@ -144,6 +145,7 @@ def query_graph_rag(query: str) -> str:
     res = _GRAPH_SERVICE.hybrid_graph_rag_search(query)
     docs = res.get("rag_context_documents", [])
     traversals = res.get("graph_traversals", [])
+    langchain_facts = _GRAPH_SERVICE.query_langchain_graph(query)
 
     output_parts = []
     if docs:
@@ -158,6 +160,10 @@ def query_graph_rag(query: str) -> str:
                 graph_strs.append(f"Entity '{t['matched_entity']}':\n  " + "\n  ".join(paths))
         if graph_strs:
             output_parts.append("🕸️ Knowledge Graph Traversal Paths:\n" + "\n\n".join(graph_strs))
+
+    if langchain_facts:
+        lc_str = "\n".join([f"  • {fact}" for fact in langchain_facts])
+        output_parts.append(f"🧬 LangChain NetworkxEntityGraph Knowledge Triples:\n{lc_str}")
 
     if not output_parts:
         return f"No Graph-RAG information found for '{query}'."

@@ -3,28 +3,35 @@ Knowledge Graph Service using NetworkX.
 Loads entity-relationship data from Excel and provides graph traversal capabilities.
 """
 
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, Any, Optional, Tuple
 import networkx as nx
 import pandas as pd
 from pathlib import Path
 
+from langchain_community.graphs.networkx_graph import NetworkxEntityGraph, KnowledgeTriple
+
 
 class KnowledgeGraphService:
-    """Service to construct and query a NetworkX Directed Graph from Excel data."""
+    """
+    Service to construct and query a Knowledge Graph from Excel data.
+    Powered by LangChain NetworkxEntityGraph for graph-based RAG and entity knowledge retrieval.
+    """
 
     def __init__(self, excel_path: Path):
         self.excel_path = excel_path
         self.graph = nx.DiGraph()
+        self.langchain_graph = NetworkxEntityGraph()
         self.df = None
         self.load_graph()
 
     def load_graph(self) -> None:
-        """Read Knowledge_Base.xlsx and populate NetworkX DiGraph."""
+        """Read Knowledge_Base.xlsx and populate NetworkX DiGraph and LangChain NetworkxEntityGraph."""
         if not self.excel_path.exists():
             raise FileNotFoundError(f"Knowledge Base Excel file not found at: {self.excel_path}")
 
         self.df = pd.read_excel(self.excel_path)
         self.graph.clear()
+        self.langchain_graph = NetworkxEntityGraph()
 
         for _, row in self.df.iterrows():
             source = str(row["source"]).strip()
@@ -32,9 +39,13 @@ class KnowledgeGraphService:
             target = str(row["target"]).strip()
             details = str(row.get("details", "")).strip()
 
+            # NetworkX graph representation
             self.graph.add_node(source, entity_type="source")
             self.graph.add_node(target, entity_type="target")
             self.graph.add_edge(source, target, relationship=relationship, details=details)
+
+            # LangChain NetworkxEntityGraph representation using KnowledgeTriple
+            self.langchain_graph.add_triple(KnowledgeTriple(source, relationship, target))
 
     def find_matching_nodes(self, query: str) -> List[str]:
         """Case-insensitive search for node names matching a query string."""
@@ -193,3 +204,100 @@ class KnowledgeGraphService:
             "incoming_edges": incoming_edges,
             "formatted_paths": path_summaries,
         }
+
+    def extract_subgraph_for_query(self, query: str) -> Dict[str, Any]:
+        """
+        Extract the exact sub-graph (nodes and edges) associated with a query / answer generation.
+        Used to demonstrate how a specific response was generated from Knowledge Graph traversal.
+        """
+        sub_nodes = set()
+        sub_edges = []
+
+        hybrid = self.hybrid_graph_rag_search(query)
+        rag_docs = hybrid.get("rag_context_documents", [])
+        graph_traversals = hybrid.get("graph_traversals", [])
+
+        # Process RAG items
+        for item in rag_docs:
+            src = item.get("source")
+            tgt = item.get("target")
+            rel = item.get("relationship", "connected_to")
+            details = item.get("details", "")
+            if src and tgt:
+                sub_nodes.add(src)
+                sub_nodes.add(tgt)
+                sub_edges.append({
+                    "source": src,
+                    "target": tgt,
+                    "relation": rel,
+                    "details": details
+                })
+
+        # Process Graph Traversals
+        for trav in graph_traversals:
+            for edge in trav.get("outgoing_edges", []) + trav.get("incoming_edges", []):
+                src = edge.get("from")
+                tgt = edge.get("to")
+                rel = edge.get("relationship", "connected_to")
+                details = edge.get("details", "")
+                if src and tgt:
+                    sub_nodes.add(src)
+                    sub_nodes.add(tgt)
+                    sub_edges.append({
+                        "source": src,
+                        "target": tgt,
+                        "relation": rel,
+                        "details": details
+                    })
+
+        # Check for query keyword heuristics
+        query_lower = query.lower()
+        if any(w in query_lower for w in ["pressure", "psi", "flame", "temp", "telemetry", "flow"]):
+            sub_nodes.update(["Live_Metrics_Dataset", "David Ross (Lead Telemetry Engineer)"])
+            sub_edges.append({"source": "Live_Metrics_Dataset", "target": "David Ross (Lead Telemetry Engineer)", "relation": "managed_by_sme", "details": "Telemetry Owner"})
+        elif any(w in query_lower for w in ["sales", "funnel", "lead", "quote", "appointment", "conversion", "job", "service"]):
+            sub_nodes.update(["Sales_Funnel_Dataset", "Sarah Jenkins (Head of Commercial Analytics)"])
+            sub_edges.append({"source": "Sales_Funnel_Dataset", "target": "Sarah Jenkins (Head of Commercial Analytics)", "relation": "managed_by_sme", "details": "Commercial SME"})
+
+        nodes_list = []
+        for n in sub_nodes:
+            attrs = self.graph.nodes[n] if n in self.graph.nodes else {}
+            nodes_list.append({
+                "id": str(n),
+                "label": str(n),
+                "category": attrs.get("category", "Entity"),
+                "description": attrs.get("description", "")
+            })
+
+        # Deduplicate edges
+        unique_edges = []
+        seen = set()
+        for e in sub_edges:
+            key = (e["source"], e["target"], e["relation"])
+            if key not in seen:
+                seen.add(key)
+                unique_edges.append(e)
+
+        return {
+            "query": query,
+            "nodes": nodes_list,
+            "edges": unique_edges
+        }
+
+    def query_langchain_graph(self, query: str) -> List[str]:
+        """
+        Query the Knowledge Graph using LangChain NetworkxEntityGraph abstraction.
+        Extracts entity knowledge triples for matched entities.
+        """
+        matched_nodes = self.find_matching_nodes(query)
+        knowledge_list = []
+        for node in matched_nodes:
+            entity_facts = self.langchain_graph.get_entity_knowledge(node)
+            for fact in entity_facts:
+                if fact not in knowledge_list:
+                    knowledge_list.append(fact)
+        return knowledge_list
+
+    def get_langchain_triples(self) -> List[Tuple[str, str, str]]:
+        """Return all LangChain KnowledgeTriples loaded into the NetworkxEntityGraph."""
+        return self.langchain_graph.get_triples()

@@ -60,32 +60,32 @@ def run_tests():
     print("\n--- 2. Testing Agentic Workflows ---")
     
     # Troubleshooting query utilizing RAG + Knowledge Graph
-    trouble_response = process_chat_message("How do I troubleshoot EA Error on Worcester Bosch 4000?", "user@centrica.com")
+    trouble_response = process_chat_message("How do I troubleshoot EA Error on Worcester Bosch 4000?", "user@abc.com")
     print("\n[Troubleshooting RAG + Graph Query Output]:")
     print(trouble_response)
     assert "RAG Document Snippets" in trouble_response or "Knowledge Graph" in trouble_response or "EA_Error" in trouble_response
     print("[PASS] RAG + Knowledge Graph query response verified.")
 
     # User asks for Live Metrics -> Must require dataset access & prompt for IT Ticket
-    metrics_req_response = process_chat_message("What is the grid pressure PSI?", "user@centrica.com")
+    metrics_req_response = process_chat_message("What is the grid pressure PSI?", "user@abc.com")
     print("\n[Dataset Access Required Output]:")
     print(metrics_req_response)
     assert "Dataset Access Required" in metrics_req_response or "IT access request" in metrics_req_response
     print("[PASS] Dataset Access Requirement & Ticket Offer verified.")
 
     # User confirms IT Ticket creation -> Ticket generated
-    ticket_response = process_chat_message("Yes please raise an IT access request ticket.", "user@centrica.com")
+    ticket_response = process_chat_message("Yes please raise an IT access request ticket.", "user@abc.com")
     print("\n[Ticket Creation Output]:")
     print(ticket_response)
     assert "TICK-" in ticket_response
     print("[PASS] Ticket Generation (TICK-XXXX) verified.")
 
     # Lineage & SME query
-    lineage_response = process_chat_message("Who is the SME for Sales_Funnel_Dataset?", "user@centrica.com")
+    lineage_response = process_chat_message("Who is the SME for Sales_Funnel_Dataset?", "user@abc.com")
     print("\n[Lineage & SME Query Output]:")
     print(lineage_response)
     assert "Sarah Jenkins" in lineage_response or "Sales_Funnel_Dataset" in lineage_response
-    print("[PASS] Centrica Enterprise Data Lineage & SME Attribution query verified.")
+    print("[PASS] ABC Enterprise Data Lineage & SME Attribution query verified.")
 
     print("\n[SUCCESS] ALL AUTOMATED VERIFICATION TESTS PASSED SUCCESSFULLY!")
 
