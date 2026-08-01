@@ -359,30 +359,33 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: rgba(0, 0, 0, 0.88);
-            backdrop-filter: blur(16px);
+            background: rgba(0, 0, 0, 0.92);
+            backdrop-filter: blur(12px);
             z-index: 10000;
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             justify-content: center;
-            padding: 24px;
+            padding: 16px;
+            box-sizing: border-box;
         }
 
         .graph-modal-content {
-            width: 960px;
-            max-width: 95vw;
-            background: rgba(14, 14, 14, 0.98);
-            border: 1px solid rgba(217, 102, 43, 0.18);
-            border-radius: 16px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9);
+            width: 100%;
+            max-width: 1300px;
+            height: calc(100vh - 32px);
+            background: rgba(14, 14, 14, 0.99);
+            border: 1px solid rgba(217, 102, 43, 0.22);
+            border-radius: 14px;
+            box-shadow: 0 24px 80px rgba(0, 0, 0, 0.95);
             display: flex;
             flex-direction: column;
             overflow: hidden;
         }
 
         .graph-modal-header {
-            padding: 16px 24px;
-            background: rgba(10, 10, 10, 0.8);
+            flex-shrink: 0;
+            padding: 12px 20px;
+            background: rgba(10, 10, 10, 0.9);
             border-bottom: 1px solid rgba(255,255,255,0.07);
             display: flex;
             justify-content: space-between;
@@ -390,27 +393,33 @@
         }
 
         .graph-modal-body {
-            position: relative;
+            flex: 1;
+            min-height: 0;
             background: #080808;
             display: flex;
             flex-direction: column;
-            align-items: center;
+            overflow: hidden;
         }
 
         .graph-controls-bar {
-            padding: 10px 24px;
-            background: rgba(12, 12, 12, 0.8);
+            flex-shrink: 0;
+            padding: 8px 16px;
+            background: rgba(12, 12, 12, 0.95);
             border-bottom: 1px solid rgba(255,255,255,0.07);
             display: flex;
             align-items: center;
             justify-content: space-between;
+            gap: 12px;
+            flex-wrap: nowrap;
+            min-height: 0;
         }
 
         .graph-filter-pills {
             display: flex;
             align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
+            gap: 6px;
+            flex-wrap: nowrap;
+            overflow-x: auto;
         }
 
         .filter-pill {
@@ -437,17 +446,59 @@
         .filter-pill.error.active { border-color: #f43f5e; color: #f43f5e; background: rgba(244, 63, 94, 0.15); }
         .filter-pill.metric.active { border-color: #facc15; color: #facc15; background: rgba(250, 204, 21, 0.15); }
 
+        .view-mode-toggle {
+            display: flex;
+            align-items: center;
+            background: rgba(8, 8, 8, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 2px;
+            gap: 2px;
+        }
+
+        .view-toggle-btn {
+            padding: 5px 14px;
+            border-radius: 16px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #94a3b8;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .view-toggle-btn:hover { color: #fff; }
+
+        .view-toggle-btn.active {
+            background: var(--accent-orange);
+            color: #fff;
+            box-shadow: 0 2px 8px var(--accent-orange-glow);
+        }
+
+        .canvas-scroll-wrapper {
+            flex: 1;
+            min-height: 300px;
+            overflow: hidden;
+            position: relative;
+            background: #080808;
+        }
+
         #graphCanvas {
+            display: block;
             width: 100%;
-            height: 480px;
+            height: 100%;
             cursor: pointer;
         }
 
         .graph-inspector-panel {
+            flex-shrink: 0;
             width: 100%;
-            padding: 14px 24px;
-            background: rgba(10, 10, 10, 0.97);
+            padding: 10px 20px;
+            background: rgba(8, 8, 8, 0.98);
             border-top: 1px solid rgba(255,255,255,0.07);
+            max-height: 100px;
+            overflow-y: auto;
         }
 
         /* Main Chat Container */
@@ -595,6 +646,18 @@
             border-left: 2px solid rgba(217, 102, 43, 0.35);
             border-bottom-left-radius: 4px;
             backdrop-filter: blur(12px);
+        }
+
+        .message-bubble a {
+            color: #7dd3fc;
+            text-decoration: none;
+            border-bottom: 1px solid rgba(125, 211, 252, 0.35);
+            transition: color 0.15s ease, border-color 0.15s ease;
+        }
+
+        .message-bubble a:hover {
+            color: #bae6fd;
+            border-bottom-color: rgba(186, 230, 253, 0.7);
         }
 
         .ticket-cta-box {
@@ -1001,7 +1064,7 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
             document.getElementById('graphNodeCount').innerText = `${subGraph.nodes.length} Grounding Nodes`;
             document.getElementById('graphEdgeCount').innerText = `${subGraph.edges.length} Traversed Edges`;
 
-            initCanvasGraph();
+            requestAnimationFrame(() => requestAnimationFrame(() => initCanvasGraph()));
 
             const nameEl = document.getElementById('inspectorNodeName');
             const descEl = document.getElementById('inspectorNodeDesc');
@@ -1017,7 +1080,8 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
                 modal.style.display = 'flex';
                 isGraphModalOpen = true;
                 await loadGraphData();
-                initCanvasGraph();
+                // Defer so the browser lays out the flex container first
+                requestAnimationFrame(() => requestAnimationFrame(() => initCanvasGraph()));
             } else {
                 modal.style.display = 'none';
                 isGraphModalOpen = false;
@@ -1039,6 +1103,16 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
         }
 
         let activeCategoryFilter = 'All';
+        let currentViewMode = 'tree';
+
+        function switchGraphView(mode) {
+            currentViewMode = mode;
+            const btnTree = document.getElementById('btnViewTree');
+            const btnCluster = document.getElementById('btnViewCluster');
+            if (btnTree) btnTree.classList.toggle('active', mode === 'tree');
+            if (btnCluster) btnCluster.classList.toggle('active', mode === 'cluster');
+            initCanvasGraph();
+        }
 
         function filterGraphCategory(cat) {
             activeCategoryFilter = cat;
@@ -1049,12 +1123,21 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
             initCanvasGraph();
         }
 
+        function getShortLabel(label) {
+            if (!label) return '';
+            let str = String(label).trim();
+            if (str.includes('(')) str = str.split('(')[0].trim();
+            if (str.length > 24) return str.substring(0, 22) + '..';
+            return str;
+        }
+
         function initCanvasGraph() {
             const canvas = document.getElementById('graphCanvas');
             if (!canvas) return;
+            const wrapper = canvas.parentElement;
             const ctx = canvas.getContext('2d');
-            const width = canvas.width = canvas.clientWidth;
-            const height = canvas.height = canvas.clientHeight;
+            const width = canvas.width = wrapper.clientWidth || 900;
+            const height = canvas.height = wrapper.clientHeight || 460;
 
             const categoryConfig = {
                 'Dataset':   { color: '#D9662B', bg: 'rgba(217, 102, 43, 0.08)', icon: '📊', label: 'Datasets' },
@@ -1064,132 +1147,239 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
                 'Metric':    { color: '#facc15', bg: 'rgba(250, 204, 21, 0.08)', icon: '📈', label: 'Metrics' }
             };
 
-            const clusterCenters = {
-                'Equipment': { x: width * 0.22, y: height * 0.30 },
-                'Error':     { x: width * 0.22, y: height * 0.72 },
-                'Metric':    { x: width * 0.50, y: height * 0.50 },
-                'Dataset':   { x: width * 0.78, y: height * 0.30 },
-                'SME':       { x: width * 0.78, y: height * 0.72 }
-            };
-
             const nodeMap = {};
             const nodesToRender = (graphData.nodes || []).filter(n => activeCategoryFilter === 'All' || n.category === activeCategoryFilter);
 
-            nodesToRender.forEach((n, idx) => {
-                const cat = n.category || 'Metric';
-                const center = clusterCenters[cat] || { x: width / 2, y: height / 2 };
-                const angle = (idx / Math.max(nodesToRender.length, 1)) * 2 * Math.PI;
-                const spreadRadius = 40 + (idx % 4) * 22;
-                nodeMap[n.id] = {
-                    ...n,
-                    x: center.x + Math.cos(angle) * spreadRadius,
-                    y: center.y + Math.sin(angle) * spreadRadius,
-                    cfg: categoryConfig[cat] || categoryConfig['Metric']
+            if (currentViewMode === 'tree') {
+                // --- Decision Tree Layout: tier columns ---
+                const tierNodes = { 0: [], 1: [], 2: [], 3: [] };
+                nodesToRender.forEach(n => {
+                    let lvl = typeof n.tree_level === 'number' ? n.tree_level : 0;
+                    if (lvl > 3) lvl = 3;
+                    tierNodes[lvl].push(n);
+                });
+                const colWidth = width / 4;
+                const topPadding = 55;
+                const bottomPadding = 40;
+                const availH = height - topPadding - bottomPadding;
+                Object.keys(tierNodes).forEach(lvlKey => {
+                    const lvl = parseInt(lvlKey);
+                    const list = tierNodes[lvl];
+                    const centerX = colWidth * lvl + colWidth / 2;
+                    list.forEach((n, idx) => {
+                        const cat = n.category || 'Metric';
+                        const y = list.length === 1
+                            ? topPadding + availH / 2
+                            : topPadding + (idx / Math.max(list.length - 1, 1)) * availH;
+                        nodeMap[n.id] = { ...n, x: centerX, y, cfg: categoryConfig[cat] || categoryConfig['Metric'] };
+                    });
+                    const colNodes = list.map(n => nodeMap[n.id]).filter(Boolean);
+                    colNodes.sort((a, b) => a.y - b.y);
+                    const minVertDist = 32;
+                    for (let pass = 0; pass < 35; pass++) {
+                        for (let i = 0; i < colNodes.length - 1; i++) {
+                            const a = colNodes[i], b = colNodes[i + 1];
+                            if (b.y - a.y < minVertDist) {
+                                const push = (minVertDist - (b.y - a.y)) / 2;
+                                a.y = Math.max(topPadding, a.y - push);
+                                b.y = Math.min(height - bottomPadding, b.y + push);
+                            }
+                        }
+                    }
+                });
+            } else {
+                // --- Domain Cluster Layout ---
+                const clusterCenters = {
+                    'Equipment': { x: width * 0.22, y: height * 0.30 },
+                    'Error':     { x: width * 0.22, y: height * 0.72 },
+                    'Metric':    { x: width * 0.50, y: height * 0.50 },
+                    'Dataset':   { x: width * 0.78, y: height * 0.30 },
+                    'SME':       { x: width * 0.78, y: height * 0.72 }
                 };
-            });
-
-            // Physics repulsion so nodes never collide or overlap
-            const nList = Object.values(nodeMap);
-            for (let iter = 0; iter < 50; iter++) {
-                for (let i = 0; i < nList.length; i++) {
-                    for (let j = i + 1; j < nList.length; j++) {
-                        const a = nList[i];
-                        const b = nList[j];
-                        const dx = b.x - a.x;
-                        const dy = b.y - a.y;
-                        const dist = Math.hypot(dx, dy) || 1;
-                        const minDist = 75;
-                        if (dist < minDist) {
-                            const force = (minDist - dist) / dist * 0.18;
-                            a.x -= dx * force;
-                            a.y -= dy * force;
-                            b.x += dx * force;
-                            b.y += dy * force;
+                nodesToRender.forEach((n, idx) => {
+                    const cat = n.category || 'Metric';
+                    const center = clusterCenters[cat] || { x: width / 2, y: height / 2 };
+                    const angle = (idx / Math.max(nodesToRender.length, 1)) * 2 * Math.PI;
+                    const spreadRadius = 40 + (idx % 4) * 22;
+                    nodeMap[n.id] = {
+                        ...n,
+                        x: center.x + Math.cos(angle) * spreadRadius,
+                        y: center.y + Math.sin(angle) * spreadRadius,
+                        cfg: categoryConfig[cat] || categoryConfig['Metric']
+                    };
+                });
+                const nList = Object.values(nodeMap);
+                for (let iter = 0; iter < 50; iter++) {
+                    for (let i = 0; i < nList.length; i++) {
+                        for (let j = i + 1; j < nList.length; j++) {
+                            const a = nList[i], b = nList[j];
+                            const dx = b.x - a.x, dy = b.y - a.y;
+                            const dist = Math.hypot(dx, dy) || 1;
+                            if (dist < 75) {
+                                const force = (75 - dist) / dist * 0.18;
+                                a.x -= dx * force; a.y -= dy * force;
+                                b.x += dx * force; b.y += dy * force;
+                            }
                         }
                     }
                 }
+            }
+
+            function isNodeInSelectedPath(nodeId) {
+                if (!selectedNode) return false;
+                if (selectedNode.id === nodeId) return true;
+                return (graphData.edges || []).some(e =>
+                    (e.source === selectedNode.id && e.target === nodeId) ||
+                    (e.target === selectedNode.id && e.source === nodeId)
+                );
             }
 
             function draw() {
                 if (!isGraphModalOpen) return;
                 ctx.clearRect(0, 0, width, height);
 
-                // Draw Cluster Background Regions
-                Object.entries(clusterCenters).forEach(([catKey, center]) => {
-                    const cfg = categoryConfig[catKey];
-                    if (!cfg) return;
-                    ctx.save();
-                    ctx.beginPath();
-                    ctx.arc(center.x, center.y, 105, 0, 2 * Math.PI);
-                    ctx.fillStyle = cfg.bg;
-                    ctx.fill();
-                    ctx.font = '600 10px Inter';
-                    ctx.fillStyle = cfg.color;
-                    ctx.textAlign = 'center';
-                    ctx.fillText(`${cfg.icon} ${cfg.label.toUpperCase()} CLUSTER`, center.x, center.y - 92);
-                    ctx.restore();
-                });
+                if (currentViewMode === 'tree') {
+                    // Tier column backgrounds
+                    const tierHeaders = [
+                        { title: 'TIER 0: SYSTEM ROOTS',    icon: '🔧', color: '#22c55e' },
+                        { title: 'TIER 1: FAULTS & DATA',   icon: '⚠️', color: '#f43f5e' },
+                        { title: 'TIER 2: ROOT CAUSES',     icon: '⚡', color: '#D9662B' },
+                        { title: 'TIER 3: REMEDIES & SMEs', icon: '✅', color: '#c084fc' }
+                    ];
+                    const colW = width / 4;
+                    for (let lvl = 0; lvl < 4; lvl++) {
+                        const laneX = lvl * colW;
+                        ctx.save();
+                        ctx.fillStyle = lvl % 2 === 0 ? 'rgba(255,255,255,0.012)' : 'rgba(0,0,0,0.25)';
+                        ctx.fillRect(laneX, 0, colW, height);
+                        if (lvl > 0) {
+                            ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+                            ctx.setLineDash([4, 4]);
+                            ctx.beginPath();
+                            ctx.moveTo(laneX, 0);
+                            ctx.lineTo(laneX, height);
+                            ctx.stroke();
+                            ctx.setLineDash([]);
+                        }
+                        const th = tierHeaders[lvl];
+                        ctx.font = '700 9px Inter';
+                        ctx.fillStyle = th.color;
+                        ctx.textAlign = 'center';
+                        ctx.fillText(`${th.icon} ${th.title}`, laneX + colW / 2, 22);
+                        ctx.restore();
+                    }
+                } else {
+                    // Domain cluster backgrounds
+                    const clusterCenters = {
+                        'Equipment': { x: width * 0.22, y: height * 0.30 },
+                        'Error':     { x: width * 0.22, y: height * 0.72 },
+                        'Metric':    { x: width * 0.50, y: height * 0.50 },
+                        'Dataset':   { x: width * 0.78, y: height * 0.30 },
+                        'SME':       { x: width * 0.78, y: height * 0.72 }
+                    };
+                    Object.entries(clusterCenters).forEach(([catKey, center]) => {
+                        const cfg = categoryConfig[catKey];
+                        if (!cfg) return;
+                        ctx.save();
+                        ctx.beginPath();
+                        ctx.arc(center.x, center.y, 105, 0, 2 * Math.PI);
+                        ctx.fillStyle = cfg.bg;
+                        ctx.fill();
+                        ctx.font = '600 10px Inter';
+                        ctx.fillStyle = cfg.color;
+                        ctx.textAlign = 'center';
+                        ctx.fillText(`${cfg.icon} ${cfg.label.toUpperCase()} CLUSTER`, center.x, center.y - 92);
+                        ctx.restore();
+                    });
+                }
+
 
                 // Draw Edges
                 (graphData.edges || []).forEach(e => {
                     const src = nodeMap[e.source];
                     const tgt = nodeMap[e.target];
                     if (src && tgt) {
-                        ctx.beginPath();
-                        ctx.moveTo(src.x, src.y);
-                        ctx.lineTo(tgt.x, tgt.y);
                         const isConnected = selectedNode && (selectedNode === src || selectedNode === tgt);
-                        ctx.strokeStyle = isConnected ? '#D9662B' : 'rgba(255, 255, 255, 0.14)';
-                        ctx.lineWidth = isConnected ? 2.5 : 1.0;
-                        ctx.stroke();
+                        const isEndConn = e.relation === 'need_to_end_connection';
+                        ctx.save();
+                        ctx.beginPath();
 
-                        // Relationship Label Badge
+                        if (currentViewMode === 'tree') {
+                            const dx = Math.abs(tgt.x - src.x) * 0.45;
+                            ctx.moveTo(src.x, src.y);
+                            ctx.bezierCurveTo(src.x + dx, src.y, tgt.x - dx, tgt.y, tgt.x, tgt.y);
+                        } else {
+                            ctx.moveTo(src.x, src.y);
+                            ctx.lineTo(tgt.x, tgt.y);
+                        }
+
+                        if (isEndConn) {
+                            const dashOffset = (Date.now() / 55) % 18;
+                            ctx.setLineDash([7, 4]);
+                            ctx.lineDashOffset = -dashOffset;
+                            ctx.strokeStyle = isConnected ? '#ff1a3a' : 'rgba(255, 40, 70, 0.9)';
+                            ctx.lineWidth = isConnected ? 3.2 : 2.4;
+                            ctx.shadowColor = '#ff2244';
+                            ctx.shadowBlur = isConnected ? 20 : 12;
+                        } else {
+                            ctx.strokeStyle = isConnected ? '#D9662B' : (selectedNode ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.14)');
+                            ctx.lineWidth = isConnected ? 2.8 : 1.1;
+                        }
+                        ctx.stroke();
+                        ctx.setLineDash([]);
+                        ctx.shadowBlur = 0;
+
                         const midX = (src.x + tgt.x) / 2;
                         const midY = (src.y + tgt.y) / 2;
-                        ctx.font = '9px Inter';
+                        ctx.font = isEndConn ? '700 9px Inter' : '9px Inter';
                         const textW = ctx.measureText(e.relation).width + 8;
-                        ctx.fillStyle = 'rgba(6, 6, 6, 0.92)';
+                        ctx.fillStyle = isEndConn ? 'rgba(28,4,8,0.97)' : 'rgba(6,6,6,0.94)';
                         ctx.fillRect(midX - textW / 2, midY - 7, textW, 14);
-                        ctx.fillStyle = isConnected ? '#D9662B' : '#4b5563';
+                        if (isEndConn) {
+                            ctx.strokeStyle = 'rgba(255,34,68,0.75)';
+                            ctx.lineWidth = 1;
+                            ctx.strokeRect(midX - textW / 2, midY - 7, textW, 14);
+                            ctx.fillStyle = '#ff4466';
+                        } else {
+                            ctx.fillStyle = isConnected ? '#D9662B' : '#4b5563';
+                        }
                         ctx.textAlign = 'center';
                         ctx.fillText(e.relation, midX, midY + 3);
+                        ctx.restore();
                     }
                 });
 
-                // Draw Executive Pill Nodes
+                // Draw Nodes
                 Object.values(nodeMap).forEach(n => {
                     const isSelected = selectedNode === n;
+                    const inPath = isNodeInSelectedPath(n.id);
+                    const displayLabel = getShortLabel(n.label);
                     ctx.font = '600 11px Inter';
-                    const textW = ctx.measureText(`${n.icon || n.cfg.icon} ${n.label}`).width;
-                    const pillW = Math.max(textW + 20, 85);
-                    const pillH = 26;
+                    const iconStr = n.icon || n.cfg.icon;
+                    const textW = ctx.measureText(`${iconStr} ${displayLabel}`).width;
+                    const pillW = Math.max(textW + 18, 78);
+                    const pillH = 25;
                     const rx = n.x - pillW / 2;
                     const ry = n.y - pillH / 2;
 
                     ctx.save();
                     ctx.beginPath();
-                    if (ctx.roundRect) {
-                        ctx.roundRect(rx, ry, pillW, pillH, 13);
-                    } else {
-                        ctx.rect(rx, ry, pillW, pillH);
-                    }
-                    ctx.fillStyle = isSelected ? 'rgba(28, 28, 28, 0.98)' : 'rgba(14, 14, 14, 0.95)';
+                    if (ctx.roundRect) ctx.roundRect(rx, ry, pillW, pillH, 12);
+                    else ctx.rect(rx, ry, pillW, pillH);
+
+                    ctx.fillStyle = isSelected ? 'rgba(32,32,32,0.98)' : (inPath ? 'rgba(22,22,22,0.96)' : 'rgba(14,14,14,0.93)');
                     ctx.fill();
-
-                    ctx.strokeStyle = n.cfg.color;
-                    ctx.lineWidth = isSelected ? 3 : 1.5;
+                    ctx.strokeStyle = isSelected ? n.cfg.color : (inPath ? n.cfg.color : (selectedNode ? 'rgba(255,255,255,0.12)' : n.cfg.color));
+                    ctx.lineWidth = isSelected ? 3 : (inPath ? 2 : 1.4);
                     ctx.stroke();
-
-                    if (isSelected) {
+                    if (isSelected || inPath) {
                         ctx.shadowColor = n.cfg.color;
-                        ctx.shadowBlur = 14;
+                        ctx.shadowBlur = isSelected ? 16 : 8;
                         ctx.stroke();
                     }
-
-                    // Label Text
-                    ctx.fillStyle = '#f8fafc';
+                    ctx.fillStyle = (isSelected || inPath || !selectedNode) ? '#f8fafc' : '#6b7280';
                     ctx.textAlign = 'center';
-                    ctx.fillText(`${n.icon || n.cfg.icon} ${n.label}`, n.x, n.y + 4);
+                    ctx.fillText(`${iconStr} ${displayLabel}`, n.x, n.y + 4);
                     ctx.restore();
                 });
 
@@ -1205,9 +1395,7 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
 
                 let clicked = null;
                 Object.values(nodeMap).forEach(n => {
-                    if (Math.abs(n.x - clickX) <= 45 && Math.abs(n.y - clickY) <= 15) {
-                        clicked = n;
-                    }
+                    if (Math.abs(n.x - clickX) <= 45 && Math.abs(n.y - clickY) <= 14) clicked = n;
                 });
 
                 selectedNode = clicked;
@@ -1217,12 +1405,12 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
                 if (clicked) {
                     const connectedEdges = (graphData.edges || []).filter(e => e.source === clicked.id || e.target === clicked.id);
                     const relSummary = connectedEdges.map(e => `• ${e.source} --[ ${e.relation} ]--> ${e.target}`).join('\n');
-
-                    nameEl.innerText = `${clicked.icon || clicked.cfg.icon} [${clicked.category}] ${clicked.label}`;
-                    descEl.innerText = `${clicked.description || 'Enterprise Knowledge Graph Node'}\n\nConnected Relationships (${connectedEdges.length}):\n${relSummary || 'None'}`;
+                    const tierName = clicked.tree_level !== undefined ? `Tier ${clicked.tree_level}` : 'Domain Entity';
+                    nameEl.innerText = `${clicked.icon || clicked.cfg.icon} [${tierName} • ${clicked.category}] ${clicked.label}`;
+                    descEl.innerText = `${clicked.description || 'Enterprise Knowledge Graph Node'}\n\nDecision Path Connections (${connectedEdges.length}):\n${relSummary || 'None'}`;
                 } else {
-                    nameEl.innerText = 'Click any graph node to inspect relationships & attributes';
-                    descEl.innerText = 'Select a node from the domain cluster canvas above to explore lineage, SMEs, and diagnostic trees.';
+                    nameEl.innerText = 'Click any graph node to inspect decision tree relationships & attributes';
+                    descEl.innerText = 'Select a node from the decision tree canvas above to explore lineage, SMEs, and diagnostic paths.';
                 }
             };
         }
@@ -1273,7 +1461,7 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
                 </div>
             </div>
 
-            <!-- Executive Domain Filter Pills Bar -->
+            <!-- Executive Domain Filter Pills & View Mode Toggle -->
             <div class="graph-controls-bar">
                 <div class="graph-filter-pills">
                     <button class="filter-pill active" data-cat="All" onclick="filterGraphCategory('All')">All Domains</button>
@@ -1283,15 +1471,21 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
                     <button class="filter-pill error" data-cat="Error" onclick="filterGraphCategory('Error')">⚠️ Fault Errors</button>
                     <button class="filter-pill metric" data-cat="Metric" onclick="filterGraphCategory('Metric')">📈 Metrics & Services</button>
                 </div>
+                <div class="view-mode-toggle">
+                    <button class="view-toggle-btn active" id="btnViewTree" onclick="switchGraphView('tree')">🌳 Decision Tree</button>
+                    <button class="view-toggle-btn" id="btnViewCluster" onclick="switchGraphView('cluster')">🕸️ Domain Clusters</button>
+                </div>
             </div>
 
             <div class="graph-modal-body">
-                <canvas id="graphCanvas" width="920" height="460"></canvas>
+                <div class="canvas-scroll-wrapper">
+                    <canvas id="graphCanvas"></canvas>
+                </div>
 
                 <div class="graph-inspector-panel" id="graphInspector">
                     <div style="font-size: 11px; font-weight: 700; color: var(--accent-orange); text-transform: uppercase;">Entity Inspector &amp; Lineage Explorer</div>
-                    <div style="font-size: 14px; font-weight: 600; color: #fff; margin-top: 4px;" id="inspectorNodeName">Click any graph node to inspect relationships & attributes</div>
-                    <div style="font-size: 12px; color: #94a3b8; margin-top: 4px;" id="inspectorNodeDesc">Select a node from the domain clusters above.</div>
+                    <div style="font-size: 14px; font-weight: 600; color: #fff; margin-top: 4px;" id="inspectorNodeName">Click any graph node to inspect decision tree relationships &amp; attributes</div>
+                    <div style="font-size: 12px; color: #94a3b8; margin-top: 4px;" id="inspectorNodeDesc">Select a node from the decision tree canvas above to explore lineage, SMEs, and diagnostic paths.</div>
                 </div>
             </div>
         </div>

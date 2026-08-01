@@ -173,17 +173,24 @@ def classify_node_category(node_id: str) -> tuple[str, str]:
 def get_graph_data_api():
     """
     API endpoint to export NetworkX Knowledge Graph nodes and edges for visual rendering.
+    Enriched with decision tree hierarchy levels and node classifications.
     """
     try:
+        dt_meta = graph_service.get_decision_tree_metadata()
         nodes = []
         for node_id, attrs in graph_service.graph.nodes(data=True):
             cat, icon = classify_node_category(node_id)
+            meta = dt_meta.get(str(node_id), {})
             nodes.append({
                 "id": str(node_id),
                 "label": str(node_id),
                 "category": cat,
                 "icon": icon,
-                "description": attrs.get("details", attrs.get("description", f"Enterprise {cat} Entity Node"))
+                "description": attrs.get("details", attrs.get("description", f"Enterprise {cat} Entity Node")),
+                "tree_level": meta.get("tree_level", 0),
+                "node_type": meta.get("node_type", "root"),
+                "parents": meta.get("parents", []),
+                "children": meta.get("children", [])
             })
 
         edges = []

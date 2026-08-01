@@ -284,6 +284,49 @@ class KnowledgeGraphService:
             "edges": unique_edges
         }
 
+    def get_decision_tree_metadata(self) -> Dict[str, Dict[str, Any]]:
+        """
+        Compute decision tree hierarchy metadata for graph nodes.
+        Enforces clear tier levels:
+          Tier 0: Root Systems & Equipment Models
+          Tier 1: Fault Errors, Core Datasets & Service Lines
+          Tier 2: Root Causes & Lineage Data Sources
+          Tier 3: Remedy Actions, Required Parts & SME Owners
+        Returns a mapping of node_id -> { tree_level, node_type, parents, children }.
+        """
+        metadata = {}
+        for n in self.graph.nodes:
+            nid_lower = n.lower()
+
+            # Explicit categorical tier rules
+            if any(k in nid_lower for k in ["sme", "jenkins", "david ross", "marcus vance", "claire williams", "valve", "electrode", "pump", "loop", "pipe", "remedy"]):
+                lvl = 3
+                node_type = "remedy_action"
+            elif any(k in nid_lower for k in ["low gas pressure", "overheating", "sap is-u", "grid mon", "net sale", "telemetry"]):
+                lvl = 2
+                node_type = "root_cause"
+            elif any(k in nid_lower for k in ["error", "dataset", "forecast", "dashboard", "hub", "heating", "maintenance", "plumbing", "electrical", "appliance", "appointment"]):
+                lvl = 1
+                node_type = "decision_fault"
+            elif any(k in nid_lower for k in ["worcester", "ideal", "baxi", "platform", "home energy", "lead", "quote"]):
+                lvl = 0
+                node_type = "root"
+            else:
+                lvl = 1
+                node_type = "decision_fault"
+
+            parents = list(self.graph.predecessors(n))
+            children = list(self.graph.successors(n))
+
+            metadata[n] = {
+                "tree_level": lvl,
+                "node_type": node_type,
+                "parents": parents,
+                "children": children
+            }
+
+        return metadata
+
     def query_langchain_graph(self, query: str) -> List[str]:
         """
         Query the Knowledge Graph using LangChain NetworkxEntityGraph abstraction.
@@ -301,3 +344,4 @@ class KnowledgeGraphService:
     def get_langchain_triples(self) -> List[Tuple[str, str, str]]:
         """Return all LangChain KnowledgeTriples loaded into the NetworkxEntityGraph."""
         return self.langchain_graph.get_triples()
+
