@@ -223,6 +223,36 @@ def forecast_boiler_installations() -> str:
     )
 
 
+@tool
+def query_dataset_sample(dataset_name: str) -> str:
+    """
+    Retrieve a tabular data sample (glimpse) of a specific operational or commercial dataset.
+    Use this when the user asks to see a glimpse, sample, or preview of a dataset like 'Customer Master', 'Engineer Skills', etc.
+    """
+    if _DATA_SERVICE is None:
+        return "Error: Data Service is not initialized."
+    
+    result = _DATA_SERVICE.get_dataset_sample(dataset_name)
+    if not result.get("success"):
+        return f"Could not retrieve sample for '{dataset_name}': {result.get('error')}"
+        
+    records = result["sample"]
+    if not records:
+        return f"Dataset '{result['dataset']}' is empty."
+        
+    # Format as a markdown table
+    headers = list(records[0].keys())
+    header_row = "| " + " | ".join(headers) + " |"
+    separator_row = "|" + "|".join(["---"] * len(headers)) + "|"
+    
+    table_lines = [f"Here is a glimpse of the **{result['dataset']}** dataset:", header_row, separator_row]
+    for row in records:
+        table_lines.append("| " + " | ".join(str(row.get(h, "")) for h in headers) + " |")
+        
+    return "\n".join(table_lines)
+
+
+
 def get_all_tools():
     """Return list of tool functions for LangChain agent."""
     return [
@@ -232,6 +262,7 @@ def get_all_tools():
         query_live_metrics,
         query_business_operations,
         query_metric_definitions,
+        query_dataset_sample,
         forecast_boiler_installations,
         check_data_access,
         raise_access_request,

@@ -52,14 +52,31 @@ class KnowledgeGraphService:
         import re
         clean_query = re.sub(r"[^\w\s]", " ", query).lower().strip()
         query_words = set(clean_query.split())
+        query_words_singular = {w[:-1] if w.endswith('s') and len(w) > 3 else w for w in query_words}
 
         matches = []
         for node in self.graph.nodes:
             clean_node = re.sub(r"[^\w\s]", " ", node).lower().strip()
             node_words = set(clean_node.split())
-            if node_words and (node_words.issubset(query_words) or clean_node in clean_query or clean_query in clean_node):
+            node_words_singular = {w[:-1] if w.endswith('s') and len(w) > 3 else w for w in node_words}
+            
+            # Exact substring match
+            if clean_node in clean_query or clean_query in clean_node:
                 matches.append(node)
-        return matches
+                continue
+                
+            # Flexible word match (plural/singular)
+            if node_words_singular and node_words_singular.issubset(query_words_singular):
+                matches.append(node)
+                continue
+                
+            # Partial overlap for multi-word nodes (at least 50% of node words match)
+            if node_words_singular:
+                overlap = len(node_words_singular.intersection(query_words_singular))
+                if overlap > 0 and overlap >= len(node_words_singular) / 2:
+                    matches.append(node)
+                    
+        return list(set(matches))
 
     def rag_search(self, query: str, top_k: int = 5) -> List[Dict[str, Any]]:
         """

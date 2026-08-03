@@ -82,11 +82,18 @@ class DataService:
         self._require_file(self.operations_path, "Business Operations workbook")
         data_frame = pd.read_excel(self.operations_path, sheet_name="Metric_Definitions")
         query_tokens = set(re.findall(r"[a-z0-9]+", query.casefold().replace("_", " ")))
-        records = data_frame[
-            data_frame["metric_name"].str.casefold().apply(
-                lambda name: set(name.replace("_", " ").split()).difference({"pct"}).issubset(query_tokens)
-            )
-        ].to_dict(orient="records")
+        query_tokens_singular = {t[:-1] if t.endswith('s') and len(t) > 3 else t for t in query_tokens}
+        
+        records = []
+        for record in data_frame.to_dict(orient="records"):
+            name_tokens = set(record["metric_name"].replace("_", " ").casefold().split())
+            name_tokens.discard("pct")
+            name_tokens_singular = {t[:-1] if t.endswith('s') and len(t) > 3 else t for t in name_tokens}
+            
+            overlap = name_tokens_singular.intersection(query_tokens_singular)
+            if overlap:
+                records.append(record)
+                
         return {"success": bool(records), "definitions": records}
 
     def forecast_installations(self) -> dict[str, Any]:
@@ -110,3 +117,26 @@ class DataService:
             "projected_installations": projected_sales,
             "note": "Directional estimate based on the current installation lead volume and observed conversion rate; additional historical periods improve forecast reliability.",
         }
+
+    def get_dataset_sample(self, dataset_name: str) -> dict[str, Any]:
+        """Return a small sample of the requested dataset from Business_Operations.xlsx."""
+        self._require_file(self.operations_path, "Business Operations workbook")
+        try:
+            xl = pd.ExcelFile(self.operations_path)
+            sheet_names = xl.sheet_names
+            
+            target_sheet = None
+            query_clean = dataset_name.lower().replace("_", " ").strip()
+            for sn in sheet_names:
+                if query_clean in sn.lower().replace("_", " ") or sn.lower().replace("_", " ") in query_clean:
+                    target_sheet = sn
+                    break
+            
+            if not target_sheet:
+                return {"success": False, "error": f"Dataset '{dataset_name}' not found."}
+                
+            data_frame = pd.read_excel(self.operations_path, sheet_name=target_sheet)
+            records = data_frame.head(5).to_dict(orient="records")
+            return {"success": True, "dataset": target_sheet, "sample": records}
+        except Exception as e:
+            return {"success": False, "error": str(e)}

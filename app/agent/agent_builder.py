@@ -25,6 +25,7 @@ from app.agent.tools import (
     query_live_metrics,
     query_business_operations,
     query_metric_definitions,
+    query_dataset_sample,
     forecast_boiler_installations,
     raise_access_request,
 )
@@ -81,18 +82,6 @@ def _is_installation_forecast_request(message: str) -> bool:
     return "installation" in normalized and any(term in normalized for term in ("future", "forecast", "will", "project"))
 
 
-def _definition_entity(message: str) -> str:
-    """Map a business-definition question to its public knowledge-graph entity."""
-    normalized = message.casefold()
-    if "appointment" in normalized:
-        return "Net Appointment"
-    if "quote" in normalized:
-        return "Quote"
-    if "conversion" in normalized:
-        return "Sales Conversion"
-    if "sale" in normalized:
-        return "Net Sale"
-    return "Lead"
 
 
 def _history_fallback(user_input: str, chat_history: Sequence[dict[str, str]] | None) -> str | None:
@@ -255,9 +244,8 @@ def run_deterministic_agent_fallback(
             def_res = call_tool(query_metric_definitions, {"query": user_input})
             if "No metric definition" not in def_res:
                 return f"📖 **Metric Definition (RAG Knowledge Base):**\n\n{def_res}"
-            definition = call_tool(query_knowledge_graph, {"entity_name": _definition_entity(user_input)})
-            return f"📖 **Knowledge Base Definition:**\n\n{definition}"
-
+            rag_kg_res = call_tool(query_graph_rag, {"query": user_input})
+            return f"📖 **Knowledge Base Definition:**\n\n{rag_kg_res}"
         return (
             f"📊 **Dataset Identified:**\n"
             f"The service job activity and commercial operational data required for your query/project is located in the **Business_Operations** dataset (`Business_Operations.xlsx`).\n\n"
@@ -271,8 +259,16 @@ def run_deterministic_agent_fallback(
         def_res = call_tool(query_metric_definitions, {"query": user_input})
         if "No metric definition" not in def_res:
             return f"📖 **Metric Definition (RAG Knowledge Base):**\n\n{def_res}"
-        definition = call_tool(query_knowledge_graph, {"entity_name": _definition_entity(user_input)})
-        return f"📖 **Knowledge Base Definition:**\n\n{definition}"
+        rag_kg_res = call_tool(query_graph_rag, {"query": user_input})
+        return f"📖 **Knowledge Base Definition:**\n\n{rag_kg_res}"
+        
+    # Rule 5.5: Data Sample / Glimpse requests
+    if any(k in input_lower for k in ["glimpse", "sample", "show me the data", "preview", "some rows"]):
+        # Extract potential dataset name by removing common words
+        clean_name = input_lower.replace("show me a glimpse of", "").replace("can i see a sample of", "").replace("what is", "").replace("the", "").replace("dataset", "").strip()
+        sample_res = call_tool(query_dataset_sample, {"dataset_name": clean_name})
+        if "Could not retrieve sample" not in sample_res:
+            return sample_res
 
     # Rule 6: Greetings & Capability questions
     if _is_greeting(user_input) or _is_capability_question(user_input):
