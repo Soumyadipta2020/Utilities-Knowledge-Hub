@@ -67,7 +67,14 @@ def test_flask_endpoints():
     fdata = full_res.get_json()
     assert fdata["success"] is True
     assert len(fdata["stages"]) == 12
-    print(f"[PASS] POST /api/pipeline/run -> OK (All 12 stages completed, {fdata['total_nodes']} nodes, {fdata['total_edges']} edges)")
+    # Test /api/datasource/preview/Information_Harnessing_Source.xlsx
+    ds_res = client.get("/api/datasource/preview/Information_Harnessing_Source.xlsx")
+    assert ds_res.status_code == 200
+    ds_data = ds_res.get_json()
+    assert ds_data["success"] is True
+    assert ds_data["total_rows"] > 0
+    assert len(ds_data["columns"]) > 0
+    print(f"[PASS] GET /api/datasource/preview/Information_Harnessing_Source.xlsx -> OK ({ds_data['total_rows']} rows, columns: {ds_data['columns']})")
 
 
 if __name__ == "__main__":

@@ -3,6 +3,7 @@ Main Entry Point for Utilities Knowledge Hub Flask Web Application.
 """
 
 from flask import Flask, jsonify, render_template, request, session
+import pandas as pd
 from pathlib import Path
 import sys
 
@@ -244,6 +245,47 @@ def get_graph_data_api():
         })
     except Exception as e:
         print(f"[Graph Data Error]: {e}")
+@app.route("/api/datasource/preview/<filename>", methods=["GET"])
+def preview_datasource_api(filename: str):
+    """
+    API endpoint to preview content, columns, total row count, and sample records
+    from any of the 6 DHS Excel data sources.
+    """
+    try:
+        # Sanitize filename
+        safe_filename = Path(filename).name
+        filepath = DATA_DIR / safe_filename
+
+        if not filepath.exists():
+            return jsonify({"success": False, "error": f"File {safe_filename} not found."}), 404
+
+        df = pd.read_excel(filepath)
+        df_clean = df.fillna("")
+
+        columns = list(df_clean.columns)
+        total_rows = len(df_clean)
+        records = df_clean.head(15).to_dict(orient="records")
+
+        # Map metadata description per DHS source file
+        descriptions = {
+            "Information_Harnessing_Source.xlsx": "Raw ingestion streams, operational manual chunks, Data Factory connector states, and IoT telemetry metrics.",
+            "Knowledge_Harnessing_Source.xlsx": "Extracted subject-predicate-object knowledge graph triples, SME attribution mappings, and ontology nodes.",
+            "Inference_Harnessing_Source.xlsx": "Diagnostic decision trees, fault resolution paths, model routing confidence scores, and error handling rules.",
+            "Outcome_Harnessing_Source.xlsx": "Commercial sales activity, automated IT access ticket outcomes, resolution metrics, and SLA performance.",
+            "Benchmarking_Harnessing_Source.xlsx": "Golden Q&A evaluation datasets, F1 precision scores (0.99), LLM-as-a-Judge ratings, and hallucination guardrails.",
+            "Governance_Security_Source.xlsx": "Azure Entra ID role permissions matrix, Microsoft Purview data lineage tags, and Key Vault secret policies."
+        }
+
+        return jsonify({
+            "success": True,
+            "filename": safe_filename,
+            "description": descriptions.get(safe_filename, "DHS Enterprise Excel Data Source."),
+            "total_rows": total_rows,
+            "columns": columns,
+            "records": records
+        })
+    except Exception as e:
+        print(f"[Datasource Preview Error]: {e}")
         return jsonify({"success": False, "error": str(e)}), 500
 
 
