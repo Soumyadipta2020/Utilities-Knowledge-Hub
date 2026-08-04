@@ -23,10 +23,12 @@ from app.config import (
     OPENROUTER_API_KEY,
     OPENROUTER_MODEL_NAME,
     OPENROUTER_BASE_URL,
+    DATA_DIR,
     ensure_mock_data_exists,
 )
 from app.services.graph_service import KnowledgeGraphService
 from app.services.data_service import DataService
+from app.services.pipeline_service import KnowledgeHarnessingPipeline
 from app.agent.tools import register_services
 from app.agent.agent_builder import build_agent_executor, process_chat_message
 
@@ -40,6 +42,7 @@ ensure_mock_data_exists()
 # Initialize Services & Inject dependencies into tools
 graph_service = KnowledgeGraphService(KB_FILE_PATH)
 data_service = DataService(METRICS_FILE_PATH, ACCESS_FILE_PATH, OPERATIONS_FILE_PATH)
+pipeline_engine = KnowledgeHarnessingPipeline(DATA_DIR, graph_service, data_service)
 register_services(graph_service, data_service)
 
 # Build LangChain executor (if OpenRouter API key exists)
@@ -110,35 +113,45 @@ def chat_api():
         }), 500
 
 
+@app.route("/api/pipeline/run-stage/<int:stage_id>", methods=["POST", "GET"])
+def run_pipeline_stage_api(stage_id: int):
+    """
+    Execute a specific stage (1-12) of the Knowledge Harnessing pipeline on real backend data.
+    Returns calculated stage metrics, duration_ms, status, and live log.
+    """
+    try:
+        if stage_id == 1:
+            from app.data.generate_mock_data import generate_all_mock_data
+            generate_all_mock_data(DATA_DIR)
+
+        stage_result = pipeline_engine.execute_stage(stage_id)
+        harnessing_metrics = pipeline_engine.get_harnessing_metrics()
+
+        return jsonify({
+            "success": True,
+            "stage": stage_result,
+            "overall_progress": round((stage_id / 12) * 100),
+            "harnessing_metrics": harnessing_metrics,
+            "total_nodes": len(graph_service.graph.nodes),
+            "total_edges": len(graph_service.graph.edges)
+        })
+    except Exception as e:
+        print(f"[Pipeline Stage Error] Stage {stage_id}: {e}")
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
 @app.route("/api/pipeline/run", methods=["POST"])
 def run_pipeline_api():
     """
     API endpoint to trigger and return the 12-stage OEM Knowledge Base Harnessing pipeline.
-    Re-generates datasets, re-indexes the Knowledge Graph, and returns live logs and stage execution status.
+    Runs all 12 backend stages and returns live execution results and metrics.
     """
     try:
-        # 1. Regenerate Excel knowledge base & telemetry datasets
-        from app.config import DATA_DIR
         from app.data.generate_mock_data import generate_all_mock_data
         generate_all_mock_data(DATA_DIR)
 
-        # 2. Reload NetworkX Knowledge Graph service
-        graph_service.load_graph()
-
-        stages = [
-            {"id": 1, "name": "File Upload", "icon": "📥", "status": "done", "log": "Uploading and validating OEM technical manuals & datasets.. Upload complete."},
-            {"id": 2, "name": "Ingestion & Extraction", "icon": "📑", "status": "done", "log": "Extracting text, error codes, and structured content.. Extract complete."},
-            {"id": 3, "name": "Cleaning & Normalization", "icon": "🧹", "status": "done", "log": "Removing duplicates and normalising text.. Clean complete."},
-            {"id": 4, "name": "Chunking & Segmentation", "icon": "✂️", "status": "done", "log": "Chunking documents into semantic segments.. Chunk complete."},
-            {"id": 5, "name": "Metadata Intelligence", "icon": "🏷️", "status": "done", "log": "Enriching metadata, SME ownership, and source attribution.. Complete."},
-            {"id": 6, "name": "Entity & Relationship", "icon": "🔗", "status": "done", "log": "Extracting entities, relationships, and fault diagnostic paths.. Linked."},
-            {"id": 7, "name": "Semantic Learning", "icon": "🧬", "status": "done", "log": "Training domain embeddings and semantic context.. Ready."},
-            {"id": 8, "name": "EDA Intelligence", "icon": "📊", "status": "done", "log": "Exploratory telemetry metrics analysis.. Calculated."},
-            {"id": 9, "name": "ML Validation & Accuracy", "icon": "✅", "status": "done", "log": "Validating diagnostic tree accuracy & confidence thresholds.. 99.4% precision."},
-            {"id": 10, "name": "Ontology & Governance", "icon": "🏛️", "status": "done", "log": "Applying dataset security policies & ServiceNow escalation mapping.. Complete."},
-            {"id": 11, "name": "Canonicalization", "icon": "✳️", "status": "done", "log": "Mapping duplicate entities to canonical enterprise nodes.. Canonicalized."},
-            {"id": 12, "name": "Knowledge Graph", "icon": "🕸️", "status": "done", "log": "Knowledge graph built! Entities and relationships linked into NetworkX graph."}
-        ]
+        stages = pipeline_engine.execute_full_pipeline()
+        harnessing_metrics = pipeline_engine.get_harnessing_metrics()
 
         return jsonify({
             "success": True,
@@ -146,12 +159,30 @@ def run_pipeline_api():
             "overall_progress": 100,
             "knowledge_base_updated": True,
             "stages": stages,
+            "harnessing_metrics": harnessing_metrics,
             "total_nodes": len(graph_service.graph.nodes),
             "total_edges": len(graph_service.graph.edges)
         })
 
     except Exception as e:
         print(f"[Pipeline Error]: {e}")
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/harnessing/metrics", methods=["GET"])
+def get_harnessing_metrics_api():
+    """
+    API endpoint to return dynamic real-time Harnessing metrics for all tabs:
+    Information, Knowledge, Inference, Outcome, Benchmarking, Storage.
+    """
+    try:
+        metrics = pipeline_engine.get_harnessing_metrics()
+        return jsonify({
+            "success": True,
+            "metrics": metrics
+        })
+    except Exception as e:
+        print(f"[Harnessing Metrics Error]: {e}")
         return jsonify({"success": False, "error": str(e)}), 500
 
 

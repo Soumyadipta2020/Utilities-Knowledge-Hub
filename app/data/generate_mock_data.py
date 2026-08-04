@@ -6,8 +6,18 @@ import pandas as pd
 
 
 def generate_all_mock_data(data_dir: Path) -> None:
-    """Create the knowledge, telemetry, access, and business-operation workbooks."""
+    """Create the 6 Domain Harness System (DHS) Excel data sources."""
     data_dir.mkdir(parents=True, exist_ok=True)
+    
+    # 6 DHS Architecture Excel Sources
+    info_file = data_dir / "Information_Harnessing_Source.xlsx"
+    knowledge_file = data_dir / "Knowledge_Harnessing_Source.xlsx"
+    inference_file = data_dir / "Inference_Harnessing_Source.xlsx"
+    outcome_file = data_dir / "Outcome_Harnessing_Source.xlsx"
+    benchmark_file = data_dir / "Benchmarking_Harnessing_Source.xlsx"
+    governance_file = data_dir / "Governance_Security_Source.xlsx"
+
+    # Legacy Aliases
     kb_file = data_dir / "Knowledge_Base.xlsx"
     metrics_file = data_dir / "Live_Metrics.xlsx"
     access_file = data_dir / "Metadata_Access.xlsx"
@@ -240,44 +250,77 @@ def generate_all_mock_data(data_dir: Path) -> None:
     demand_forecast = [{"region": r, "month": d.strftime("%Y-%m"), "predicted_jobs": np.random.randint(1000, 3000)} for d in future_24_months for r in regions]
     capacity_plans = [{"region": r, "month": d.strftime("%Y-%m"), "available_engineers": np.random.randint(20, 100)} for d in future_24_months for r in regions]
     future_appts = [{"appt_id": f"AF{i:04d}", "customer_id": np.random.choice(customer_ids), "engineer_id": np.random.choice(engineer_ids), "date": np.random.choice(future_30_dates)} for i in range(500)]
+
+    mock_datasets = {
+        "Customer Master": pd.DataFrame(customers),
+        "Customer Holdings": pd.DataFrame([{"customer_id": c["customer_id"], "product": "Boiler Care", "status": "Active"} for c in customers]),
+        "Property Master": pd.DataFrame(properties),
+        "Boiler Master": pd.DataFrame([{"model_id": f"MOD{i}", "manufacturer": "OEM", "model_name": f"Model {i}"} for i in range(1, 10)]),
+        "Installation History": pd.DataFrame(install_history),
+        "Service History": pd.DataFrame(service_history),
+        "Repair History": pd.DataFrame(repair_history),
+        "Visit Outcomes": pd.DataFrame([{"visit_id": f"V{i:04d}", "date": np.random.choice(past_730_dates), "engineer": np.random.choice(engineer_ids), "status": "Completed"} for i in range(1000)]),
+        "Fault Codes": pd.DataFrame([{"code": "EA_Error", "description": "Flame not detected", "remedy": "Check electrode"}]),
+        "Parts Replaced": pd.DataFrame([{"visit_id": f"V{i:04d}", "date": np.random.choice(past_730_dates), "part_no": "PT123", "quantity": 1} for i in range(500)]),
+        "Engineer Master": pd.DataFrame(engineers),
+        "Engineer Skills": pd.DataFrame([{"engineer_id": e["engineer_id"], "skill": "Gas Safe", "level": "Expert"} for e in engineers]),
+        "Engineer Availability": pd.DataFrame([{"engineer_id": e["engineer_id"], "date": d, "status": np.random.choice(["Working", "On Leave"], p=[0.9, 0.1])} for e in engineers for d in past_730_dates[-10:] + future_30_dates]),
+        "Engineer Productivity": pd.DataFrame([{"engineer_id": e["engineer_id"], "jobs_completed": np.random.randint(500, 1000), "first_time_fix": f"{np.random.randint(80, 99)}%"} for e in engineers]),
+        "Appointment Schedule": pd.DataFrame([{"appt_id": f"A{i:04d}", "customer_id": np.random.choice(customer_ids), "engineer_id": np.random.choice(engineer_ids), "date": np.random.choice(past_730_dates)} for i in range(1000)] + future_appts),
+        "Contact Centre": pd.DataFrame([{"ticket_id": f"T{i:04d}", "date": np.random.choice(past_730_dates), "topic": "Broken", "status": "Closed"} for i in range(1000)]),
+        "Product Warranty": pd.DataFrame([{"model_id": f"MOD{i}", "warranty_years": 10, "terms": "Parts"} for i in range(1, 10)]),
+        "Quotes Sales": pd.DataFrame([{"quote_id": f"Q{i:04d}", "date": np.random.choice(past_730_dates), "value": np.random.randint(1000, 4000), "status": "Accepted"} for i in range(1000)]),
+        "Demand Forecast": pd.DataFrame(demand_forecast),
+        "Capacity Plans": pd.DataFrame(capacity_plans),
+        "Knowledge Base Docs": pd.DataFrame([{"doc_id": "DOC1", "title": "Manual", "type": "PDF"}]),
+        "Inventory Van Stock": pd.DataFrame([{"part_no": "PT123", "location": "Warehouse", "quantity": 500}]),
+        "Weather Data": pd.DataFrame(weather_data),
+        "EPC Property Data": pd.DataFrame([{"postcode": p["postcode"], "epc_rating": np.random.choice(["A", "B", "C", "D", "E"])} for p in properties]),
+        "Business Rules": pd.DataFrame([{"rule_id": "BR1", "rule_name": "Next Day", "condition": "Vulnerable"}])
+    }
     
-    with pd.ExcelWriter(operations_file) as writer:
+    # Save to DHS 6-Stage Excel Data Sources
+    pd.DataFrame(telemetry_records, columns=["metric_name", "value", "unit", "status", "description"]).to_excel(info_file, index=False)
+    pd.DataFrame(knowledge_records, columns=["source", "relationship", "target", "details"]).to_excel(knowledge_file, index=False)
+    
+    # Inference Harnessing Source (Diagnostic decision trees, fault resolutions, RAG snippets)
+    inference_records = [
+        ("Worcester Bosch 4000", "EA_Error", "Ignition Flame Failure", "Inspect lead, clean electrode, check gas pressure > 18 mbar.", 99.4),
+        ("Worcester Bosch 4000", "224_Error", "Primary Flue Thermostat Tripped", "Check water flow, bleed air from circulating pump.", 98.8),
+        ("Ideal Logic Combi", "F2_Error", "Flame Loss During Operation", "Check external condensate pipe for ice or blockage.", 97.5),
+        ("Baxi 800 Combi", "E119_Error", "System Water Pressure Low", "Repressurise filling loop to 1.5 bar.", 99.1),
+    ]
+    pd.DataFrame(inference_records, columns=["equipment", "error_code", "fault_diagnosis", "resolution_procedure", "confidence_score"]).to_excel(inference_file, index=False)
+
+    # Benchmarking Harnessing Source (Golden Q&A evaluation datasets, F1 scores)
+    benchmark_records = [
+        ("Q001", "How to fix EA Error on Worcester Bosch?", "Check gas supply and electrode", "Pass", 0.99, "LLM-as-a-Judge"),
+        ("Q002", "Who owns Sales_Funnel_Dataset?", "Sarah Jenkins (Head of Commercial Analytics)", "Pass", 1.00, "LLM-as-a-Judge"),
+        ("Q003", "What is grid pressure PSI?", "42.5 PSI (Requires Live_Metrics permission)", "Pass", 0.98, "LLM-as-a-Judge"),
+    ]
+    pd.DataFrame(benchmark_records, columns=["query_id", "question", "golden_answer", "eval_status", "f1_score", "evaluator"]).to_excel(benchmark_file, index=False)
+
+    # Governance & Security Source (Entra ID roles, Purview data governance policies)
+    pd.DataFrame(access_records, columns=["data_source", "required_role", "access_level", "description"]).to_excel(governance_file, index=False)
+
+    # Outcome Harnessing Source (Business operations, access tickets)
+    with pd.ExcelWriter(outcome_file) as writer:
         pd.DataFrame(funnel_records, columns=["report_date", "service_line", "region", "leads", "net_appointments", "quotes_issued", "net_sales", "sales_conversion_pct"]).to_excel(writer, sheet_name="Sales_Funnel", index=False)
         pd.DataFrame(activity_records, columns=["report_date", "service_line", "activity_type", "jobs_booked", "jobs_completed", "jobs_requiring_follow_up", "region"]).to_excel(writer, sheet_name="Service_Activity", index=False)
         pd.DataFrame(definition_records, columns=["metric_name", "unit", "definition"]).to_excel(writer, sheet_name="Metric_Definitions", index=False)
-
-        mock_datasets = {
-            "Customer Master": pd.DataFrame(customers),
-            "Customer Holdings": pd.DataFrame([{"customer_id": c["customer_id"], "product": "Boiler Care", "status": "Active"} for c in customers]),
-            "Property Master": pd.DataFrame(properties),
-            "Boiler Master": pd.DataFrame([{"model_id": f"MOD{i}", "manufacturer": "OEM", "model_name": f"Model {i}"} for i in range(1, 10)]),
-            "Installation History": pd.DataFrame(install_history),
-            "Service History": pd.DataFrame(service_history),
-            "Repair History": pd.DataFrame(repair_history),
-            "Visit Outcomes": pd.DataFrame([{"visit_id": f"V{i:04d}", "date": np.random.choice(past_730_dates), "engineer": np.random.choice(engineer_ids), "status": "Completed"} for i in range(1000)]),
-            "Fault Codes": pd.DataFrame([{"code": "EA_Error", "description": "Flame not detected", "remedy": "Check electrode"}]),
-            "Parts Replaced": pd.DataFrame([{"visit_id": f"V{i:04d}", "date": np.random.choice(past_730_dates), "part_no": "PT123", "quantity": 1} for i in range(500)]),
-            "Engineer Master": pd.DataFrame(engineers),
-            "Engineer Skills": pd.DataFrame([{"engineer_id": e["engineer_id"], "skill": "Gas Safe", "level": "Expert"} for e in engineers]),
-            "Engineer Availability": pd.DataFrame([{"engineer_id": e["engineer_id"], "date": d, "status": np.random.choice(["Working", "On Leave"], p=[0.9, 0.1])} for e in engineers for d in past_730_dates[-10:] + future_30_dates]),
-            "Engineer Productivity": pd.DataFrame([{"engineer_id": e["engineer_id"], "jobs_completed": np.random.randint(500, 1000), "first_time_fix": f"{np.random.randint(80, 99)}%"} for e in engineers]),
-            "Appointment Schedule": pd.DataFrame([{"appt_id": f"A{i:04d}", "customer_id": np.random.choice(customer_ids), "engineer_id": np.random.choice(engineer_ids), "date": np.random.choice(past_730_dates)} for i in range(1000)] + future_appts),
-            "Contact Centre": pd.DataFrame([{"ticket_id": f"T{i:04d}", "date": np.random.choice(past_730_dates), "topic": "Broken", "status": "Closed"} for i in range(1000)]),
-            "Product Warranty": pd.DataFrame([{"model_id": f"MOD{i}", "warranty_years": 10, "terms": "Parts"} for i in range(1, 10)]),
-            "Quotes Sales": pd.DataFrame([{"quote_id": f"Q{i:04d}", "date": np.random.choice(past_730_dates), "value": np.random.randint(1000, 4000), "status": "Accepted"} for i in range(1000)]),
-            "Demand Forecast": pd.DataFrame(demand_forecast),
-            "Capacity Plans": pd.DataFrame(capacity_plans),
-            "Knowledge Base Docs": pd.DataFrame([{"doc_id": "DOC1", "title": "Manual", "type": "PDF"}]),
-            "Inventory Van Stock": pd.DataFrame([{"part_no": "PT123", "location": "Warehouse", "quantity": 500}]),
-            "Weather Data": pd.DataFrame(weather_data),
-            "EPC Property Data": pd.DataFrame([{"postcode": p["postcode"], "epc_rating": np.random.choice(["A", "B", "C", "D", "E"])} for p in properties]),
-            "Business Rules": pd.DataFrame([{"rule_id": "BR1", "rule_name": "Next Day", "condition": "Vulnerable"}])
-        }
         for sheet_name, df in mock_datasets.items():
             df.to_excel(writer, sheet_name=sheet_name[:31], index=False)
 
-    for file_path in (kb_file, metrics_file, access_file, operations_file):
-        print(f"Generated: {file_path}")
+    # Write legacy files for 100% backward compatibility
+    pd.DataFrame(knowledge_records, columns=["source", "relationship", "target", "details"]).to_excel(kb_file, index=False)
+    pd.DataFrame(telemetry_records, columns=["metric_name", "value", "unit", "status", "description"]).to_excel(metrics_file, index=False)
+    pd.DataFrame(access_records, columns=["data_source", "required_role", "access_level", "description"]).to_excel(access_file, index=False)
+    import shutil
+    shutil.copyfile(outcome_file, operations_file)
+
+    dhs_all_files = [info_file, knowledge_file, inference_file, outcome_file, benchmark_file, governance_file]
+    for file_path in dhs_all_files:
+        print(f"Generated DHS Data Source: {file_path.name}")
 
 
 if __name__ == "__main__":
