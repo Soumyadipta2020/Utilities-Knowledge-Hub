@@ -1018,6 +1018,7 @@
     color: rgba(34, 197, 94, 0.8);
 }
 </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
@@ -1155,7 +1156,7 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
 
                 <div style="display: flex; gap: 6px; background: rgba(10,10,10,0.8); border: 1px solid rgba(255,255,255,0.08); padding: 4px; border-radius: 20px;">
                     <button class="view-toggle-btn active" onclick="switchHarnessingSubTab(this, 'sub-info')">📊 Information</button>
-                    <button class="view-toggle-btn" onclick="switchHarnessingSubTab(this, 'sub-knowledge')">🕸️ Knowledge</button>
+                    <button class="view-toggle-btn" onclick="switchHarnessingSubTab(this, 'sub-knowledge')"><i class="fa-solid fa-network-wired"></i> Knowledge</button>
                     <button class="view-toggle-btn" onclick="switchHarnessingSubTab(this, 'sub-inference')">⚡ Inference</button>
                     <button class="view-toggle-btn" onclick="switchHarnessingSubTab(this, 'sub-outcome')">📈 Outcome</button>
                     <button class="view-toggle-btn" onclick="switchHarnessingSubTab(this, 'sub-benchmarking')">🎯 Benchmarking</button>
@@ -1651,111 +1652,9 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js">
-    // Dataset Relations Logic
-    function openRelationModal() {
-        document.getElementById('relationModal').classList.add('active');
-    }
-    function closeRelationModal() {
-        document.getElementById('relationModal').classList.remove('active');
-        document.getElementById('relationEditor').value = '';
-    }
-    function analyzeRelation() {
-        const btn = document.getElementById('analyzeBtn');
-        const dsA = document.getElementById('datasetA').value;
-        const dsB = document.getElementById('datasetB').value;
-        const editor = document.getElementById('relationEditor');
-        
-        btn.disabled = true;
-        btn.innerHTML = 'Analyzing...';
-        editor.value = 'AI is analyzing schemas and metadata...';
-        
-        setTimeout(() => {
-            btn.disabled = false;
-            btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg> Analyze Relation (AI)';
-            
-            // Mock AI suggestion
-            editor.value = `${dsA} acts as the primary source of truth, linked to ${dsB} via common employee/user ID keys. Unstructured data from ${dsA} is frequently queried alongside structured metrics in ${dsB}.`;
-        }, 1200);
-    }
-    function saveRelation() {
-        const dsA = document.getElementById('datasetA').value;
-        const dsB = document.getElementById('datasetB').value;
-        const editor = document.getElementById('relationEditor').value;
-        
-        if(!editor || editor.includes('AI is analyzing')) return;
-        
-        const list = document.getElementById('relationsList');
-        const item = document.createElement('div');
-        item.className = 'relation-item';
-        item.innerHTML = `<strong>${dsA}</strong> ↔️ <strong>${dsB}</strong><br/>${editor}`;
-        
-        list.prepend(item);
-        
-        // Show a quick visual success
-        const saveBtn = document.querySelector('.save-relation-btn');
-        const oldText = saveBtn.innerText;
-        saveBtn.innerText = 'Saved Successfully!';
-        saveBtn.style.background = '#10b981';
-        setTimeout(() => {
-            saveBtn.innerText = oldText;
-            saveBtn.style.background = '#22c55e';
-            closeRelationModal();
-        }, 1000);
-    }
-</script>
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js">
-    // Dataset Relations Logic
-    function openRelationModal() {
-        document.getElementById('relationModal').classList.add('active');
-    }
-    function closeRelationModal() {
-        document.getElementById('relationModal').classList.remove('active');
-        document.getElementById('relationEditor').value = '';
-    }
-    function analyzeRelation() {
-        const btn = document.getElementById('analyzeBtn');
-        const dsA = document.getElementById('datasetA').value;
-        const dsB = document.getElementById('datasetB').value;
-        const editor = document.getElementById('relationEditor');
-        
-        btn.disabled = true;
-        btn.innerHTML = 'Analyzing...';
-        editor.value = 'AI is analyzing schemas and metadata...';
-        
-        setTimeout(() => {
-            btn.disabled = false;
-            btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg> Analyze Relation (AI)';
-            
-            // Mock AI suggestion
-            editor.value = `${dsA} acts as the primary source of truth, linked to ${dsB} via common employee/user ID keys. Unstructured data from ${dsA} is frequently queried alongside structured metrics in ${dsB}.`;
-        }, 1200);
-    }
-    function saveRelation() {
-        const dsA = document.getElementById('datasetA').value;
-        const dsB = document.getElementById('datasetB').value;
-        const editor = document.getElementById('relationEditor').value;
-        
-        if(!editor || editor.includes('AI is analyzing')) return;
-        
-        const list = document.getElementById('relationsList');
-        const item = document.createElement('div');
-        item.className = 'relation-item';
-        item.innerHTML = `<strong>${dsA}</strong> ↔️ <strong>${dsB}</strong><br/>${editor}`;
-        
-        list.prepend(item);
-        
-        // Show a quick visual success
-        const saveBtn = document.querySelector('.save-relation-btn');
-        const oldText = saveBtn.innerText;
-        saveBtn.innerText = 'Saved Successfully!';
-        saveBtn.style.background = '#10b981';
-        setTimeout(() => {
-            saveBtn.innerText = oldText;
-            saveBtn.style.background = '#22c55e';
-            closeRelationModal();
-        }, 1000);
-    }
-</script>
+    </script>
     <script>
         const BOT_ICON_SVG = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4"/><circle cx="12" cy="2" r="1"/><rect x="4" y="8" width="16" height="12" rx="3"/><circle cx="9" cy="13" r="1" fill="currentColor"/><circle cx="15" cy="13" r="1" fill="currentColor"/><path d="M10 17h4"/></svg>`;
 
@@ -2196,11 +2095,11 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
             canvas.style.height = computedHeight + 'px';
 
             const categoryConfig = {
-                'Dataset':   { color: '#D9662B', bg: 'rgba(217, 102, 43, 0.08)', icon: '📊', label: 'Datasets' },
-                'SME':       { color: '#c084fc', bg: 'rgba(192, 132, 252, 0.08)', icon: '👤', label: 'SMEs' },
-                'Equipment': { color: '#22c55e', bg: 'rgba(34, 197, 94, 0.08)', icon: '🔧', label: 'Equipment' },
-                'Error':     { color: '#f43f5e', bg: 'rgba(244, 63, 94, 0.08)', icon: '⚠️', label: 'Faults' },
-                'Metric':    { color: '#facc15', bg: 'rgba(250, 204, 21, 0.08)', icon: '📈', label: 'Metrics' }
+                'Dataset':   { color: '#D9662B', bg: 'rgba(217, 102, 43, 0.08)', icon: '\uf1c0', label: 'Datasets' },
+                'SME':       { color: '#c084fc', bg: 'rgba(192, 132, 252, 0.08)', icon: '\uf007', label: 'SMEs' },
+                'Equipment': { color: '#22c55e', bg: 'rgba(34, 197, 94, 0.08)', icon: '\uf0ad', label: 'Equipment' },
+                'Error':     { color: '#f43f5e', bg: 'rgba(244, 63, 94, 0.08)', icon: '\uf071', label: 'Faults' },
+                'Metric':    { color: '#facc15', bg: 'rgba(250, 204, 21, 0.08)', icon: '\uf201', label: 'Metrics' }
             };
 
             const nodeMap = {};
@@ -2296,10 +2195,10 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
                 if (currentViewMode === 'tree') {
                     // Tier column backgrounds
                     const tierHeaders = [
-                        { title: 'TIER 0: SYSTEM ROOTS',    icon: '🔧', color: '#22c55e' },
-                        { title: 'TIER 1: FAULTS & DATA',   icon: '⚠️', color: '#f43f5e' },
-                        { title: 'TIER 2: ROOT CAUSES',     icon: '⚡', color: '#D9662B' },
-                        { title: 'TIER 3: REMEDIES & SMEs', icon: '✅', color: '#c084fc' }
+                        { title: 'TIER 0: SYSTEM ROOTS',    icon: '\uf0ad', color: '#22c55e' },
+                        { title: 'TIER 1: FAULTS & DATA',   icon: '\uf071', color: '#f43f5e' },
+                        { title: 'TIER 2: ROOT CAUSES',     icon: '\uf0e7', color: '#D9662B' },
+                        { title: 'TIER 3: REMEDIES & SMEs', icon: '\uf00c', color: '#c084fc' }
                     ];
                     const colW = width / 4;
                     for (let lvl = 0; lvl < 4; lvl++) {
@@ -2317,7 +2216,7 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
                             ctx.setLineDash([]);
                         }
                         const th = tierHeaders[lvl];
-                        ctx.font = '700 9px Inter';
+                        ctx.font = '900 11px "Font Awesome 6 Free", Inter';
                         ctx.fillStyle = th.color;
                         ctx.textAlign = 'center';
                         ctx.fillText(`${th.icon} ${th.title}`, laneX + colW / 2, 22);
@@ -2340,7 +2239,7 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
                         ctx.arc(center.x, center.y, 105, 0, 2 * Math.PI);
                         ctx.fillStyle = cfg.bg;
                         ctx.fill();
-                        ctx.font = '600 10px Inter';
+                        ctx.font = '900 12px "Font Awesome 6 Free", Inter';
                         ctx.fillStyle = cfg.color;
                         ctx.textAlign = 'center';
                         ctx.fillText(`${cfg.icon} ${cfg.label.toUpperCase()} CLUSTER`, center.x, center.y - 92);
@@ -2409,7 +2308,7 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
                     const isSelected = selectedNode === n;
                     const inPath = isNodeInSelectedPath(n.id);
                     const displayLabel = getShortLabel(n.label);
-                    ctx.font = '600 11px Inter';
+                    ctx.font = '900 13px "Font Awesome 6 Free", Inter';
                     const iconStr = n.icon || n.cfg.icon;
                     const textW = ctx.measureText(`${iconStr} ${displayLabel}`).width;
                     const pillW = Math.max(textW + 18, 78);
@@ -2486,63 +2385,12 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
             }
         });
     
-    // Dataset Relations Logic
-    function openRelationModal() {
-        document.getElementById('relationModal').classList.add('active');
-    }
-    function closeRelationModal() {
-        document.getElementById('relationModal').classList.remove('active');
-        document.getElementById('relationEditor').value = '';
-    }
-    function analyzeRelation() {
-        const btn = document.getElementById('analyzeBtn');
-        const dsA = document.getElementById('datasetA').value;
-        const dsB = document.getElementById('datasetB').value;
-        const editor = document.getElementById('relationEditor');
-        
-        btn.disabled = true;
-        btn.innerHTML = 'Analyzing...';
-        editor.value = 'AI is analyzing schemas and metadata...';
-        
-        setTimeout(() => {
-            btn.disabled = false;
-            btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg> Analyze Relation (AI)';
-            
-            // Mock AI suggestion
-            editor.value = `${dsA} acts as the primary source of truth, linked to ${dsB} via common employee/user ID keys. Unstructured data from ${dsA} is frequently queried alongside structured metrics in ${dsB}.`;
-        }, 1200);
-    }
-    function saveRelation() {
-        const dsA = document.getElementById('datasetA').value;
-        const dsB = document.getElementById('datasetB').value;
-        const editor = document.getElementById('relationEditor').value;
-        
-        if(!editor || editor.includes('AI is analyzing')) return;
-        
-        const list = document.getElementById('relationsList');
-        const item = document.createElement('div');
-        item.className = 'relation-item';
-        item.innerHTML = `<strong>${dsA}</strong> ↔️ <strong>${dsB}</strong><br/>${editor}`;
-        
-        list.prepend(item);
-        
-        // Show a quick visual success
-        const saveBtn = document.querySelector('.save-relation-btn');
-        const oldText = saveBtn.innerText;
-        saveBtn.innerText = 'Saved Successfully!';
-        saveBtn.style.background = '#10b981';
-        setTimeout(() => {
-            saveBtn.innerText = oldText;
-            saveBtn.style.background = '#22c55e';
-            closeRelationModal();
-        }, 1000);
-    }
-</script>
+    </script>
 
     <!-- Toast Notification -->
     <div class="toast-notification" id="toastBox">
         <div style="width: 36px; height: 36px; border-radius: 50%; background: var(--accent-orange-soft); border: 1px solid var(--accent-orange); display: flex; align-items: center; justify-content: center; font-size: 18px;">
-            🕸️
+            <i class="fa-solid fa-network-wired"></i>
         </div>
         <div>
             <div style="font-size: 13px; font-weight: 700; color: #fff;">Knowledge graph built</div>
@@ -2555,7 +2403,7 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
         <div class="graph-modal-content">
             <div class="graph-modal-header">
                 <div style="display: flex; align-items: center; gap: 12px;">
-                    <div class="brand-icon" style="background: var(--accent-orange);">🕸️</div>
+                    <div class="brand-icon" style="background: var(--accent-orange);"><i class="fa-solid fa-network-wired"></i></div>
                     <div>
                         <h3 style="font-family: 'Outfit', sans-serif; font-size: 18px; color: #fff;">Executive Knowledge Graph Explorer</h3>
                         <p style="font-size: 12px; color: #94a3b8;">Domain Clusters • Data Lineage • SME Ownership • Fault Remedies</p>
@@ -2572,15 +2420,15 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
             <div class="graph-controls-bar">
                 <div class="graph-filter-pills">
                     <button class="filter-pill active" data-cat="All" onclick="filterGraphCategory('All')">All Domains</button>
-                    <button class="filter-pill dataset" data-cat="Dataset" onclick="filterGraphCategory('Dataset')">📊 Datasets & Lineage</button>
-                    <button class="filter-pill sme" data-cat="SME" onclick="filterGraphCategory('SME')">👤 SME Owners</button>
-                    <button class="filter-pill equipment" data-cat="Equipment" onclick="filterGraphCategory('Equipment')">🔧 Equipment Models</button>
-                    <button class="filter-pill error" data-cat="Error" onclick="filterGraphCategory('Error')">⚠️ Fault Errors</button>
-                    <button class="filter-pill metric" data-cat="Metric" onclick="filterGraphCategory('Metric')">📈 Metrics & Services</button>
+                    <button class="filter-pill dataset" data-cat="Dataset" onclick="filterGraphCategory('Dataset')"><i class="fa-solid fa-database"></i> Datasets & Lineage</button>
+                    <button class="filter-pill sme" data-cat="SME" onclick="filterGraphCategory('SME')"><i class="fa-solid fa-user"></i> SME Owners</button>
+                    <button class="filter-pill equipment" data-cat="Equipment" onclick="filterGraphCategory('Equipment')"><i class="fa-solid fa-wrench"></i> Equipment Models</button>
+                    <button class="filter-pill error" data-cat="Error" onclick="filterGraphCategory('Error')"><i class="fa-solid fa-triangle-exclamation"></i> Fault Errors</button>
+                    <button class="filter-pill metric" data-cat="Metric" onclick="filterGraphCategory('Metric')"><i class="fa-solid fa-chart-line"></i> Metrics & Services</button>
                 </div>
                 <div class="view-mode-toggle">
-                    <button class="view-toggle-btn active" id="btnViewTree" onclick="switchGraphView('tree')">🌳 Decision Tree</button>
-                    <button class="view-toggle-btn" id="btnViewCluster" onclick="switchGraphView('cluster')">🕸️ Domain Clusters</button>
+                    <button class="view-toggle-btn active" id="btnViewTree" onclick="switchGraphView('tree')"><i class="fa-solid fa-tree"></i> Decision Tree</button>
+                    <button class="view-toggle-btn" id="btnViewCluster" onclick="switchGraphView('cluster')"><i class="fa-solid fa-network-wired"></i> Domain Clusters</button>
                 </div>
             </div>
 
@@ -2867,58 +2715,7 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
         };
     }
 
-    // Dataset Relations Logic
-    function openRelationModal() {
-        document.getElementById('relationModal').classList.add('active');
-    }
-    function closeRelationModal() {
-        document.getElementById('relationModal').classList.remove('active');
-        document.getElementById('relationEditor').value = '';
-    }
-    function analyzeRelation() {
-        const btn = document.getElementById('analyzeBtn');
-        const dsA = document.getElementById('datasetA').value;
-        const dsB = document.getElementById('datasetB').value;
-        const editor = document.getElementById('relationEditor');
-        
-        btn.disabled = true;
-        btn.innerHTML = 'Analyzing...';
-        editor.value = 'AI is analyzing schemas and metadata...';
-        
-        setTimeout(() => {
-            btn.disabled = false;
-            btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg> Analyze Relation (AI)';
-            
-            // Mock AI suggestion
-            editor.value = `${dsA} acts as the primary source of truth, linked to ${dsB} via common employee/user ID keys. Unstructured data from ${dsA} is frequently queried alongside structured metrics in ${dsB}.`;
-        }, 1200);
-    }
-    function saveRelation() {
-        const dsA = document.getElementById('datasetA').value;
-        const dsB = document.getElementById('datasetB').value;
-        const editor = document.getElementById('relationEditor').value;
-        
-        if(!editor || editor.includes('AI is analyzing')) return;
-        
-        const list = document.getElementById('relationsList');
-        const item = document.createElement('div');
-        item.className = 'relation-item';
-        item.innerHTML = `<strong>${dsA}</strong> ↔️ <strong>${dsB}</strong><br/>${editor}`;
-        
-        list.prepend(item);
-        
-        // Show a quick visual success
-        const saveBtn = document.querySelector('.save-relation-btn');
-        const oldText = saveBtn.innerText;
-        saveBtn.innerText = 'Saved Successfully!';
-        saveBtn.style.background = '#10b981';
-        setTimeout(() => {
-            saveBtn.innerText = oldText;
-            saveBtn.style.background = '#22c55e';
-            closeRelationModal();
-        }, 1000);
-    }
-
+    
     // Helper to toggle Scenario Cards visibility based on user input
     function toggleScenarioCards() {
         const input = document.getElementById('userInput');
@@ -3054,15 +2851,11 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
             <div class="relation-body">
                 <div class="dataset-selects">
                     <select id="datasetA">
-                        <option value="SharePoint HR Manuals">SharePoint HR Manuals</option>
-                        <option value="SAP Financial Ledger">SAP Financial Ledger</option>
-                        <option value="Snowflake User DB">Snowflake User DB</option>
+                        <option value="">Loading datasets...</option>
                     </select>
                     <span style="color: #a1a1aa;">↔️</span>
                     <select id="datasetB">
-                        <option value="Snowflake User DB">Snowflake User DB</option>
-                        <option value="SAP Financial Ledger">SAP Financial Ledger</option>
-                        <option value="SharePoint HR Manuals">SharePoint HR Manuals</option>
+                        <option value="">Loading datasets...</option>
                     </select>
                 </div>
                 <button class="analyze-btn" id="analyzeBtn" onclick="analyzeRelation()">
@@ -3084,5 +2877,112 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
             </div>
         </div>
     </div>
+
+<script>
+    // Dataset Relations Logic
+    function openRelationModal() {
+        document.getElementById('relationModal').classList.add('active');
+        fetchDatasets();
+    }
+    
+    function closeRelationModal() {
+        document.getElementById('relationModal').classList.remove('active');
+        document.getElementById('relationEditor').value = '';
+    }
+    
+    function fetchDatasets() {
+        fetch('/api/datasets')
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    const datasets = data.datasets;
+                    // Add fallbacks just in case
+                    if(!datasets || datasets.length === 0) {
+                        datasets.push('SharePoint HR Manuals', 'SAP Financial Ledger', 'Snowflake User DB', 'Information_Harnessing_Source.xlsx');
+                    }
+                    
+                    const selectA = document.getElementById('datasetA');
+                    const selectB = document.getElementById('datasetB');
+                    
+                    let optionsHtml = '';
+                    datasets.forEach(ds => {
+                        optionsHtml += `<option value="${ds}">${ds}</option>`;
+                    });
+                    
+                    selectA.innerHTML = optionsHtml;
+                    selectB.innerHTML = optionsHtml;
+                }
+            })
+            .catch(err => console.error("Error fetching datasets", err));
+    }
+
+    function analyzeRelation() {
+        const btn = document.getElementById('analyzeBtn');
+        const dsA = document.getElementById('datasetA').value;
+        const dsB = document.getElementById('datasetB').value;
+        const editor = document.getElementById('relationEditor');
+        
+        btn.disabled = true;
+        btn.innerHTML = 'Analyzing...';
+        editor.value = 'AI is analyzing schemas and metadata...';
+        
+        setTimeout(() => {
+            btn.disabled = false;
+            btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg> Analyze Relation (AI)';
+            
+            // Mock AI suggestion
+            editor.value = `${dsA} acts as the primary source of truth, linked to ${dsB} via common employee/user ID keys. Unstructured data from ${dsA} is frequently queried alongside structured metrics in ${dsB}.`;
+        }, 1200);
+    }
+    
+    function saveRelation() {
+        const dsA = document.getElementById('datasetA').value;
+        const dsB = document.getElementById('datasetB').value;
+        const editor = document.getElementById('relationEditor').value;
+        
+        if(!editor || editor.includes('AI is analyzing')) return;
+        
+        // Save to backend graph
+        fetch('/api/graph/relation', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                source: dsA,
+                target: dsB,
+                details: editor
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.success) {
+                const list = document.getElementById('relationsList');
+                const item = document.createElement('div');
+                item.className = 'relation-item';
+                item.innerHTML = `<strong>${dsA}</strong> ↔️ <strong>${dsB}</strong><br/>${editor}`;
+                
+                list.prepend(item);
+                
+                // Show a quick visual success
+                const saveBtn = document.querySelector('.save-relation-btn');
+                const oldText = saveBtn.innerText;
+                saveBtn.innerText = 'Saved Successfully!';
+                saveBtn.style.background = '#10b981';
+                setTimeout(() => {
+                    saveBtn.innerText = oldText;
+                    saveBtn.style.background = '#22c55e';
+                    closeRelationModal();
+                }, 1000);
+            } else {
+                alert("Failed to save relation: " + data.error);
+            }
+        })
+        .catch(err => {
+            console.error("Error saving relation", err);
+            alert("Error saving relation");
+        });
+    }
+</script>
 </body>
 </html>

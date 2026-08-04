@@ -191,14 +191,16 @@ def classify_node_category(node_id: str) -> tuple[str, str]:
     """Classify node into executive domain category and icon."""
     nid = str(node_id).lower()
     if any(k in nid for k in ["sme", "jenkins", "david ross", "marcus vance", "claire williams", "head of", "lead telemetry", "data scientist", "vp operations"]):
-        return "SME", "👤"
-    if any(k in nid for k in ["dataset", "snowflake", "sap", "crm", "platform", "dashboard", "network", "xlsx"]):
-        return "Dataset", "📊"
+        return "SME", "\uf007" # fa-user
+    if any(k in nid for k in ["dataset", "snowflake", "sap", "crm", "platform", "dashboard", "network"]):
+        return "Dataset", "\uf1c0" # fa-database
+    if "xlsx" in nid:
+        return "File", "\uf15c" # fa-file-lines
     if any(k in nid for k in ["error", "low gas", "overheating", "electrode", "valve", "pump", "pipe"]):
-        return "Error", "⚠️"
+        return "Error", "\uf071" # fa-triangle-exclamation
     if any(k in nid for k in ["worcester", "ideal", "baxi", "combi", "home energy services"]):
-        return "Equipment", "🔧"
-    return "Metric", "📈"
+        return "Equipment", "\uf0ad" # fa-wrench
+    return "Metric", "\uf201" # fa-chart-line
 
 
 @app.route("/api/graph/data", methods=["GET"])
@@ -211,7 +213,14 @@ def get_graph_data_api():
         dt_meta = graph_service.get_decision_tree_metadata()
         nodes = []
         for node_id, attrs in graph_service.graph.nodes(data=True):
-            cat, icon = classify_node_category(node_id)
+            fallback_cat, fallback_icon = classify_node_category(node_id)
+            cat = attrs.get("category", fallback_cat)
+            
+            # Map icons if category is set explicitly
+            icon = fallback_icon
+            if cat == "Dataset" and "category" in attrs: icon = "\uf1c0"
+            if cat == "File" and "category" in attrs: icon = "\uf15c"
+            
             meta = dt_meta.get(str(node_id), {})
             nodes.append({
                 "id": str(node_id),
@@ -245,6 +254,41 @@ def get_graph_data_api():
         })
     except Exception as e:
         print(f"[Graph Data Error]: {e}")
+
+
+@app.route("/api/datasets", methods=["GET"])
+def get_datasets_api():
+    """
+    API endpoint to retrieve all available datasets.
+    Includes datasets defined in the Knowledge Graph and sheets from Business_Operations.xlsx.
+    """
+    try:
+        datasets = set()
+        
+        # 1. Get Datasets from graph categories
+        for node_id, attrs in graph_service.graph.nodes(data=True):
+            fallback_cat, _ = classify_node_category(node_id)
+            cat = attrs.get("category", fallback_cat)
+            if cat == "Dataset":
+                datasets.add(str(node_id))
+                
+        # 2. Get Datasets from Business_Operations.xlsx sheets
+        ops_file = DATA_DIR / "Business_Operations.xlsx"
+        if ops_file.exists():
+            try:
+                xls = pd.ExcelFile(ops_file)
+                for sheet in xls.sheet_names:
+                    datasets.add(sheet)
+            except Exception as e:
+                print(f"Error reading sheets from {ops_file}: {e}")
+
+        return jsonify({
+            "success": True,
+            "datasets": sorted(list(datasets))
+        })
+    except Exception as e:
+        print(f"[Datasets API Error]: {e}")
+        return jsonify({"success": False, "error": str(e)}), 500
 @app.route("/api/datasource/preview/<filename>", methods=["GET"])
 def preview_datasource_api(filename: str):
     """
@@ -286,6 +330,31 @@ def preview_datasource_api(filename: str):
         })
     except Exception as e:
         print(f"[Datasource Preview Error]: {e}")
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/graph/relation", methods=["POST"])
+def add_graph_relation_api():
+    """
+    API endpoint to save a new relation between two datasets.
+    """
+    try:
+        data = request.get_json() or {}
+        source = data.get("source")
+        target = data.get("target")
+        details = data.get("details", "")
+
+        if not source or not target:
+            return jsonify({"success": False, "error": "Source and target datasets are required."}), 400
+
+        graph_service.add_custom_relation(source, target, details)
+
+        return jsonify({
+            "success": True,
+            "message": "Relation saved to Knowledge Graph."
+        })
+    except Exception as e:
+        print(f"[Add Relation Error]: {e}")
         return jsonify({"success": False, "error": str(e)}), 500
 
 

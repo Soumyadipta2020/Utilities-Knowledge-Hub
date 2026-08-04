@@ -47,6 +47,39 @@ class KnowledgeGraphService:
             # LangChain NetworkxEntityGraph representation using KnowledgeTriple
             self.langchain_graph.add_triple(KnowledgeTriple(source, relationship, target))
 
+        # Dynamically inject sheets from Business_Operations.xlsx as datasets
+        ops_file = self.excel_path.parent / "Business_Operations.xlsx"
+        if ops_file.exists():
+            try:
+                xls = pd.ExcelFile(ops_file)
+                main_dataset_node = "Business_Operations.xlsx"
+                self.graph.add_node(main_dataset_node, entity_type="source", category="File", details="Business Operations Excel Source")
+                
+                for sheet in xls.sheet_names:
+                    # Add each sheet as a dataset node
+                    self.graph.add_node(sheet, entity_type="target", category="Dataset", details=f"Sheet in {ops_file.name}")
+                    
+                    # Create an edge from the main dataset to the sheet
+                    self.graph.add_edge(main_dataset_node, sheet, relationship="contains_dataset_sheet", details="Excel workbook hierarchy")
+                    self.langchain_graph.add_triple(KnowledgeTriple(main_dataset_node, "contains_dataset_sheet", sheet))
+            except Exception as e:
+                print(f"Error loading Business_Operations sheets into graph: {e}")
+
+    def add_custom_relation(self, source: str, target: str, details: str) -> None:
+        """Add a custom relationship between two nodes (e.g. from UI) to the graph."""
+        relationship = "related_to"
+        
+        # Add to NetworkX
+        if not self.graph.has_node(source):
+            self.graph.add_node(source, entity_type="source", category="Dataset")
+        if not self.graph.has_node(target):
+            self.graph.add_node(target, entity_type="target", category="Dataset")
+            
+        self.graph.add_edge(source, target, relationship=relationship, details=details)
+        
+        # Add to LangChain graph
+        self.langchain_graph.add_triple(KnowledgeTriple(source, relationship, target))
+
     def find_matching_nodes(self, query: str) -> List[str]:
         """Case-insensitive search for node names matching a query string."""
         import re
