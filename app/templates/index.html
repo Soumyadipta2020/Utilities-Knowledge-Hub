@@ -741,7 +741,258 @@
             transform: translateY(-1px);
             box-shadow: 0 4px 14px var(--accent-orange-glow);
         }
-    </style>
+
+        /* Nav Tabs */
+        .nav-tabs {
+            display: flex;
+            gap: 24px;
+            padding: 0 32px;
+            background: rgba(12, 12, 12, 0.95);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            overflow-x: auto;
+            flex-shrink: 0;
+        }
+
+        .nav-tab {
+            padding: 14px 0;
+            color: var(--text-muted);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .nav-tab:hover {
+            color: var(--text-primary);
+        }
+
+        .nav-tab.active {
+            color: var(--accent-orange);
+            border-bottom-color: var(--accent-orange);
+            font-weight: 600;
+        }
+
+        .tab-content {
+            display: none;
+            flex: 1;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .tab-content.active {
+            display: flex;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 12px;
+        }
+        .metric-card {
+            background: rgba(20, 20, 20, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            transition: transform 0.2s;
+        }
+        .metric-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent-orange);
+            box-shadow: 0 6px 16px var(--accent-orange-glow);
+        }
+        .metric-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .metric-value {
+            font-size: 18px; margin: 0;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            color: #fff;
+        }
+        .metric-change {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--accent-emerald);
+        }
+        .feature-list {
+            margin-top: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .feature-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 6px 12px;
+            background: rgba(10, 10, 10, 0.6);
+            border-radius: 6px;
+            border: 1px solid rgba(255,255,255,0.05);
+            font-size: 11.5px;
+        }
+        .status-badge {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: 600;
+            background: rgba(34, 197, 94, 0.15);
+            color: #22c55e;
+        }
+
+        .process-flow {
+            display: flex;
+            align-items: stretch;
+            gap: 8px;
+            margin: 12px 0;
+        }
+        .process-step {
+            background: rgba(30, 30, 30, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 6px;
+            padding: 8px;
+            flex: 1;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .process-step h4 {
+            font-size: 12px;
+            color: var(--accent-orange);
+            margin-bottom: 4px;
+        }
+        .process-step p {
+            font-size: 10.5px;
+            color: var(--text-muted);
+            line-height: 1.3;
+        }
+        .process-arrow {
+            color: rgba(255, 255, 255, 0.2);
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+        }
+        .tab-section-title {
+            font-size: 12px;
+            color: #fff;
+            margin-top: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 4px;
+            margin-bottom: 8px;
+        }
+        .explanation-text {
+            font-size: 11.5px;
+            color: var(--text-muted);
+            line-height: 1.4;
+            margin-bottom: 8px;
+        }
+    
+/* Dataset Relations Modal */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+.modal-overlay.active { display: flex; }
+.relation-modal {
+    background: #111;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    width: 600px;
+    padding: 24px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+.relation-header {
+    display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    padding-bottom: 12px;
+}
+.relation-header h3 { margin: 0; font-size: 16px; color: #fff; }
+.close-modal { background: none; border: none; color: #a1a1aa; cursor: pointer; font-size: 20px; }
+.close-modal:hover { color: #fff; }
+.relation-body { display: flex; flex-direction: column; gap: 16px; }
+.dataset-selects { display: flex; gap: 12px; align-items: center; }
+.dataset-selects select {
+    flex: 1;
+    background: #1a1a1a;
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #e4e4e7;
+    padding: 8px 12px;
+    border-radius: 6px;
+    outline: none;
+}
+.analyze-btn {
+    background: var(--accent-orange);
+    color: #fff;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    display: flex; justify-content: center; align-items: center; gap: 8px;
+}
+.analyze-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.relation-editor {
+    background: #1a1a1a;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 6px;
+    padding: 12px;
+    color: #e4e4e7;
+    min-height: 80px;
+    resize: vertical;
+    font-family: inherit;
+    font-size: 13px;
+    width: 100%;
+    box-sizing: border-box;
+}
+.save-relation-btn {
+    background: #22c55e;
+    color: #fff;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.3s;
+}
+.saved-relations-list {
+    margin-top: 16px;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    padding-top: 16px;
+}
+.relation-item {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.05);
+    padding: 10px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    font-size: 12px;
+    color: #a1a1aa;
+    line-height: 1.4;
+}
+.relation-item strong { color: #fff; }
+</style>
 </head>
 <body>
 
@@ -790,11 +1041,14 @@
         <button class="prompt-btn" style="background: var(--accent-orange-soft); border-color: rgba(217, 102, 43, 0.35); color: #e2a37e; margin-top: auto; display: flex; align-items: center; gap: 8px;" onclick="toggleGraphModal()">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg> View Interactive Knowledge Graph
         </button>
+        <button class="prompt-btn" style="background: rgba(34, 197, 94, 0.1); border-color: rgba(34, 197, 94, 0.35); color: #4ade80; margin-top: 8px; display: flex; align-items: center; gap: 8px;" onclick="openRelationModal()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5c-1.1 0-2 .9-2 2v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg> Manage Dataset Relations
+        </button>
     </aside>
 
     <!-- Main Chat View -->
     <main class="chat-container">
-        <header class="chat-header">
+        <header class="chat-header" style="border-bottom: none; padding-bottom: 4px;">
             <div class="header-title">
                 <h2>ABC Unified Intelligence Hub</h2>
                 <p>Dataset Discovery • Business Lineage • SME Attribution • Automated Access Request Escalation</p>
@@ -805,6 +1059,17 @@
             </div>
         </header>
 
+        <div class="nav-tabs">
+            <div class="nav-tab active" onclick="switchMainTab(this, 'tab-conversation')">Conversation</div>
+            <div class="nav-tab" onclick="switchMainTab(this, 'tab-info')">Information Harnessing</div>
+            <div class="nav-tab" onclick="switchMainTab(this, 'tab-knowledge')">Knowledge Harnessing</div>
+            <div class="nav-tab" onclick="switchMainTab(this, 'tab-inference')">Inference Harnessing</div>
+            <div class="nav-tab" onclick="switchMainTab(this, 'tab-outcome')">Outcome Harnessing</div>
+            <div class="nav-tab" onclick="switchMainTab(this, 'tab-benchmarking')">Benchmarking</div>
+            <div class="nav-tab" onclick="switchMainTab(this, 'tab-storage')">Storage</div>
+        </div>
+
+        <div id="tab-conversation" class="tab-content active">
         <!-- Message Window -->
         <div class="chat-messages" id="chatMessages">
             <div class="message-row agent">
@@ -829,13 +1094,589 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
                 </button>
             </form>
         </div>
+        </div> <!-- End tab-conversation -->
+
+        <div id="tab-info" class="tab-content" style="padding: 16px 24px; overflow: hidden; flex-direction: column; height: 100%; box-sizing: border-box;">
+            <!-- Top Half: Two Columns -->
+            <div style="display: flex; gap: 32px; flex-shrink: 0; margin-bottom: 16px;">
+                <!-- Left Column -->
+                <div style="flex: 1.2; display: flex; flex-direction: column;">
+                    <h4 class="tab-section-title" style="margin-top: 0; flex-shrink: 0;">Architecture Pipeline</h4>
+                    <div class="process-flow" style="flex-shrink: 0;">
+                <div class="process-step">
+                    <h4 style="margin: 0; line-height: 1.2; color: var(--accent-orange); font-size: 12px; margin-bottom: 6px;">1. Connectors</h4>
+                    <div style="margin-bottom: 6px;"><span style="font-size: 9.5px; font-weight: bold; color: #22c55e; background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.3); padding: 2px 6px; border-radius: 4px; white-space: nowrap; display: inline-block;">24 Sources</span></div>
+                    <p style="margin: 0;">APIs pull from SAP, Snowflake & SharePoint</p>
+                </div>
+                <div class="process-arrow">➔</div>
+                <div class="process-step">
+                    <h4 style="margin: 0; line-height: 1.2; color: var(--accent-orange); font-size: 12px; margin-bottom: 6px;">2. Parser</h4>
+                    <div style="margin-bottom: 6px;"><span style="font-size: 9.5px; font-weight: bold; color: #22c55e; background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.3); padding: 2px 6px; border-radius: 4px; white-space: nowrap; display: inline-block;">1.4M Docs</span></div>
+                    <p style="margin: 0;">Extracts text, tables, and images from docs</p>
+                </div>
+                <div class="process-arrow">➔</div>
+                <div class="process-step">
+                    <h4 style="margin: 0; line-height: 1.2; color: var(--accent-orange); font-size: 12px; margin-bottom: 6px;">3. Cleaning</h4>
+                    <div style="margin-bottom: 6px;"><span style="font-size: 9.5px; font-weight: bold; color: #22c55e; background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.3); padding: 2px 6px; border-radius: 4px; white-space: nowrap; display: inline-block;">4.2 TB</span></div>
+                    <p style="margin: 0;">Deduplication and canonicalization</p>
+                </div>
+                <div class="process-arrow">➔</div>
+                <div class="process-step">
+                    <h4 style="margin: 0; line-height: 1.2; color: var(--accent-orange); font-size: 12px; margin-bottom: 6px;">4. Staging</h4>
+                    <div style="margin-bottom: 6px;"><span style="font-size: 9.5px; font-weight: bold; color: #22c55e; background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.3); padding: 2px 6px; border-radius: 4px; white-space: nowrap; display: inline-block;">100% Synced</span></div>
+                    <p style="margin: 0;">Clean data lands in AWS S3</p>
+                </div>
+            </div>
+                    
+                    <div class="explanation-text" style="margin-top: 4px; font-size: 11.5px; line-height: 1.5;">
+                        <strong>How it works:</strong> The Information Harnessing layer is the foundation of the intelligence hub. We use highly concurrent webhooks and API connectors to synchronize data from our enterprise systems in real-time. Unstructured documents like PDFs and manuals are passed through a vision-language model to accurately parse tables and diagrams before text is extracted.
+                    </div>
+                </div>
+                
+                <!-- Right Column -->
+                <div style="flex: 1; display: flex; flex-direction: column;">
+                    <h4 class="tab-section-title" style="margin-top: 0; flex-shrink: 0;">Live Telemetry</h4>
+                    <div>
+                        <div class="dashboard-grid">
+                <div class="metric-card">
+                    <div class="metric-title">Total Documents</div>
+                    <div class="metric-value" id="metric-docs">1.4M</div>
+                    <div class="metric-change">↑ 12% this week</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">Daily Volume</div>
+                    <div class="metric-value">4.2 TB</div>
+                    <div class="metric-change" style="color: var(--text-muted);">Stable</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">Data Connectors</div>
+                    <div class="metric-value">24</div>
+                    <div class="metric-change">↑ 2 new added</div>
+                </div>
+            </div>
+                    </div>
+                    <h4 class="tab-section-title" style="margin-top: 16px; margin-bottom: 8px; flex-shrink: 0;">Source Lineage Status</h4>
+                    <div>
+                        <div class="feature-list">
+                <div class="feature-item">
+                    <span>🗄️ SharePoint Manuals</span>
+                    <span class="status-badge">Synced Live</span>
+                </div>
+                <div class="feature-item">
+                    <span>❄️ Snowflake Data</span>
+                    <span class="status-badge">Synced Live</span>
+                </div>
+                <div class="feature-item">
+                    <span>🔧 SAP Registry</span>
+                    <span id="sap-sync-status" class="status-badge" style="background: rgba(250, 204, 21, 0.15); color: #facc15;">Syncing (92%)</span>
+                </div>
+            </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Bottom Half: Full Width Chart -->
+            <div style="flex: 1; display: flex; flex-direction: column; background: rgba(20, 20, 20, 0.8); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 10px; padding: 12px; min-height: 0;">
+                <h4 style="font-size: 11px; color: #fff; text-transform: uppercase; margin-bottom: 8px; margin-top: 0; flex-shrink: 0;">Ingestion Volume (Last 7 Days)</h4>
+                <div style="position: relative; flex: 1; width: 100%; min-height: 0;">
+                    <canvas id="chart-info"></canvas>
+                </div>
+            </div>
+        </div>
+<div id="tab-knowledge" class="tab-content" style="padding: 16px 24px; overflow: hidden; flex-direction: column; height: 100%; box-sizing: border-box;">
+            <!-- Top Half: Two Columns -->
+            <div style="display: flex; gap: 32px; flex-shrink: 0; margin-bottom: 16px;">
+                <!-- Left Column -->
+                <div style="flex: 1.2; display: flex; flex-direction: column;">
+                    <h4 class="tab-section-title" style="margin-top: 0; flex-shrink: 0;">Semantic Workflow</h4>
+                    <div class="process-flow" style="flex-shrink: 0;">
+                <div class="process-step">
+                    <h4 style="margin: 0; line-height: 1.2; color: var(--accent-orange); font-size: 12px; margin-bottom: 6px;">1. Chunking</h4>
+                    <div style="margin-bottom: 6px;"><span style="font-size: 9.5px; font-weight: bold; color: #22c55e; background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.3); padding: 2px 6px; border-radius: 4px; white-space: nowrap; display: inline-block;">5.6M Chunks</span></div>
+                    <p style="margin: 0;">Split into semantic context windows</p>
+                </div>
+                <div class="process-arrow">➔</div>
+                <div class="process-step">
+                    <h4 style="margin: 0; line-height: 1.2; color: var(--accent-orange); font-size: 12px; margin-bottom: 6px;">2. Extraction</h4>
+                    <div style="margin-bottom: 6px;"><span style="font-size: 9.5px; font-weight: bold; color: #22c55e; background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.3); padding: 2px 6px; border-radius: 4px; white-space: nowrap; display: inline-block;">845k Entities</span></div>
+                    <p style="margin: 0;">Identify assets, people, and metrics</p>
+                </div>
+                <div class="process-arrow">➔</div>
+                <div class="process-step">
+                    <h4 style="margin: 0; line-height: 1.2; color: var(--accent-orange); font-size: 12px; margin-bottom: 6px;">3. Mapping</h4>
+                    <div style="margin-bottom: 6px;"><span style="font-size: 9.5px; font-weight: bold; color: #22c55e; background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.3); padding: 2px 6px; border-radius: 4px; white-space: nowrap; display: inline-block;">3.2M Edges</span></div>
+                    <p style="margin: 0;">Linking entities contextually</p>
+                </div>
+                <div class="process-arrow">➔</div>
+                <div class="process-step">
+                    <h4 style="margin: 0; line-height: 1.2; color: var(--accent-orange); font-size: 12px; margin-bottom: 6px;">4. Knowledge Graph</h4>
+                    <div style="margin-bottom: 6px;"><span style="font-size: 9.5px; font-weight: bold; color: #22c55e; background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.3); padding: 2px 6px; border-radius: 4px; white-space: nowrap; display: inline-block;">98.4% Conf</span></div>
+                    <p style="margin: 0;">Nodes injected into Neo4j</p>
+                </div>
+            </div>
+                    
+                    <div class="explanation-text" style="margin-top: 4px; font-size: 11.5px; line-height: 1.5;">
+                        <strong>How it works:</strong> Once data is ingested, it must be structured so the AI can "understand" business context. We use specialized NLP pipelines to perform Named Entity Recognition (NER) to pull out critical business terms. These terms are mapped against our custom enterprise ontology, creating a massive, interconnected Knowledge Graph that links unstructured text directly to structured SQL tables and SME ownership.
+                    </div>
+                </div>
+                
+                <!-- Right Column -->
+                <div style="flex: 1; display: flex; flex-direction: column;">
+                    <h4 class="tab-section-title" style="margin-top: 0; flex-shrink: 0;">Graph Metrics</h4>
+                    <div>
+                        <div class="dashboard-grid">
+                <div class="metric-card">
+                    <div class="metric-title">Graph Nodes</div>
+                    <div class="metric-value" id="metric-nodes">845,210</div>
+                    <div class="metric-change" style="color: var(--text-muted);">Entities Identified</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">Relationship Edges</div>
+                    <div class="metric-value" id="metric-edges">3.2M</div>
+                    <div class="metric-change" style="color: var(--text-muted);">Semantic Links</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">Ontology Confidence</div>
+                    <div class="metric-value">98.4%</div>
+                    <div class="metric-change">↑ 0.2% improvement</div>
+                </div>
+            </div>
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <!-- Bottom Half: Full Width Chart -->
+            <div style="flex: 1; display: flex; flex-direction: column; background: rgba(20, 20, 20, 0.8); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 10px; padding: 12px; min-height: 0;">
+                <h4 style="font-size: 11px; color: #fff; text-transform: uppercase; margin-bottom: 8px; margin-top: 0; flex-shrink: 0;">Graph Entities Growth</h4>
+                <div style="position: relative; flex: 1; width: 100%; min-height: 0;">
+                    <canvas id="chart-knowledge"></canvas>
+                </div>
+            </div>
+        </div>
+<div id="tab-inference" class="tab-content" style="padding: 16px 24px; overflow: hidden; flex-direction: column; height: 100%; box-sizing: border-box;">
+            <!-- Top Half: Two Columns -->
+            <div style="display: flex; gap: 32px; flex-shrink: 0; margin-bottom: 16px;">
+                <!-- Left Column -->
+                <div style="flex: 1.2; display: flex; flex-direction: column;">
+                    <h4 class="tab-section-title" style="margin-top: 0; flex-shrink: 0;">Query Execution Engine</h4>
+                    <div class="process-flow" style="flex-shrink: 0;">
+                <div class="process-step">
+                    <h4 style="margin: 0; line-height: 1.2; color: var(--accent-orange); font-size: 12px; margin-bottom: 6px;">1. Intent Router</h4>
+                    <div style="margin-bottom: 6px;"><span style="font-size: 9.5px; font-weight: bold; color: #22c55e; background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.3); padding: 2px 6px; border-radius: 4px; white-space: nowrap; display: inline-block;">99% Acc</span></div>
+                    <p style="margin: 0;">Classifies query as Search/Task</p>
+                </div>
+                <div class="process-arrow">➔</div>
+                <div class="process-step">
+                    <h4 style="margin: 0; line-height: 1.2; color: var(--accent-orange); font-size: 12px; margin-bottom: 6px;">2. GraphRAG</h4>
+                    <div style="margin-bottom: 6px;"><span style="font-size: 9.5px; font-weight: bold; color: #22c55e; background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.3); padding: 2px 6px; border-radius: 4px; white-space: nowrap; display: inline-block;">94.8% Prec</span></div>
+                    <p style="margin: 0;">Hybrid search across Vector/Graph</p>
+                </div>
+                <div class="process-arrow">➔</div>
+                <div class="process-step">
+                    <h4 style="margin: 0; line-height: 1.2; color: var(--accent-orange); font-size: 12px; margin-bottom: 6px;">3. Assembly</h4>
+                    <div style="margin-bottom: 6px;"><span style="font-size: 9.5px; font-weight: bold; color: #22c55e; background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.3); padding: 2px 6px; border-radius: 4px; white-space: nowrap; display: inline-block;">120ms</span></div>
+                    <p style="margin: 0;">Inject context into prompt</p>
+                </div>
+                <div class="process-arrow">➔</div>
+                <div class="process-step">
+                    <h4 style="margin: 0; line-height: 1.2; color: var(--accent-orange); font-size: 12px; margin-bottom: 6px;">4. LLM Gen</h4>
+                    <div style="margin-bottom: 6px;"><span style="font-size: 9.5px; font-weight: bold; color: #22c55e; background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.3); padding: 2px 6px; border-radius: 4px; white-space: nowrap; display: inline-block;">420ms</span></div>
+                    <p style="margin: 0;">Streams grounded response</p>
+                </div>
+            </div>
+                    
+                    <div class="explanation-text" style="margin-top: 4px; font-size: 11.5px; line-height: 1.5;">
+                        <strong>How it works:</strong> The Inference layer powers the chatbot. When a user asks a question, an intent router determines what tools the AI agent needs. We utilize Graph-based Retrieval-Augmented Generation (GraphRAG) to pull highly relevant contextual snippets. This ensures the Large Language Model generates answers that are strictly grounded in our enterprise data, minimizing hallucination and ensuring compliance.
+                    </div>
+                </div>
+                
+                <!-- Right Column -->
+                <div style="flex: 1; display: flex; flex-direction: column;">
+                    <h4 class="tab-section-title" style="margin-top: 0; flex-shrink: 0;">Model Performance</h4>
+                    <div>
+                        <div class="dashboard-grid">
+                <div class="metric-card">
+                    <div class="metric-title">Query Latency</div>
+                    <div class="metric-value">420ms</div>
+                    <div class="metric-change">↓ 15ms faster</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">Vector Precision</div>
+                    <div class="metric-value">94.8%</div>
+                    <div class="metric-change" style="color: var(--text-muted);">Top-K Match Rate</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">Active AI Models</div>
+                    <div class="metric-value">3</div>
+                    <div class="metric-change" style="color: var(--text-muted);">Router, Embed, Generate</div>
+                </div>
+            </div>
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <!-- Bottom Half: Full Width Chart -->
+            <div style="flex: 1; display: flex; flex-direction: column; background: rgba(20, 20, 20, 0.8); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 10px; padding: 12px; min-height: 0;">
+                <h4 style="font-size: 11px; color: #fff; text-transform: uppercase; margin-bottom: 8px; margin-top: 0; flex-shrink: 0;">Query Latency (ms)</h4>
+                <div style="position: relative; flex: 1; width: 100%; min-height: 0;">
+                    <canvas id="chart-inference"></canvas>
+                </div>
+            </div>
+        </div>
+<div id="tab-outcome" class="tab-content" style="padding: 16px 24px; overflow: hidden; flex-direction: column; height: 100%; box-sizing: border-box;">
+            <!-- Top Half: Two Columns -->
+            <div style="display: flex; gap: 32px; flex-shrink: 0; margin-bottom: 16px;">
+                <!-- Left Column -->
+                <div style="flex: 1.2; display: flex; flex-direction: column;">
+                    <h4 class="tab-section-title" style="margin-top: 0; flex-shrink: 0;">Value Generation Loop</h4>
+                    <div class="process-flow" style="flex-shrink: 0;">
+                <div class="process-step">
+                    <h4 style="margin: 0; line-height: 1.2; color: var(--accent-orange); font-size: 12px; margin-bottom: 6px;">1. Resolution</h4>
+                    <div style="margin-bottom: 6px;"><span style="font-size: 9.5px; font-weight: bold; color: #22c55e; background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.3); padding: 2px 6px; border-radius: 4px; white-space: nowrap; display: inline-block;">12.4k Res</span></div>
+                    <p style="margin: 0;">Agent solves query autonomously</p>
+                </div>
+                <div class="process-arrow">➔</div>
+                <div class="process-step">
+                    <h4 style="margin: 0; line-height: 1.2; color: var(--accent-orange); font-size: 12px; margin-bottom: 6px;">2. Deflection</h4>
+                    <div style="margin-bottom: 6px;"><span style="font-size: 9.5px; font-weight: bold; color: #22c55e; background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.3); padding: 2px 6px; border-radius: 4px; white-space: nowrap; display: inline-block;">840 Hrs</span></div>
+                    <p style="margin: 0;">Time saved logged for SMEs</p>
+                </div>
+                <div class="process-arrow">➔</div>
+                <div class="process-step">
+                    <h4 style="margin: 0; line-height: 1.2; color: var(--accent-orange); font-size: 12px; margin-bottom: 6px;">3. Feedback</h4>
+                    <div style="margin-bottom: 6px;"><span style="font-size: 9.5px; font-weight: bold; color: #22c55e; background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.3); padding: 2px 6px; border-radius: 4px; white-space: nowrap; display: inline-block;">4.8/5 Rating</span></div>
+                    <p style="margin: 0;">User feedback feeds into system</p>
+                </div>
+                <div class="process-arrow">➔</div>
+                <div class="process-step">
+                    <h4 style="margin: 0; line-height: 1.2; color: var(--accent-orange); font-size: 12px; margin-bottom: 6px;">4. ROI Dashboard</h4>
+                    <div style="margin-bottom: 6px;"><span style="font-size: 9.5px; font-weight: bold; color: #22c55e; background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.3); padding: 2px 6px; border-radius: 4px; white-space: nowrap; display: inline-block;">$1.2M ROI</span></div>
+                    <p style="margin: 0;">Real-time cost savings view</p>
+                </div>
+            </div>
+                    
+                    <div class="explanation-text" style="margin-top: 4px; font-size: 11.5px; line-height: 1.5;">
+                        <strong>How it works:</strong> The ultimate goal of the AI Hub is driving measurable business outcomes. We actively track when the AI successfully resolves a query (like dataset discovery or troubleshooting) versus when it escalates to an IT ticket. By measuring SME (Subject Matter Expert) deflection rates and turnaround times, we quantify the monetary value and efficiency gains the AI agent brings to the enterprise.
+                    </div>
+                </div>
+                
+                <!-- Right Column -->
+                <div style="flex: 1; display: flex; flex-direction: column;">
+                    <h4 class="tab-section-title" style="margin-top: 0; flex-shrink: 0;">Business Impact</h4>
+                    <div>
+                        <div class="dashboard-grid">
+                <div class="metric-card">
+                    <div class="metric-title">Automated Res.</div>
+                    <div class="metric-value" id="metric-auto-res">12,450</div>
+                    <div class="metric-change">↑ 18% vs Last Month</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">SME Hours Saved</div>
+                    <div class="metric-value">840 hrs</div>
+                    <div class="metric-change" style="color: var(--text-muted);">Estimated this week</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">Resolution Time</div>
+                    <div class="metric-value">- 45%</div>
+                    <div class="metric-change">Reduced turnaround</div>
+                </div>
+            </div>
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <!-- Bottom Half: Full Width Chart -->
+            <div style="flex: 1; display: flex; flex-direction: column; background: rgba(20, 20, 20, 0.8); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 10px; padding: 12px; min-height: 0;">
+                <h4 style="font-size: 11px; color: #fff; text-transform: uppercase; margin-bottom: 8px; margin-top: 0; flex-shrink: 0;">Automated Resolutions vs Escalations</h4>
+                <div style="position: relative; flex: 1; width: 100%; min-height: 0;">
+                    <canvas id="chart-outcome"></canvas>
+                </div>
+            </div>
+        </div>
+<div id="tab-benchmarking" class="tab-content" style="padding: 16px 24px; overflow: hidden; flex-direction: column; height: 100%; box-sizing: border-box;">
+            <!-- Top Half: Two Columns -->
+            <div style="display: flex; gap: 32px; flex-shrink: 0; margin-bottom: 16px;">
+                <!-- Left Column -->
+                <div style="flex: 1.2; display: flex; flex-direction: column;">
+                    <h4 class="tab-section-title" style="margin-top: 0; flex-shrink: 0;">Evaluation Pipeline</h4>
+                    <div class="process-flow" style="flex-shrink: 0;">
+                <div class="process-step">
+                    <h4 style="margin: 0; line-height: 1.2; color: var(--accent-orange); font-size: 12px; margin-bottom: 6px;">1. Golden Data</h4>
+                    <div style="margin-bottom: 6px;"><span style="font-size: 9.5px; font-weight: bold; color: #22c55e; background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.3); padding: 2px 6px; border-radius: 4px; white-space: nowrap; display: inline-block;">5k Pairs</span></div>
+                    <p style="margin: 0;">Curated Q&A pairs validated</p>
+                </div>
+                <div class="process-arrow">➔</div>
+                <div class="process-step">
+                    <h4 style="margin: 0; line-height: 1.2; color: var(--accent-orange); font-size: 12px; margin-bottom: 6px;">2. Batch Inference</h4>
+                    <div style="margin-bottom: 6px;"><span style="font-size: 9.5px; font-weight: bold; color: #22c55e; background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.3); padding: 2px 6px; border-radius: 4px; white-space: nowrap; display: inline-block;">Overnight</span></div>
+                    <p style="margin: 0;">System runs queries overnight</p>
+                </div>
+                <div class="process-arrow">➔</div>
+                <div class="process-step">
+                    <h4 style="margin: 0; line-height: 1.2; color: var(--accent-orange); font-size: 12px; margin-bottom: 6px;">3. LLM-as-a-Judge</h4>
+                    <div style="margin-bottom: 6px;"><span style="font-size: 9.5px; font-weight: bold; color: #22c55e; background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.3); padding: 2px 6px; border-radius: 4px; white-space: nowrap; display: inline-block;">96.5% Agr</span></div>
+                    <p style="margin: 0;">Model grades responses</p>
+                </div>
+                <div class="process-arrow">➔</div>
+                <div class="process-step">
+                    <h4 style="margin: 0; line-height: 1.2; color: var(--accent-orange); font-size: 12px; margin-bottom: 6px;">4. CI/CD Gate</h4>
+                    <div style="margin-bottom: 6px;"><span style="font-size: 9.5px; font-weight: bold; color: #22c55e; background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.3); padding: 2px 6px; border-radius: 4px; white-space: nowrap; display: inline-block;">0.04% Hall</span></div>
+                    <p style="margin: 0;">Blocks deploy if drop < 90%</p>
+                </div>
+            </div>
+                    
+                    <div class="explanation-text" style="margin-top: 4px; font-size: 11.5px; line-height: 1.5;">
+                        <strong>How it works:</strong> To ensure trust, the system is continuously evaluated. We maintain a "Golden Dataset" of hundreds of complex business questions and their exact correct answers. Every time a change is made to the pipeline or LLM prompt, we run an automated benchmark suite overnight. This calculates precision, recall, and hallucination rates, acting as an automated CI/CD guardrail for AI quality.
+                    </div>
+                </div>
+                
+                <!-- Right Column -->
+                <div style="flex: 1; display: flex; flex-direction: column;">
+                    <h4 class="tab-section-title" style="margin-top: 0; flex-shrink: 0;">Evaluation Metrics</h4>
+                    <div>
+                        <div class="dashboard-grid">
+                <div class="metric-card">
+                    <div class="metric-title">F1 Score</div>
+                    <div class="metric-value" id="metric-f1">0.92</div>
+                    <div class="metric-change">↑ Excellent</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">SME Agreement</div>
+                    <div class="metric-value">96.5%</div>
+                    <div class="metric-change" style="color: var(--text-muted);">Human Verification</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">Hallucination</div>
+                    <div class="metric-value">0.04%</div>
+                    <div class="metric-change">↓ Below 1% threshold</div>
+                </div>
+            </div>
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <!-- Bottom Half: Full Width Chart -->
+            <div style="flex: 1; display: flex; flex-direction: column; background: rgba(20, 20, 20, 0.8); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 10px; padding: 12px; min-height: 0;">
+                <h4 style="font-size: 11px; color: #fff; text-transform: uppercase; margin-bottom: 8px; margin-top: 0; flex-shrink: 0;">F1 Score Trend</h4>
+                <div style="position: relative; flex: 1; width: 100%; min-height: 0;">
+                    <canvas id="chart-benchmarking"></canvas>
+                </div>
+            </div>
+        </div>
+<div id="tab-storage" class="tab-content" style="padding: 16px 24px; overflow: hidden; flex-direction: column; height: 100%; box-sizing: border-box;">
+            <!-- Top Half: Two Columns -->
+            <div style="display: flex; gap: 32px; flex-shrink: 0; margin-bottom: 16px;">
+                <!-- Left Column -->
+                <div style="flex: 1.2; display: flex; flex-direction: column;">
+                    <h4 class="tab-section-title" style="margin-top: 0; flex-shrink: 0;">Data Topology</h4>
+                    <div class="process-flow" style="flex-shrink: 0;">
+                <div class="process-step">
+                    <h4 style="margin: 0; line-height: 1.2; color: var(--accent-orange); font-size: 12px; margin-bottom: 6px;">1. Object Storage</h4>
+                    <div style="margin-bottom: 6px;"><span style="font-size: 9.5px; font-weight: bold; color: #22c55e; background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.3); padding: 2px 6px; border-radius: 4px; white-space: nowrap; display: inline-block;">124 TB</span></div>
+                    <p style="margin: 0;">Raw files in AWS S3 buckets</p>
+                </div>
+                <div class="process-arrow">➔</div>
+                <div class="process-step">
+                    <h4 style="margin: 0; line-height: 1.2; color: var(--accent-orange); font-size: 12px; margin-bottom: 6px;">2. Document DB</h4>
+                    <div style="margin-bottom: 6px;"><span style="font-size: 9.5px; font-weight: bold; color: #22c55e; background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.3); padding: 2px 6px; border-radius: 4px; white-space: nowrap; display: inline-block;">18.4 GB</span></div>
+                    <p style="margin: 0;">Parsed JSON in MongoDB</p>
+                </div>
+                <div class="process-arrow">➔</div>
+                <div class="process-step">
+                    <h4 style="margin: 0; line-height: 1.2; color: var(--accent-orange); font-size: 12px; margin-bottom: 6px;">3. Vector Store</h4>
+                    <div style="margin-bottom: 6px;"><span style="font-size: 9.5px; font-weight: bold; color: #22c55e; background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.3); padding: 2px 6px; border-radius: 4px; white-space: nowrap; display: inline-block;">42% Util</span></div>
+                    <p style="margin: 0;">High-dim embeddings in Milvus</p>
+                </div>
+                <div class="process-arrow">➔</div>
+                <div class="process-step">
+                    <h4 style="margin: 0; line-height: 1.2; color: var(--accent-orange); font-size: 12px; margin-bottom: 6px;">4. Graph DB</h4>
+                    <div style="margin-bottom: 6px;"><span style="font-size: 9.5px; font-weight: bold; color: #22c55e; background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.3); padding: 2px 6px; border-radius: 4px; white-space: nowrap; display: inline-block;">3.2M Edges</span></div>
+                    <p style="margin: 0;">Relationships in Neo4j</p>
+                </div>
+            </div>
+                    
+                    <div class="explanation-text" style="margin-top: 4px; font-size: 11.5px; line-height: 1.5;">
+                        <strong>How it works:</strong> The backend is powered by a multi-database architecture optimized for AI. Object storage retains raw files for auditability. Document databases store parsed semi-structured data. For lightning-fast semantic search, we use a scalable Vector Database to query embeddings. Finally, a Graph Database maintains the complex web of relationships for entity traversal and reasoning.
+                    </div>
+                </div>
+                
+                <!-- Right Column -->
+                <div style="flex: 1; display: flex; flex-direction: column;">
+                    <h4 class="tab-section-title" style="margin-top: 0; flex-shrink: 0;">Capacity & Health</h4>
+                    <div>
+                        <div class="dashboard-grid">
+                <div class="metric-card">
+                    <div class="metric-title">Vector DB Util</div>
+                    <div class="metric-value">42%</div>
+                    <div class="metric-change" style="color: var(--text-muted);">Scale: Normal</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">Graph DB Size</div>
+                    <div class="metric-value">18.4 GB</div>
+                    <div class="metric-change" style="color: var(--text-muted);">Optimal Cache Hit</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">Cold Storage</div>
+                    <div class="metric-value">124 TB</div>
+                    <div class="metric-change" style="color: var(--text-muted);">Archived Data</div>
+                </div>
+            </div>
+                    </div>
+                    <h4 class="tab-section-title" style="margin-top: 16px; margin-bottom: 8px; flex-shrink: 0;">System Status</h4>
+                    <div>
+                        <div class="feature-list">
+                <div class="feature-item">
+                    <span>Milvus Vector Cluster</span>
+                    <span class="status-badge">Operational</span>
+                </div>
+                <div class="feature-item">
+                    <span>Neo4j Graph Database</span>
+                    <span class="status-badge">Operational</span>
+                </div>
+                <div class="feature-item">
+                    <span>AWS S3 Datalake Storage</span>
+                    <span class="status-badge">Operational</span>
+                </div>
+            </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Bottom Half: Full Width Chart -->
+            <div style="flex: 1; display: flex; flex-direction: column; background: rgba(20, 20, 20, 0.8); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 10px; padding: 12px; min-height: 0;">
+                <h4 style="font-size: 11px; color: #fff; text-transform: uppercase; margin-bottom: 8px; margin-top: 0; flex-shrink: 0;">Database Utilization</h4>
+                <div style="position: relative; flex: 1; width: 100%; min-height: 0;">
+                    <canvas id="chart-storage"></canvas>
+                </div>
+            </div>
+        </div>
     </main>
 
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js">
+    // Dataset Relations Logic
+    function openRelationModal() {
+        document.getElementById('relationModal').classList.add('active');
+    }
+    function closeRelationModal() {
+        document.getElementById('relationModal').classList.remove('active');
+        document.getElementById('relationEditor').value = '';
+    }
+    function analyzeRelation() {
+        const btn = document.getElementById('analyzeBtn');
+        const dsA = document.getElementById('datasetA').value;
+        const dsB = document.getElementById('datasetB').value;
+        const editor = document.getElementById('relationEditor');
+        
+        btn.disabled = true;
+        btn.innerHTML = 'Analyzing...';
+        editor.value = 'AI is analyzing schemas and metadata...';
+        
+        setTimeout(() => {
+            btn.disabled = false;
+            btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg> Analyze Relation (AI)';
+            
+            // Mock AI suggestion
+            editor.value = `${dsA} acts as the primary source of truth, linked to ${dsB} via common employee/user ID keys. Unstructured data from ${dsA} is frequently queried alongside structured metrics in ${dsB}.`;
+        }, 1200);
+    }
+    function saveRelation() {
+        const dsA = document.getElementById('datasetA').value;
+        const dsB = document.getElementById('datasetB').value;
+        const editor = document.getElementById('relationEditor').value;
+        
+        if(!editor || editor.includes('AI is analyzing')) return;
+        
+        const list = document.getElementById('relationsList');
+        const item = document.createElement('div');
+        item.className = 'relation-item';
+        item.innerHTML = `<strong>${dsA}</strong> ↔️ <strong>${dsB}</strong><br/>${editor}`;
+        
+        list.prepend(item);
+        
+        // Show a quick visual success
+        const saveBtn = document.querySelector('.save-relation-btn');
+        const oldText = saveBtn.innerText;
+        saveBtn.innerText = 'Saved Successfully!';
+        saveBtn.style.background = '#10b981';
+        setTimeout(() => {
+            saveBtn.innerText = oldText;
+            saveBtn.style.background = '#22c55e';
+            closeRelationModal();
+        }, 1000);
+    }
+</script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js">
+    // Dataset Relations Logic
+    function openRelationModal() {
+        document.getElementById('relationModal').classList.add('active');
+    }
+    function closeRelationModal() {
+        document.getElementById('relationModal').classList.remove('active');
+        document.getElementById('relationEditor').value = '';
+    }
+    function analyzeRelation() {
+        const btn = document.getElementById('analyzeBtn');
+        const dsA = document.getElementById('datasetA').value;
+        const dsB = document.getElementById('datasetB').value;
+        const editor = document.getElementById('relationEditor');
+        
+        btn.disabled = true;
+        btn.innerHTML = 'Analyzing...';
+        editor.value = 'AI is analyzing schemas and metadata...';
+        
+        setTimeout(() => {
+            btn.disabled = false;
+            btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg> Analyze Relation (AI)';
+            
+            // Mock AI suggestion
+            editor.value = `${dsA} acts as the primary source of truth, linked to ${dsB} via common employee/user ID keys. Unstructured data from ${dsA} is frequently queried alongside structured metrics in ${dsB}.`;
+        }, 1200);
+    }
+    function saveRelation() {
+        const dsA = document.getElementById('datasetA').value;
+        const dsB = document.getElementById('datasetB').value;
+        const editor = document.getElementById('relationEditor').value;
+        
+        if(!editor || editor.includes('AI is analyzing')) return;
+        
+        const list = document.getElementById('relationsList');
+        const item = document.createElement('div');
+        item.className = 'relation-item';
+        item.innerHTML = `<strong>${dsA}</strong> ↔️ <strong>${dsB}</strong><br/>${editor}`;
+        
+        list.prepend(item);
+        
+        // Show a quick visual success
+        const saveBtn = document.querySelector('.save-relation-btn');
+        const oldText = saveBtn.innerText;
+        saveBtn.innerText = 'Saved Successfully!';
+        saveBtn.style.background = '#10b981';
+        setTimeout(() => {
+            saveBtn.innerText = oldText;
+            saveBtn.style.background = '#22c55e';
+            closeRelationModal();
+        }, 1000);
+    }
+</script>
     <script>
         const BOT_ICON_SVG = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4"/><circle cx="12" cy="2" r="1"/><rect x="4" y="8" width="16" height="12" rx="3"/><circle cx="9" cy="13" r="1" fill="currentColor"/><circle cx="15" cy="13" r="1" fill="currentColor"/><path d="M10 17h4"/></svg>`;
 
         const USER_ICON_SVG = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
+
+        function switchMainTab(el, tabId) {
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+            
+            document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+            if (tabId) {
+                const target = document.getElementById(tabId);
+                if (target) target.classList.add('active');
+            }
+        }
 
         function parseMarkdown(text) {
             if (!text) return '';
@@ -1026,6 +1867,13 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
             renderStepper(0);
             fill.style.width = '0%';
             percent.innerText = '0%';
+            
+            const sapStatus = document.getElementById('sap-sync-status');
+            if(sapStatus) {
+                sapStatus.innerText = 'Syncing (0%)';
+                sapStatus.style.background = 'rgba(250, 204, 21, 0.15)';
+                sapStatus.style.color = '#facc15';
+            }
 
             for (let i = 0; i < PIPELINE_STAGES.length; i++) {
                 await new Promise(r => setTimeout(r, 150));
@@ -1033,6 +1881,10 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
                 fill.style.width = pct + '%';
                 percent.innerText = pct + '%';
                 renderStepper(i + 1);
+                
+                if (sapStatus) {
+                    sapStatus.innerText = `Syncing (${pct}%)`;
+                }
             }
 
             try {
@@ -1040,9 +1892,35 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
             } catch (e) {
                 console.error("Pipeline API call error:", e);
             }
+            
+            updateDashboardMetrics();
 
             toast.classList.add('show');
             setTimeout(() => toast.classList.remove('show'), 4000);
+        }
+
+        function updateDashboardMetrics() {
+            const sapStatus = document.getElementById('sap-sync-status');
+            if (sapStatus) {
+                sapStatus.innerText = 'Synced Live';
+                sapStatus.style.background = 'rgba(34, 197, 94, 0.15)';
+                sapStatus.style.color = '#22c55e';
+            }
+            
+            const docsIngested = document.getElementById('metric-docs');
+            if (docsIngested) docsIngested.innerText = '1.42M';
+            
+            const graphNodes = document.getElementById('metric-nodes');
+            if (graphNodes) graphNodes.innerText = '848,150';
+            
+            const edges = document.getElementById('metric-edges');
+            if (edges) edges.innerText = '3.3M';
+            
+            const autoRes = document.getElementById('metric-auto-res');
+            if (autoRes) autoRes.innerText = '12,620';
+            
+            const f1Score = document.getElementById('metric-f1');
+            if (f1Score) f1Score.innerText = '0.93';
         }
 
         /* Knowledge Graph Visualizer Logic */
@@ -1446,7 +2324,59 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
                 welcomeBubble.innerHTML = parseMarkdown(initialText);
             }
         });
-    </script>
+    
+    // Dataset Relations Logic
+    function openRelationModal() {
+        document.getElementById('relationModal').classList.add('active');
+    }
+    function closeRelationModal() {
+        document.getElementById('relationModal').classList.remove('active');
+        document.getElementById('relationEditor').value = '';
+    }
+    function analyzeRelation() {
+        const btn = document.getElementById('analyzeBtn');
+        const dsA = document.getElementById('datasetA').value;
+        const dsB = document.getElementById('datasetB').value;
+        const editor = document.getElementById('relationEditor');
+        
+        btn.disabled = true;
+        btn.innerHTML = 'Analyzing...';
+        editor.value = 'AI is analyzing schemas and metadata...';
+        
+        setTimeout(() => {
+            btn.disabled = false;
+            btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg> Analyze Relation (AI)';
+            
+            // Mock AI suggestion
+            editor.value = `${dsA} acts as the primary source of truth, linked to ${dsB} via common employee/user ID keys. Unstructured data from ${dsA} is frequently queried alongside structured metrics in ${dsB}.`;
+        }, 1200);
+    }
+    function saveRelation() {
+        const dsA = document.getElementById('datasetA').value;
+        const dsB = document.getElementById('datasetB').value;
+        const editor = document.getElementById('relationEditor').value;
+        
+        if(!editor || editor.includes('AI is analyzing')) return;
+        
+        const list = document.getElementById('relationsList');
+        const item = document.createElement('div');
+        item.className = 'relation-item';
+        item.innerHTML = `<strong>${dsA}</strong> ↔️ <strong>${dsB}</strong><br/>${editor}`;
+        
+        list.prepend(item);
+        
+        // Show a quick visual success
+        const saveBtn = document.querySelector('.save-relation-btn');
+        const oldText = saveBtn.innerText;
+        saveBtn.innerText = 'Saved Successfully!';
+        saveBtn.style.background = '#10b981';
+        setTimeout(() => {
+            saveBtn.innerText = oldText;
+            saveBtn.style.background = '#22c55e';
+            closeRelationModal();
+        }, 1000);
+    }
+</script>
 
     <!-- Toast Notification -->
     <div class="toast-notification" id="toastBox">
@@ -1502,6 +2432,369 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
                     <div style="font-size: 11px; font-weight: 700; color: var(--accent-orange); text-transform: uppercase;">Entity Inspector &amp; Lineage Explorer</div>
                     <div style="font-size: 14px; font-weight: 600; color: #fff; margin-top: 4px;" id="inspectorNodeName">Click any graph node to inspect decision tree relationships &amp; attributes</div>
                     <div style="font-size: 12px; color: #94a3b8; margin-top: 4px;" id="inspectorNodeDesc">Select a node from the decision tree canvas above to explore lineage, SMEs, and diagnostic paths.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+    window.dashboardCharts = {};
+    
+    const chartOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { display: false }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                grid: { color: 'rgba(255,255,255,0.05)' },
+                ticks: { color: '#a1a1aa', font: { size: 10 } }
+            },
+            x: {
+                grid: { display: false },
+                ticks: { color: '#a1a1aa', font: { size: 10 } }
+            }
+        }
+    };
+
+    function initCharts() {
+        const primaryColor = 'rgba(249, 115, 22, 1)';
+        const primaryBg = 'rgba(249, 115, 22, 0.2)';
+        const secondaryColor = 'rgba(34, 197, 94, 1)';
+        const secondaryBg = 'rgba(34, 197, 94, 0.2)';
+
+        // Info Tab Chart (Bar)
+        if(document.getElementById('chart-info')) {
+            window.dashboardCharts['info'] = new Chart(document.getElementById('chart-info'), {
+                type: 'bar',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'Docs Ingested',
+                        data: [12000, 19000, 15000, 22000, 18000, 9000, 11000],
+                        backgroundColor: primaryBg,
+                        borderColor: primaryColor,
+                        borderWidth: 1,
+                        borderRadius: 4
+                    }]
+                },
+                options: chartOptions
+            });
+        }
+
+        // Knowledge Tab Chart (Line)
+        if(document.getElementById('chart-knowledge')) {
+            window.dashboardCharts['knowledge'] = new Chart(document.getElementById('chart-knowledge'), {
+                type: 'line',
+                data: {
+                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                    datasets: [
+                        { label: 'Nodes', data: [500000, 620000, 750000, 845000], borderColor: primaryColor, backgroundColor: primaryBg, fill: true, tension: 0.4 },
+                        { label: 'Edges', data: [1200000, 1800000, 2500000, 3200000], borderColor: secondaryColor, backgroundColor: secondaryBg, fill: true, tension: 0.4 }
+                    ]
+                },
+                options: chartOptions
+            });
+        }
+
+        // Inference Tab Chart (Line)
+        if(document.getElementById('chart-inference')) {
+            window.dashboardCharts['inference'] = new Chart(document.getElementById('chart-inference'), {
+                type: 'line',
+                data: {
+                    labels: ['10:00', '11:00', '12:00', '13:00', '14:00', '15:00'],
+                    datasets: [{
+                        label: 'Latency (ms)',
+                        data: [450, 480, 420, 410, 460, 420],
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: chartOptions
+            });
+        }
+
+        // Outcome Tab Chart (Stacked Bar)
+        if(document.getElementById('chart-outcome')) {
+            window.dashboardCharts['outcome'] = new Chart(document.getElementById('chart-outcome'), {
+                type: 'bar',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+                    datasets: [
+                        { label: 'Automated', data: [8000, 9500, 10200, 11500, 12450], backgroundColor: secondaryBg, borderColor: secondaryColor, borderWidth: 1 },
+                        { label: 'Escalated', data: [2000, 1800, 1500, 1200, 900], backgroundColor: 'rgba(239, 68, 68, 0.2)', borderColor: 'rgba(239, 68, 68, 1)', borderWidth: 1 }
+                    ]
+                },
+                options: {
+                    ...chartOptions,
+                    scales: {
+                        x: { stacked: true, grid: { display: false }, ticks: { color: '#a1a1aa', font: { size: 10 } } },
+                        y: { stacked: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#a1a1aa', font: { size: 10 } } }
+                    }
+                }
+            });
+        }
+
+        // Benchmarking Tab Chart (Line)
+        if(document.getElementById('chart-benchmarking')) {
+            window.dashboardCharts['benchmarking'] = new Chart(document.getElementById('chart-benchmarking'), {
+                type: 'line',
+                data: {
+                    labels: ['v1.0', 'v1.1', 'v1.2', 'v2.0', 'v2.1'],
+                    datasets: [{
+                        label: 'F1 Score',
+                        data: [0.85, 0.87, 0.89, 0.91, 0.92],
+                        borderColor: primaryColor,
+                        backgroundColor: primaryBg,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: chartOptions
+            });
+        }
+
+        // Storage Tab Chart (Doughnut/Bar)
+        if(document.getElementById('chart-storage')) {
+            window.dashboardCharts['storage'] = new Chart(document.getElementById('chart-storage'), {
+                type: 'bar',
+                data: {
+                    labels: ['Vector DB', 'Graph DB', 'Cold Storage'],
+                    datasets: [{
+                        label: 'Capacity Used (%)',
+                        data: [42, 65, 28],
+                        backgroundColor: [primaryBg, secondaryBg, 'rgba(59, 130, 246, 0.2)'],
+                        borderColor: [primaryColor, secondaryColor, '#3b82f6'],
+                        borderWidth: 1,
+                        borderRadius: 4
+                    }]
+                },
+                options: chartOptions
+            });
+        }
+    }
+
+
+        // Info Tab Chart 2 (Doughnut)
+        if(document.getElementById('chart-info-2')) {
+            window.dashboardCharts['info-2'] = new Chart(document.getElementById('chart-info-2'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['SharePoint', 'Snowflake', 'SAP', 'Other'],
+                    datasets: [{
+                        data: [45, 25, 20, 10],
+                        backgroundColor: [primaryBg, secondaryBg, 'rgba(59, 130, 246, 0.2)', 'rgba(168, 85, 247, 0.2)'],
+                        borderColor: [primaryColor, secondaryColor, '#3b82f6', '#a855f7'],
+                        borderWidth: 1
+                    }]
+                },
+                options: { ...chartOptions, plugins: { legend: { display: true, position: 'right', labels: {color: '#a1a1aa', boxWidth: 10, font: {size: 10}} } }, scales: {x: {display: false}, y: {display: false}} }
+            });
+        }
+
+        // Knowledge Tab Chart 2 (Pie)
+        if(document.getElementById('chart-knowledge-2')) {
+            window.dashboardCharts['knowledge-2'] = new Chart(document.getElementById('chart-knowledge-2'), {
+                type: 'pie',
+                data: {
+                    labels: ['People', 'Assets', 'Locations', 'Metrics'],
+                    datasets: [{
+                        data: [30, 40, 15, 15],
+                        backgroundColor: [primaryBg, secondaryBg, 'rgba(59, 130, 246, 0.2)', 'rgba(239, 68, 68, 0.2)'],
+                        borderColor: [primaryColor, secondaryColor, '#3b82f6', 'rgba(239, 68, 68, 1)'],
+                        borderWidth: 1
+                    }]
+                },
+                options: { ...chartOptions, plugins: { legend: { display: true, position: 'right', labels: {color: '#a1a1aa', boxWidth: 10, font: {size: 10}} } }, scales: {x: {display: false}, y: {display: false}} }
+            });
+        }
+
+        // Inference Tab Chart 2 (Bar)
+        if(document.getElementById('chart-inference-2')) {
+            window.dashboardCharts['inference-2'] = new Chart(document.getElementById('chart-inference-2'), {
+                type: 'bar',
+                data: {
+                    labels: ['Search', 'Summarize', 'Extract', 'SQL Gen'],
+                    datasets: [{
+                        label: 'Requests',
+                        data: [420, 310, 250, 180],
+                        backgroundColor: secondaryBg,
+                        borderColor: secondaryColor,
+                        borderWidth: 1,
+                        borderRadius: 4
+                    }]
+                },
+                options: chartOptions
+            });
+        }
+
+        // Outcome Tab Chart 2 (Line)
+        if(document.getElementById('chart-outcome-2')) {
+            window.dashboardCharts['outcome-2'] = new Chart(document.getElementById('chart-outcome-2'), {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+                    datasets: [{
+                        label: 'Savings ($)',
+                        data: [12000, 15000, 22000, 28000, 35000],
+                        borderColor: '#22c55e',
+                        backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: chartOptions
+            });
+        }
+
+        // Benchmarking Tab Chart 2 (Radar or Bar - using Bar for simplicity)
+        if(document.getElementById('chart-benchmarking-2')) {
+            window.dashboardCharts['benchmarking-2'] = new Chart(document.getElementById('chart-benchmarking-2'), {
+                type: 'bar',
+                data: {
+                    labels: ['Finance', 'HR', 'Engineering', 'Legal'],
+                    datasets: [{
+                        label: 'Accuracy %',
+                        data: [94, 98, 91, 96],
+                        backgroundColor: 'rgba(168, 85, 247, 0.2)',
+                        borderColor: '#a855f7',
+                        borderWidth: 1,
+                        borderRadius: 4
+                    }]
+                },
+                options: { ...chartOptions, indexAxis: 'y' }
+            });
+        }
+
+        // Storage Tab Chart 2 (Line)
+        if(document.getElementById('chart-storage-2')) {
+            window.dashboardCharts['storage-2'] = new Chart(document.getElementById('chart-storage-2'), {
+                type: 'line',
+                data: {
+                    labels: ['W1', 'W2', 'W3', 'W4'],
+                    datasets: [{
+                        label: 'Growth (TB)',
+                        data: [2.1, 2.4, 2.9, 3.5],
+                        borderColor: primaryColor,
+                        backgroundColor: primaryBg,
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: chartOptions
+            });
+        }
+
+    // Call initCharts on window load
+    window.addEventListener('load', initCharts);
+
+    // Patch switchMainTab to resize charts when they become visible
+    const originalSwitch = window.switchMainTab;
+    if (typeof originalSwitch !== 'undefined') {
+        window.switchMainTab = function(el, tabId) {
+            originalSwitch(el, tabId);
+            // Trigger chart resize after a tiny delay to let CSS apply display:flex
+            setTimeout(() => {
+                Object.values(window.dashboardCharts).forEach(chart => {
+                    chart.resize();
+                });
+            }, 10);
+        };
+    }
+
+    // Dataset Relations Logic
+    function openRelationModal() {
+        document.getElementById('relationModal').classList.add('active');
+    }
+    function closeRelationModal() {
+        document.getElementById('relationModal').classList.remove('active');
+        document.getElementById('relationEditor').value = '';
+    }
+    function analyzeRelation() {
+        const btn = document.getElementById('analyzeBtn');
+        const dsA = document.getElementById('datasetA').value;
+        const dsB = document.getElementById('datasetB').value;
+        const editor = document.getElementById('relationEditor');
+        
+        btn.disabled = true;
+        btn.innerHTML = 'Analyzing...';
+        editor.value = 'AI is analyzing schemas and metadata...';
+        
+        setTimeout(() => {
+            btn.disabled = false;
+            btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg> Analyze Relation (AI)';
+            
+            // Mock AI suggestion
+            editor.value = `${dsA} acts as the primary source of truth, linked to ${dsB} via common employee/user ID keys. Unstructured data from ${dsA} is frequently queried alongside structured metrics in ${dsB}.`;
+        }, 1200);
+    }
+    function saveRelation() {
+        const dsA = document.getElementById('datasetA').value;
+        const dsB = document.getElementById('datasetB').value;
+        const editor = document.getElementById('relationEditor').value;
+        
+        if(!editor || editor.includes('AI is analyzing')) return;
+        
+        const list = document.getElementById('relationsList');
+        const item = document.createElement('div');
+        item.className = 'relation-item';
+        item.innerHTML = `<strong>${dsA}</strong> ↔️ <strong>${dsB}</strong><br/>${editor}`;
+        
+        list.prepend(item);
+        
+        // Show a quick visual success
+        const saveBtn = document.querySelector('.save-relation-btn');
+        const oldText = saveBtn.innerText;
+        saveBtn.innerText = 'Saved Successfully!';
+        saveBtn.style.background = '#10b981';
+        setTimeout(() => {
+            saveBtn.innerText = oldText;
+            saveBtn.style.background = '#22c55e';
+            closeRelationModal();
+        }, 1000);
+    }
+</script>
+
+    <!-- Dataset Relations Modal -->
+    <div id="relationModal" class="modal-overlay">
+        <div class="relation-modal">
+            <div class="relation-header">
+                <h3>Manage Dataset Relations</h3>
+                <button class="close-modal" onclick="closeRelationModal()">&times;</button>
+            </div>
+            <div class="relation-body">
+                <div class="dataset-selects">
+                    <select id="datasetA">
+                        <option value="SharePoint HR Manuals">SharePoint HR Manuals</option>
+                        <option value="SAP Financial Ledger">SAP Financial Ledger</option>
+                        <option value="Snowflake User DB">Snowflake User DB</option>
+                    </select>
+                    <span style="color: #a1a1aa;">↔️</span>
+                    <select id="datasetB">
+                        <option value="Snowflake User DB">Snowflake User DB</option>
+                        <option value="SAP Financial Ledger">SAP Financial Ledger</option>
+                        <option value="SharePoint HR Manuals">SharePoint HR Manuals</option>
+                    </select>
+                </div>
+                <button class="analyze-btn" id="analyzeBtn" onclick="analyzeRelation()">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg> Analyze Relation (AI)
+                </button>
+                
+                <div style="display: flex; flex-direction: column; gap: 4px;">
+                    <label style="font-size: 11px; color: #a1a1aa;">AI Suggested Relationship (Edit to override)</label>
+                    <textarea id="relationEditor" class="relation-editor" placeholder="Select datasets and click analyze..."></textarea>
+                </div>
+                
+                <button class="save-relation-btn" onclick="saveRelation()">Save to Knowledge Graph</button>
+            </div>
+            <div class="saved-relations-list">
+                <h4 style="margin: 0 0 8px 0; font-size: 12px; color: #fff;">Saved Relations</h4>
+                <div id="relationsList">
+                    <div class="relation-item"><strong>SAP Financial Ledger</strong> ↔️ <strong>Snowflake User DB</strong><br/>Joined on UUID. SAP handles transactional history while Snowflake handles user metadata.</div>
                 </div>
             </div>
         </div>
