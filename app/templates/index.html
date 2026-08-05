@@ -2040,16 +2040,6 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
         }
 
         let activeCategoryFilter = 'All';
-        let currentViewMode = 'tree';
-
-        function switchGraphView(mode) {
-            currentViewMode = mode;
-            const btnTree = document.getElementById('btnViewTree');
-            const btnCluster = document.getElementById('btnViewCluster');
-            if (btnTree) btnTree.classList.toggle('active', mode === 'tree');
-            if (btnCluster) btnCluster.classList.toggle('active', mode === 'cluster');
-            initCanvasGraph();
-        }
 
         function filterGraphCategory(cat) {
             activeCategoryFilter = cat;
@@ -2064,7 +2054,7 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
             if (!label) return '';
             let str = String(label).trim();
             if (str.includes('(')) str = str.split('(')[0].trim();
-            if (str.length > 24) return str.substring(0, 22) + '..';
+            if (str.length > 29) return str.substring(0, 26) + '..';
             return str;
         }
 
@@ -2075,7 +2065,10 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
             const ctx = canvas.getContext('2d');
             
             let nodesToRender = [];
-            if (activeCategoryFilter === 'All') {
+            if (activeCategoryFilter === 'Dataset') {
+                nodesToRender = (graphData.nodes || []).filter(n => n.category === 'Dataset');
+                nodesToRender.forEach(n => n._isPrimary = true);
+            } else if (activeCategoryFilter === 'All') {
                 nodesToRender = graphData.nodes || [];
                 nodesToRender.forEach(n => n._isPrimary = true);
             } else {
@@ -2097,17 +2090,15 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
             }
 
             let computedHeight = wrapper.clientHeight || 460;
-            if (currentViewMode === 'tree') {
-                const maxNodesInOneTier = Math.max(
-                    ...[0, 1, 2, 3].map(lvl => nodesToRender.filter(n => {
-                        let l = typeof n.tree_level === 'number' ? n.tree_level : 0;
-                        if (l > 3) l = 3;
-                        return l === lvl;
-                    }).length)
-                );
-                // 40px vertical space per node + padding
-                computedHeight = Math.max(computedHeight, maxNodesInOneTier * 45 + 100);
-            }
+            const maxNodesInOneTier = Math.max(
+                ...[0, 1, 2, 3].map(lvl => nodesToRender.filter(n => {
+                    let l = typeof n.tree_level === 'number' ? n.tree_level : 0;
+                    if (l > 3) l = 3;
+                    return l === lvl;
+                }).length)
+            );
+            // 40px vertical space per node + padding
+            computedHeight = Math.max(computedHeight, maxNodesInOneTier * 45 + 100);
 
             const width = canvas.width = wrapper.clientWidth || 900;
             const height = canvas.height = computedHeight;
@@ -2123,14 +2114,48 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
 
             const nodeMap = {};
 
-            if (currentViewMode === 'tree') {
-                // --- Decision Tree Layout: tier columns ---
-                const tierNodes = { 0: [], 1: [], 2: [], 3: [] };
-                nodesToRender.forEach(n => {
-                    let lvl = typeof n.tree_level === 'number' ? n.tree_level : 0;
-                    if (lvl > 3) lvl = 3;
-                    tierNodes[lvl].push(n);
-                });
+            if (activeCategoryFilter === 'Dataset') {
+                    // --- Connection-wise Dataset Layout: 2 Columns ---
+                    const masterKeywords = ["master", "codes", "rules", "weather", "availab", "epc"];
+                    const leftCol = [];
+                    const rightCol = [];
+
+                    nodesToRender.forEach(n => {
+                        const nid = n.id.toLowerCase();
+                        if (masterKeywords.some(k => nid.includes(k))) {
+                            leftCol.push(n);
+                        } else {
+                            rightCol.push(n);
+                        }
+                    });
+
+                    const topPadding = 55;
+                    const bottomPadding = 40;
+                    const availH = height - topPadding - bottomPadding;
+
+                    const leftX = width * 0.28;
+                    leftCol.forEach((n, idx) => {
+                        const y = leftCol.length === 1
+                            ? topPadding + availH / 2
+                            : topPadding + (idx / Math.max(leftCol.length - 1, 1)) * availH;
+                        nodeMap[n.id] = { ...n, x: leftX, y, cfg: categoryConfig['Dataset'] };
+                    });
+
+                    const rightX = width * 0.72;
+                    rightCol.forEach((n, idx) => {
+                        const y = rightCol.length === 1
+                            ? topPadding + availH / 2
+                            : topPadding + (idx / Math.max(rightCol.length - 1, 1)) * availH;
+                        nodeMap[n.id] = { ...n, x: rightX, y, cfg: categoryConfig['Dataset'] };
+                    });
+                } else {
+                    // --- Decision Tree Layout: tier columns ---
+                    const tierNodes = { 0: [], 1: [], 2: [], 3: [] };
+                    nodesToRender.forEach(n => {
+                        let lvl = typeof n.tree_level === 'number' ? n.tree_level : 0;
+                        if (lvl > 3) lvl = 3;
+                        tierNodes[lvl].push(n);
+                    });
                 const colWidth = width / 4;
                 const topPadding = 55;
                 const bottomPadding = 40;
@@ -2172,131 +2197,159 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
                         }
                     }
                 });
-            } else {
-                // --- Domain Cluster Layout ---
-                const clusterCenters = {
-                    'Domain Cluster':  { x: width * 0.25, y: height * 0.30 },
-                    'Key Info Link':   { x: width * 0.25, y: height * 0.72 },
-                    'Entity':          { x: width * 0.50, y: height * 0.50 },
-                    'Dataset':         { x: width * 0.75, y: height * 0.30 },
-                    'Business Metric': { x: width * 0.75, y: height * 0.72 }
-                };
-                nodesToRender.forEach((n, idx) => {
-                    const cat = n.category || 'Metric';
-                    const center = clusterCenters[cat] || { x: width / 2, y: height / 2 };
-                    const angle = (idx / Math.max(nodesToRender.length, 1)) * 2 * Math.PI;
-                    const spreadRadius = 40 + (idx % 4) * 22;
-                    nodeMap[n.id] = {
-                        ...n,
-                        x: center.x + Math.cos(angle) * spreadRadius,
-                        y: center.y + Math.sin(angle) * spreadRadius,
-                        cfg: categoryConfig[cat] || categoryConfig['Metric']
-                    };
+            }
+
+            let selectedNodePathSet = new Set();
+            let selectedEdgePathSet = new Set();
+
+            function updateSelectedNodePath() {
+                selectedNodePathSet.clear();
+                selectedEdgePathSet.clear();
+                if (!selectedNode) return;
+                
+                selectedNodePathSet.add(selectedNode.id);
+                
+                const adjOut = {};
+                const adjIn = {};
+                (graphData.edges || []).forEach(e => {
+                    const src = typeof e.source === 'object' ? e.source.id : e.source;
+                    const tgt = typeof e.target === 'object' ? e.target.id : e.target;
+                    if (!adjOut[src]) adjOut[src] = [];
+                    if (!adjIn[tgt]) adjIn[tgt] = [];
+                    adjOut[src].push({ neighbor: tgt, edge: e });
+                    adjIn[tgt].push({ neighbor: src, edge: e });
                 });
-                const nList = Object.values(nodeMap);
-                for (let iter = 0; iter < 50; iter++) {
-                    for (let i = 0; i < nList.length; i++) {
-                        for (let j = i + 1; j < nList.length; j++) {
-                            const a = nList[i], b = nList[j];
-                            const dx = b.x - a.x, dy = b.y - a.y;
-                            const dist = Math.hypot(dx, dy) || 1;
-                            if (dist < 75) {
-                                const force = (75 - dist) / dist * 0.18;
-                                a.x -= dx * force; a.y -= dy * force;
-                                b.x += dx * force; b.y += dy * force;
+                
+                // 1. Traverse Ancestors (Upstream)
+                let queue = [selectedNode];
+                while(queue.length > 0) {
+                    const current = queue.shift();
+                    const parents = adjIn[current.id] || [];
+                    
+                    parents.forEach(link => {
+                        if (!selectedNodePathSet.has(link.neighbor)) {
+                            selectedNodePathSet.add(link.neighbor);
+                            selectedEdgePathSet.add(link.edge);
+                            
+                            const neighborNode = graphData.nodes.find(n => n.id === link.neighbor);
+                            if (neighborNode && neighborNode.category !== 'Key Info Link') {
+                                queue.push(neighborNode);
                             }
+                        } else {
+                            selectedEdgePathSet.add(link.edge);
                         }
-                    }
+                    });
+                }
+                
+                // 2. Traverse Descendants (Downstream)
+                queue = [selectedNode];
+                while(queue.length > 0) {
+                    const current = queue.shift();
+                    const children = adjOut[current.id] || [];
+                    
+                    children.forEach(link => {
+                        if (!selectedNodePathSet.has(link.neighbor)) {
+                            selectedNodePathSet.add(link.neighbor);
+                            selectedEdgePathSet.add(link.edge);
+                            
+                            const neighborNode = graphData.nodes.find(n => n.id === link.neighbor);
+                            if (neighborNode && neighborNode.category !== 'Key Info Link') {
+                                queue.push(neighborNode);
+                            }
+                        } else {
+                            selectedEdgePathSet.add(link.edge);
+                        }
+                    });
                 }
             }
 
             function isNodeInSelectedPath(nodeId) {
                 if (!selectedNode) return false;
-                if (selectedNode.id === nodeId) return true;
-                return (graphData.edges || []).some(e =>
-                    (e.source === selectedNode.id && e.target === nodeId) ||
-                    (e.target === selectedNode.id && e.source === nodeId)
-                );
+                return selectedNodePathSet.has(nodeId);
             }
 
             function draw() {
                 if (!isGraphModalOpen) return;
                 ctx.clearRect(0, 0, width, height);
 
-                if (currentViewMode === 'tree') {
-                    // Tier column backgrounds
-                    const tierHeaders = [
-                        { title: 'TIER 0: SYSTEM ROOTS',    icon: '\uf0ad', color: '#22c55e' },
-                        { title: 'TIER 1: FAULTS & DATA',   icon: '\uf071', color: '#f43f5e' },
-                        { title: 'TIER 2: ROOT CAUSES',     icon: '\uf0e7', color: '#D9662B' },
-                        { title: 'TIER 3: REMEDIES & SMEs', icon: '\uf00c', color: '#c084fc' }
-                    ];
-                    const colW = width / 4;
-                    for (let lvl = 0; lvl < 4; lvl++) {
-                        const laneX = lvl * colW;
-                        ctx.save();
-                        ctx.fillStyle = lvl % 2 === 0 ? 'rgba(255,255,255,0.012)' : 'rgba(0,0,0,0.25)';
-                        ctx.fillRect(laneX, 0, colW, height);
-                        if (lvl > 0) {
-                            ctx.strokeStyle = 'rgba(255,255,255,0.05)';
-                            ctx.setLineDash([4, 4]);
-                            ctx.beginPath();
-                            ctx.moveTo(laneX, 0);
-                            ctx.lineTo(laneX, height);
-                            ctx.stroke();
-                            ctx.setLineDash([]);
-                        }
-                        const th = tierHeaders[lvl];
-                        ctx.font = '900 11px "Font Awesome 6 Free", Inter';
-                        ctx.fillStyle = th.color;
-                        ctx.textAlign = 'center';
-                        ctx.fillText(`${th.icon} ${th.title}`, laneX + colW / 2, 22);
-                        ctx.restore();
-                    }
-                } else {
-                    // Domain cluster backgrounds
-                    const clusterCenters = {
-                        'Equipment': { x: width * 0.22, y: height * 0.30 },
-                        'Error':     { x: width * 0.22, y: height * 0.72 },
-                        'Metric':    { x: width * 0.50, y: height * 0.50 },
-                        'Dataset':   { x: width * 0.78, y: height * 0.30 },
-                        'SME':       { x: width * 0.78, y: height * 0.72 }
-                    };
-                    Object.entries(clusterCenters).forEach(([catKey, center]) => {
-                        const cfg = categoryConfig[catKey];
-                        if (!cfg) return;
-                        ctx.save();
-                        ctx.beginPath();
-                        ctx.arc(center.x, center.y, 105, 0, 2 * Math.PI);
-                        ctx.fillStyle = cfg.bg;
-                        ctx.fill();
-                        ctx.font = '900 12px "Font Awesome 6 Free", Inter';
-                        ctx.fillStyle = cfg.color;
-                        ctx.textAlign = 'center';
-                        ctx.fillText(`${cfg.icon} ${cfg.label.toUpperCase()} CLUSTER`, center.x, center.y - 92);
-                        ctx.restore();
-                    });
-                }
+                if (activeCategoryFilter === 'Dataset') {
+                        const colW = width / 2;
+                        const datasetHeaders = [
+                            { title: 'PRIMARY MASTER DATASETS', icon: '\uf1c0', color: '#D9662B', x: width * 0.28 },
+                            { title: 'OPERATIONAL DATASETS & ACTIVITY', icon: '\uf0ae', color: '#f97316', x: width * 0.72 }
+                        ];
 
+                        ctx.save();
+                        ctx.fillStyle = 'rgba(255,255,255,0.012)';
+                        ctx.fillRect(0, 0, colW, height);
+                        ctx.fillStyle = 'rgba(0,0,0,0.25)';
+                        ctx.fillRect(colW, 0, colW, height);
+
+                        ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+                        ctx.setLineDash([4, 4]);
+                        ctx.beginPath();
+                        ctx.moveTo(colW, 0);
+                        ctx.lineTo(colW, height);
+                        ctx.stroke();
+                        ctx.setLineDash([]);
+
+                        datasetHeaders.forEach(th => {
+                            ctx.font = '900 11px "Font Awesome 6 Free", Inter';
+                            ctx.fillStyle = th.color;
+                            ctx.textAlign = 'center';
+                            ctx.fillText(`${th.icon} ${th.title}`, th.x, 22);
+                        });
+                        ctx.restore();
+                    } else {
+                        // Tier column backgrounds
+                        const tierHeaders = [
+                            { title: 'TIER 0: SYSTEM ROOTS',    icon: '\uf0ad', color: '#22c55e' },
+                            { title: 'TIER 1: FAULTS & DATA',   icon: '\uf071', color: '#f43f5e' },
+                            { title: 'TIER 2: ROOT CAUSES',     icon: '\uf0e7', color: '#D9662B' },
+                            { title: 'TIER 3: REMEDIES & SMEs', icon: '\uf00c', color: '#c084fc' }
+                        ];
+                        const colW = width / 4;
+                        for (let lvl = 0; lvl < 4; lvl++) {
+                            const laneX = lvl * colW;
+                            ctx.save();
+                            ctx.fillStyle = lvl % 2 === 0 ? 'rgba(255,255,255,0.012)' : 'rgba(0,0,0,0.25)';
+                            ctx.fillRect(laneX, 0, colW, height);
+                            if (lvl > 0) {
+                                ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+                                ctx.setLineDash([4, 4]);
+                                ctx.beginPath();
+                                ctx.moveTo(laneX, 0);
+                                ctx.lineTo(laneX, height);
+                                ctx.stroke();
+                                ctx.setLineDash([]);
+                            }
+                            const th = tierHeaders[lvl];
+                            ctx.font = '900 11px "Font Awesome 6 Free", Inter';
+                            ctx.fillStyle = th.color;
+                            ctx.textAlign = 'center';
+                            ctx.fillText(`${th.icon} ${th.title}`, laneX + colW / 2, 22);
+                            ctx.restore();
+                        }
+                    }
 
                 // Draw Edges
                 (graphData.edges || []).forEach(e => {
                     const src = nodeMap[e.source];
                     const tgt = nodeMap[e.target];
                     if (src && tgt) {
-                        const isConnected = selectedNode && (selectedNode === src || selectedNode === tgt);
+                        // Hide direct dataset-to-dataset edges unless we are explicitly in the Dataset connection view
+                        if (src.category === 'Dataset' && tgt.category === 'Dataset' && activeCategoryFilter !== 'Dataset') {
+                            return;
+                        }
+
+                        const isConnected = selectedNode && selectedEdgePathSet.has(e);
                         const isEndConn = e.relation === 'need_to_end_connection';
                         ctx.save();
                         ctx.beginPath();
 
-                        if (currentViewMode === 'tree') {
-                            const dx = Math.abs(tgt.x - src.x) * 0.45;
-                            ctx.moveTo(src.x, src.y);
-                            ctx.bezierCurveTo(src.x + dx, src.y, tgt.x - dx, tgt.y, tgt.x, tgt.y);
-                        } else {
-                            ctx.moveTo(src.x, src.y);
-                            ctx.lineTo(tgt.x, tgt.y);
-                        }
+                        const dx = Math.abs(tgt.x - src.x) * 0.45;
+                        ctx.moveTo(src.x, src.y);
+                        ctx.bezierCurveTo(src.x + dx, src.y, tgt.x - dx, tgt.y, tgt.x, tgt.y);
 
                         if (isEndConn) {
                             const dashOffset = (Date.now() / 55) % 18;
@@ -2314,22 +2367,44 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
                         ctx.setLineDash([]);
                         ctx.shadowBlur = 0;
 
-                        const midX = (src.x + tgt.x) / 2;
-                        const midY = (src.y + tgt.y) / 2;
-                        ctx.font = isEndConn ? '700 9px Inter' : '9px Inter';
-                        const textW = ctx.measureText(e.relation).width + 8;
-                        ctx.fillStyle = isEndConn ? 'rgba(28,4,8,0.97)' : 'rgba(6,6,6,0.94)';
+                        // Dynamically calculate the visual midpoint of the empty space between the nodes
+                        ctx.font = '700 10px "Font Awesome 6 Free", Inter, sans-serif';
+                        const srcW = Math.max(ctx.measureText(`${src.icon || src.cfg.icon} ${getShortLabel(src.label)}`).width + 16, 70);
+                        const tgtW = Math.max(ctx.measureText(`${tgt.icon || tgt.cfg.icon} ${getShortLabel(tgt.label)}`).width + 16, 70);
+                        
+                        let t = 0.5;
+                        if (Math.abs(tgt.x - src.x) > 10) {
+                            const dir = Math.sign(tgt.x - src.x); // handles right-to-left as well
+                            const visualMidX = (src.x + tgt.x)/2 + dir * (srcW - tgtW)/4;
+                            t = (visualMidX - src.x) / (tgt.x - src.x);
+                            t = Math.max(0.15, Math.min(0.85, t)); // Keep safely on the edge
+                        }
+                        const midX = src.x + (tgt.x - src.x) * t;
+                        const midY = src.y + (tgt.y - src.y) * t;
+                        const isViaEdge = e.relation && e.relation.startsWith('via:');
+                        let displayRelation = e.relation;
+                        if (displayRelation === 'contains_dataset') displayRelation = 'contains';
+                        if (displayRelation === 'calculates_metric') displayRelation = 'calculates';
+                        
+                        ctx.font = (isEndConn || isViaEdge) ? '700 9px Inter, sans-serif' : '8px Inter, sans-serif';
+                        const textW = ctx.measureText(displayRelation).width + 10;
+                        ctx.fillStyle = isEndConn ? 'rgba(28,4,8,0.97)' : (isViaEdge ? 'rgba(20, 10, 4, 0.95)' : 'rgba(6,6,6,0.94)');
                         ctx.fillRect(midX - textW / 2, midY - 7, textW, 14);
                         if (isEndConn) {
                             ctx.strokeStyle = 'rgba(255,34,68,0.75)';
                             ctx.lineWidth = 1;
                             ctx.strokeRect(midX - textW / 2, midY - 7, textW, 14);
                             ctx.fillStyle = '#ff4466';
+                        } else if (isViaEdge) {
+                            ctx.strokeStyle = '#D9662B';
+                            ctx.lineWidth = 1;
+                            ctx.strokeRect(midX - textW / 2, midY - 7, textW, 14);
+                            ctx.fillStyle = '#f97316';
                         } else {
                             ctx.fillStyle = isConnected ? '#D9662B' : '#4b5563';
                         }
                         ctx.textAlign = 'center';
-                        ctx.fillText(e.relation, midX, midY + 3);
+                        ctx.fillText(displayRelation, midX, midY + 3);
                         ctx.restore();
                     }
                 });
@@ -2339,11 +2414,12 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
                     const isSelected = selectedNode === n;
                     const inPath = isNodeInSelectedPath(n.id);
                     const displayLabel = getShortLabel(n.label);
-                    ctx.font = '900 13px "Font Awesome 6 Free", Inter';
+                    ctx.font = '700 10px "Font Awesome 6 Free", Inter, sans-serif';
                     const iconStr = n.icon || n.cfg.icon;
                     const textW = ctx.measureText(`${iconStr} ${displayLabel}`).width;
-                    const pillW = Math.max(textW + 18, 78);
-                    const pillH = 25;
+                    const pillW = Math.max(textW + 16, 70);
+                    n.pillW = pillW; // Store for precise click/hover detection
+                    const pillH = 23;
                     const rx = n.x - pillW / 2;
                     const ry = n.y - pillH / 2;
 
@@ -2373,6 +2449,30 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
 
             draw();
 
+            canvas.onmousemove = (evt) => {
+                const rect = canvas.getBoundingClientRect();
+                const clickX = evt.clientX - rect.left;
+                const clickY = evt.clientY - rect.top;
+
+                let hovered = null;
+                Object.values(nodeMap).forEach(n => {
+                    const halfW = n.pillW ? n.pillW / 2 : 45;
+                    if (Math.abs(n.x - clickX) <= halfW && Math.abs(n.y - clickY) <= 14) hovered = n;
+                });
+
+                const tooltip = document.getElementById('graphTooltip');
+                if (hovered) {
+                    canvas.style.cursor = 'pointer';
+                    tooltip.style.display = 'block';
+                    tooltip.innerText = hovered.label;
+                    tooltip.style.left = (evt.clientX + 15) + 'px';
+                    tooltip.style.top = (evt.clientY + 15) + 'px';
+                } else {
+                    canvas.style.cursor = 'default';
+                    tooltip.style.display = 'none';
+                }
+            };
+
             canvas.onclick = (evt) => {
                 const rect = canvas.getBoundingClientRect();
                 const clickX = evt.clientX - rect.left;
@@ -2380,10 +2480,12 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
 
                 let clicked = null;
                 Object.values(nodeMap).forEach(n => {
-                    if (Math.abs(n.x - clickX) <= 45 && Math.abs(n.y - clickY) <= 14) clicked = n;
+                    const halfW = n.pillW ? n.pillW / 2 : 45;
+                    if (Math.abs(n.x - clickX) <= halfW && Math.abs(n.y - clickY) <= 14) clicked = n;
                 });
 
                 selectedNode = clicked;
+                updateSelectedNodePath();
                 const nameEl = document.getElementById('inspectorNodeName');
                 const descEl = document.getElementById('inspectorNodeDesc');
 
@@ -2429,6 +2531,9 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
         </div>
     </div>
 
+    <!-- Graph Tooltip -->
+    <div id="graphTooltip" style="position: fixed; display: none; background: rgba(14,14,14,0.95); color: #fff; padding: 6px 12px; border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; font-family: Inter, sans-serif; font-size: 11px; font-weight: 600; z-index: 10050; pointer-events: none; box-shadow: 0 4px 12px rgba(0,0,0,0.5); max-width: 350px; word-wrap: break-word;"></div>
+
     <!-- Executive Knowledge Graph Visualizer Modal -->
     <div class="graph-modal-overlay" id="graphModal" style="display: none;">
         <div class="graph-modal-content">
@@ -2455,10 +2560,6 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
                     <button class="filter-pill dataset" data-cat="Dataset" onclick="filterGraphCategory('Dataset')"><i class="fa-solid fa-database"></i> Datasets</button>
                     <button class="filter-pill entity" data-cat="Key Info Link" onclick="filterGraphCategory('Key Info Link')"><i class="fa-solid fa-link"></i> Shared Entities</button>
                     <button class="filter-pill metric" data-cat="Business Metric" onclick="filterGraphCategory('Business Metric')"><i class="fa-solid fa-chart-line"></i> Metrics</button>
-                </div>
-                <div class="view-mode-toggle">
-                    <button class="view-toggle-btn active" id="btnViewTree" onclick="switchGraphView('tree')"><i class="fa-solid fa-tree"></i> Decision Tree</button>
-                    <button class="view-toggle-btn" id="btnViewCluster" onclick="switchGraphView('cluster')"><i class="fa-solid fa-network-wired"></i> Domain Clusters</button>
                 </div>
             </div>
 

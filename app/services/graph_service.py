@@ -96,7 +96,7 @@ class KnowledgeGraphService:
                             self.graph.add_node(entity_name, entity_type="Shared_Entity", category="Key Info Link", details=f"Cross-dataset linkage key: {col}")
                         
                         # Dataset -> Shared Entity
-                        self._add_triple(dataset_node, "linked_by_info", entity_name, details="Foreign key relationship")
+                        self._add_triple(dataset_node, f"via: {col}", entity_name, details=f"Linked by column '{col}'")
                         
                 # Define Business Metrics mapping
                 metric_mapping = {
@@ -116,6 +116,31 @@ class KnowledgeGraphService:
                             if not self.graph.has_node(metric_node):
                                 self.graph.add_node(metric_node, entity_type="Metric", category="Business Metric", details=f"KPI derived from {dataset_name}")
                             self._add_triple(dataset_node, "calculates_metric", metric_node, details="Metric calculation derivation")
+                            
+            # Direct Dataset-to-Dataset connections for Dataset connection view
+            all_dataset_nodes = [n for n in self.graph.nodes if n.startswith("Dataset: ")]
+            dataset_keys = {}
+            for dnode in all_dataset_nodes:
+                dname = dnode.replace("Dataset: ", "")
+                csv_path = self.data_dir / dname
+                if csv_path.exists():
+                    try:
+                        df_s = pd.read_csv(csv_path, nrows=0)
+                        dataset_keys[dnode] = set(df_s.columns)
+                    except Exception:
+                        dataset_keys[dnode] = set()
+
+            shared_keys = ["customer_id", "boiler_id", "job_id", "pay_id", "lead_id"]
+            d_list = list(dataset_keys.keys())
+            for i in range(len(d_list)):
+                node_a = d_list[i]
+                keys_a = dataset_keys[node_a]
+                for j in range(i + 1, len(d_list)):
+                    node_b = d_list[j]
+                    keys_b = dataset_keys[node_b]
+                    common = [k for k in shared_keys if k in keys_a and k in keys_b]
+                    for key in common:
+                        self._add_triple(node_a, f"via: {key}", node_b, details=f"Direct dataset connection via '{key}'")
                         
         except Exception as e:
             print(f"Error loading graph from CSVs: {e}")
