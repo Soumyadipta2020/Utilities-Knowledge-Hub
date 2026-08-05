@@ -143,16 +143,10 @@ def _is_explicit_access_check(message: str) -> bool:
 
 
 def _extract_record_ids(user_input: str, chat_history: Sequence[dict[str, str]] | None = None) -> list[str]:
-    """Extract entity/record IDs (e.g., CUST00007, ENG014, JOB000001) from user input or recent chat history."""
+    """Extract entity/record IDs (e.g., CUST00007, ENG014, JOB000001) from user input."""
     found = re.findall(r"\b[A-Z]{3,8}[-\_]?\d{1,10}\b", user_input, flags=re.IGNORECASE)
     if found:
         return [f.upper() for f in found]
-    if chat_history:
-        for turn in reversed(list(chat_history)):
-            content = turn.get("content", "")
-            hist_found = re.findall(r"\b[A-Z]{3,8}[-\_]?\d{1,10}\b", content, flags=re.IGNORECASE)
-            if hist_found:
-                return [f.upper() for f in hist_found]
     return []
 
 
@@ -163,9 +157,10 @@ CURRENT SESSION CONTEXT:
 - User Email: {user_email}
 
 CRITICAL RULES FOR DATA RETRIEVAL & ANSWER GENERATION:
-1. Always answer the user's questions directly and accurately using retrieved RAG context, CSV records, and knowledge graph facts.
-2. DO NOT inform the user that access is required or tell them they do not have access, UNLESS the user explicitly asks to check whether they have access or not.
-3. IF the user explicitly asks to check their access or requests to raise an access ticket (e.g., 'check access', 'do I have access', 'raise an access request'):
+1. Always answer the user's questions directly, concisely, and accurately based ONLY on what was asked.
+2. DO NOT output unnecessary dataset dumps, raw JSON/dict objects, or unrelated property/location data unless explicitly requested by the user.
+3. DO NOT inform the user that access is required or tell them they do not have access, UNLESS the user explicitly asks to check whether they have access or not.
+4. IF the user explicitly asks to check their access or requests to raise an access ticket (e.g., 'check access', 'do I have access', 'raise an access request'):
    - Perform the access check or execute `raise_access_request(user_email='{user_email}', data_source='...')`.
    - Return the access status or generated ticket details to the user.
 """
@@ -433,6 +428,130 @@ def _extract_recent_context(chat_history: Sequence[dict[str, str]] | None) -> di
     }
 
 
+def _synthesize_record_search_response(
+    user_input: str,
+    record_ids: list[str],
+    results: list[dict[str, Any]],
+) -> str:
+    """Synthesize a direct, concise, human-readable answer for record queries based on user intent."""
+    input_lower = user_input.lower()
+    by_dataset: dict[str, list[dict[str, Any]]] = {}
+    for r in results:
+        rec_copy = dict(r)
+        ds = rec_copy.pop("_dataset", "unknown")
+        by_dataset.setdefault(ds, []).append(rec_copy)
+
+    cust_id = ", ".join(set(record_ids)) if record_ids else "Requested Record"
+    cust_name = ""
+    if "customer_master" in by_dataset and by_dataset["customer_master"]:
+        cust_name = by_dataset["customer_master"][0].get("customer_name", "")
+    display_title = f"{cust_id} ({cust_name})" if cust_name else cust_id
+
+    # 1. Extract Boiler information
+    boiler_info = []
+    if "boiler_master" in by_dataset and by_dataset["boiler_master"]:
+        bm = by_dataset["boiler_master"][0]
+        mfr = bm.get("boiler_manufacturer", "")
+        model = bm.get("model", "")
+        btype = bm.get("boiler_type", "")
+        bid = bm.get("boiler_id", "")
+        idate = bm.get("installation_date", "")
+        erating = bm.get("energy_rating", "")
+        b_name = f"{mfr} {model}".strip() or model or mfr or "Boiler"
+        details = []
+        if btype: details.append(f"Type: `{btype}`")
+        if bid: details.append(f"Boiler ID: `{bid}`")
+        if erating: details.append(f"Energy Rating: `{erating}`")
+        if idate: details.append(f"Installed: `{idate}`")
+        detail_str = " (" + ", ".join(details) + ")" if details else ""
+        boiler_info.append(f"• **Boiler Model:** **{b_name}**{detail_str}")
+    elif "customer_master" in by_dataset and by_dataset["customer_master"]:
+        cm = by_dataset["customer_master"][0]
+        if cm.get("boiler_company"):
+            boiler_info.append(f"• **Boiler Manufacturer/Company:** **{cm.get('boiler_company')}**")
+
+    # 2. Extract Fault & Repair information
+    fault_info = []
+    if "boiler_master" in by_dataset and by_dataset["boiler_master"]:
+        fh = by_dataset["boiler_master"][0].get("fault_history")
+        if fh and str(fh).strip() not in ("None", "N/A", "nan", ""):
+            fault_info.append(f"• **Historical Fault:** `{fh}`")
+
+    if "repair_history" in by_dataset:
+        for rh in by_dataset["repair_history"]:
+            rdate = rh.get("repair_date", "")
+            rtype = rh.get("repair_type", "")
+            fcode = rh.get("fault_code", "")
+            freason = rh.get("fault_reason", "")
+            parts = []
+            if rtype: parts.append(f"Type: `{rtype}`")
+            if fcode: parts.append(f"Fault Code: `{fcode}`")
+            if freason: parts.append(f"Reason: `{freason}`")
+            p_str = " (" + ", ".join(parts) + ")" if parts else ""
+            fault_info.append(f"• **Repair Incident ({rdate}):**{p_str}")
+
+    if not fault_info and any(k in input_lower for k in ["fault", "repair", "historically", "breakdown", "issue"]):
+        fault_info.append("• **Historical Faults:** No major fault code or repair incidents recorded.")
+
+    # 3. Extract Service & Visit information
+    service_info = []
+    if "service_history" in by_dataset:
+        for s in by_dataset["service_history"]:
+            sdate = s.get("service_date", "")
+            stype = s.get("service_type", "")
+            parts = s.get("parts_serviced", "")
+            service_info.append(f"• **Service ({sdate}):** `{stype}` (Parts: `{parts}`)")
+    if "visit_outcome" in by_dataset:
+        for v in by_dataset["visit_outcome"][:2]:
+            vdate = v.get("visit_date", "")
+            vstat = v.get("visit_status", "")
+            service_info.append(f"• **Visit ({vdate}):** Status `{vstat}`")
+
+    # 4. Extract Location & Property information
+    location_info = []
+    if "customer_holdings" in by_dataset and by_dataset["customer_holdings"]:
+        ch = by_dataset["customer_holdings"][0]
+        city = ch.get("city", "")
+        region = ch.get("region", "")
+        pincode = ch.get("pincode", "")
+        location_info.append(f"• **Location:** `{city}`, `{region}` (Pincode: `{pincode}`)")
+    if "property_master" in by_dataset and by_dataset["property_master"]:
+        pm = by_dataset["property_master"][0]
+        ptype = pm.get("property_type", "")
+        rooms = pm.get("rooms", "")
+        floors = pm.get("number_of_floors", "")
+        location_info.append(f"• **Property Type:** `{ptype}` ({rooms} rooms, {floors} floors)")
+
+    # Intent detection
+    asks_boiler = any(k in input_lower for k in ["boiler", "appliance", "model", "equipment", "unit", "company", "manufacturer", "type of boiler", "boiler type", "which boiler", "what boiler"])
+    asks_fault = any(k in input_lower for k in ["fault", "repair", "history", "historically", "issue", "breakdown", "error", "incident", "failure"])
+    asks_service = any(k in input_lower for k in ["service", "serviced", "visit", "appointment", "maintenance"])
+    asks_location = any(k in input_lower for k in ["location", "address", "city", "pincode", "property", "where"])
+
+    has_specific_intent = asks_boiler or asks_fault or asks_service or asks_location
+    sections = []
+
+    if asks_boiler or not has_specific_intent:
+        if boiler_info:
+            sections.append("🔧 **Boiler Details:**\n" + "\n".join(boiler_info))
+    if asks_fault or not has_specific_intent:
+        if fault_info:
+            sections.append("⚠️ **Fault & Repair History:**\n" + "\n".join(fault_info))
+    if asks_service:
+        if service_info:
+            sections.append("🛠️ **Service & Maintenance History:**\n" + "\n".join(service_info[:4]))
+    if asks_location:
+        if location_info:
+            sections.append("🏠 **Location Info:**\n" + "\n".join(location_info))
+
+    if not sections:
+        if boiler_info: sections.append("🔧 **Boiler Details:**\n" + "\n".join(boiler_info))
+        if fault_info: sections.append("⚠️ **Fault & Repair History:**\n" + "\n".join(fault_info))
+
+    header = f"📋 **Enterprise Data Record Results for `{display_title}`:**\n\n"
+    return header + "\n\n".join(sections)
+
+
 def run_deterministic_agent_fallback(
     user_input: str,
     user_email: str,
@@ -500,59 +619,7 @@ def run_deterministic_agent_fallback(
         search_query = " ".join(record_ids) if record_ids else user_input
         search_res = _DATA_SERVICE.search_records(search_query)
         if search_res.get("success") and search_res.get("results"):
-            results = search_res["results"]
-            by_dataset: dict[str, list[dict[str, Any]]] = {}
-            for r in results:
-                ds = r.pop("_dataset")
-                by_dataset.setdefault(ds, []).append(r)
-
-            card_blocks = []
-            for ds, recs in by_dataset.items():
-                owner_info = _DATA_SERVICE.get_dataset_ownership(ds)
-                owner_str = ""
-                if owner_info.get("success") and "ownership" in owner_info:
-                    o = owner_info["ownership"]
-                    owner_str = f" *(SME Owner: {o['owner_name']} - {o['storage_provider']})*"
-
-                fields_list = []
-                for rec in recs[:3]:
-                    formatted_fields = ", ".join([f"**{k}**: `{v}`" for k, v in rec.items()])
-                    fields_list.append(f"  • {formatted_fields}")
-
-                card_blocks.append(f"📁 **Dataset: `{ds}`**{owner_str}:\n" + "\n".join(fields_list))
-
-            cust_id_display = ", ".join(set(record_ids)) if record_ids else "Requested Record"
-
-            # Check if this query is asking about services, repairs, or visits
-            if any(k in input_lower for k in ["service", "serviced", "repair", "visit"]):
-                summary_lines = []
-                if "service_history" in by_dataset:
-                    for s in by_dataset["service_history"]:
-                        summary_lines.append(f"• **Service Date:** `{s.get('service_date', 'N/A')}` | **Type:** `{s.get('service_type', 'N/A')}` | **Parts Serviced:** `{s.get('parts_serviced', 'N/A')}`")
-                if "repair_history" in by_dataset:
-                    for r in by_dataset["repair_history"]:
-                        summary_lines.append(f"• **Repair Date:** `{r.get('repair_date', 'N/A')}` | **Type:** `{r.get('repair_type', 'N/A')}` | **Fault Code:** `{r.get('fault_code', 'N/A')}` | **Reason:** `{r.get('fault_reason', 'N/A')}`")
-                if "visit_outcome" in by_dataset:
-                    for v in by_dataset["visit_outcome"]:
-                        summary_lines.append(f"• **Visit Date:** `{v.get('visit_date', 'N/A')}` | **Status:** `{v.get('visit_status', 'N/A')}` | **Feedback:** `{v.get('customer_feedback', 'N/A')}`")
-                if "installation_history" in by_dataset:
-                    for i in by_dataset["installation_history"]:
-                        summary_lines.append(f"• **Installation Completed:** `{i.get('installation_date', 'N/A')}`")
-
-                if summary_lines:
-                    return (
-                        f"🛠️ **Service & Repair Records for `{cust_id_display}`:**\n\n"
-                        f"Here are the recorded service, repair, and visit details for customer/boiler `{cust_id_display}`:\n\n" +
-                        "\n".join(summary_lines) + "\n\n" +
-                        f"📋 **All Connected Dataset Records:**\n\n" +
-                        "\n\n".join(card_blocks)
-                    )
-
-            return (
-                f"📊 **Enterprise Data Record Search Results (`{cust_id_display}`):**\n\n"
-                f"The following matching record(s) were retrieved across connected enterprise data storage platforms:\n\n" +
-                "\n\n".join(card_blocks)
-            )
+            return _synthesize_record_search_response(user_input, record_ids, search_res["results"])
 
     # 4. Data Storage Topology & Connected Sources
     storage_keywords = [
@@ -625,42 +692,46 @@ def run_deterministic_agent_fallback(
             "\n\n".join(owner_lines)
         )
 
-    # 6. Follow-up dataset location / source questions
+    # 6. Follow-up dataset location / source questions & Dataset discovery
     followup_data_keywords = [
         "where", "how can i get", "get the data", "get data", "find the data",
-        "access the data", "where to get", "where is it", "source"
+        "access the data", "where to get", "where is it", "source", "datasets related",
+        "these informations", "all these informations", "related datasets", "dataset list",
+        "which dataset", "what dataset", "these info", "this info", "datasets have",
+        "dataset locations", "list of datasets"
     ]
     if any(k in input_lower for k in followup_data_keywords):
-        if any(k in input_lower for k in ["customer", "contact", "account"]):
-            ds = "customer_master"
-            provider = "Salesforce CRM"
-            topic = "customer account details and commercial contacts"
-        elif any(k in input_lower for k in ["engineer", "shift", "availability", "workforce"]):
-            ds = "engineer_availability_and_shifts"
-            provider = "Workday HCM & Finance"
-            topic = "engineer shift schedules and workforce availability"
-        elif any(k in input_lower for k in ["inventory", "stock", "parts", "van"]):
-            ds = "inventory_and_van_stock"
-            provider = "SAP S/4HANA ERP"
-            topic = "van inventory stock and appliance parts"
-        elif any(k in input_lower for k in ["pressure", "flame", "telemetry", "sensor", "boiler"]):
-            ds = "boiler_telemetry_logs"
-            provider = "Azure Blob Container"
-            topic = "boiler telemetry readings and IoT sensor logs"
-        elif any(k in input_lower for k in ["appointment", "repair", "visit"]):
-            ds = "appointment_schedule"
-            provider = "Microsoft SQL Server"
-            topic = "engineer appointment schedules and repair outcomes"
-        else:
-            ctx = _extract_recent_context(chat_history)
-            ds = ctx.get("dataset", "customer_master")
-            provider = ctx.get("provider", "Salesforce CRM")
-            topic = ctx.get("topic", "enterprise operational records")
+        recent_datasets = _extract_all_recent_datasets(chat_history)
+        matching_in_query = [d for d in ALL_KNOWN_DATASETS if d in input_lower]
+        target_datasets = matching_in_query or recent_datasets or ["customer_master", "repair_history", "boiler_master", "customer_holdings", "property_master"]
 
+        from pathlib import Path
+        datasets_list = []
+        json_path = Path("data/dataset_ownership.json")
+        if json_path.exists():
+            try:
+                with open(json_path, "r", encoding="utf-8") as f:
+                    datasets_list = json.load(f).get("datasets", [])
+            except Exception:
+                pass
+
+        lines = []
+        for ds in target_datasets:
+            match = next((item for item in datasets_list if item.get("dataset_id") == ds), None)
+            if match:
+                lines.append(
+                    f"• **`{match['dataset_id']}`** ({match['dataset_name']}) → Hosted in **{match['storage_provider']}** (`{match['storage_type']}`)\n"
+                    f"  👤 SME Owner: **{match['owner_name']}** ({match['owner_email']})"
+                )
+            else:
+                lines.append(f"• **`{ds}`** → Enterprise Operational Dataset")
+
+        ds_str = ", ".join([f"`{d}`" for d in target_datasets])
         return (
-            f"📊 **Dataset Location Info:**\n"
-            f"The {topic} required for your query is located in the **{ds}** dataset (hosted in **{provider}**).\n\n"
-            f"💡 *Tip: Ask 'Check my access' if you wish to verify dataset permissions.*"
+            f"📊 **Enterprise Datasets & Storage Locations for your Query:**\n\n"
+            f"The records and information discussed are hosted across the following enterprise platforms ({ds_str}):\n\n" +
+            "\n\n".join(lines) + "\n\n"
+            f"💡 *Need access? Ask 'Raise an IT access request for {target_datasets[0]}' to initiate access entitlement.*"
         )
 
     # 7. Operational Telemetry & Diagnostics

@@ -305,7 +305,7 @@ def chat_api():
         session["chat_history"] = chat_history[-6:]
 
         access_required_flag = "Dataset Access & Entitlement Check" in agent_response or "Access Escalation Procedure Initiated" in agent_response or "Dataset Access Required" in agent_response or "Access Denied" in agent_response
-        response_graph = graph_service.extract_subgraph_for_query(user_message)
+        response_graph = graph_service.extract_subgraph_for_query(user_message, response=agent_response)
         _record_data_access_activity(
             user_email,
             user_message,

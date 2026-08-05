@@ -613,30 +613,49 @@ class KnowledgeGraphService:
     def find_matching_nodes(self, query: str) -> List[str]:
         """Case-insensitive search for node names matching a query string."""
         import re
-        clean_query = re.sub(r"[^\w\s]", " ", query).lower().strip()
-        query_words = set(clean_query.split())
-        query_words_singular = {w[:-1] if w.endswith('s') and len(w) > 3 else w for w in query_words}
+        clean_text = re.sub(r"[^\w\s]", " ", query).lower().strip()
+        text_words = set(clean_text.split())
+        text_words_singular = {w[:-1] if w.endswith('s') and len(w) > 3 else w for w in text_words}
 
         matches = []
+        category_words = {"dataset", "datasets", "domain", "domains", "metric", "metrics", "shared", "entity", "entities", "csv"}
+
         for node in self.graph.nodes:
-            clean_node = re.sub(r"[^\w\s]", " ", node).lower().strip()
+            clean_node = re.sub(r"[^\w\s]", " ", str(node)).lower().strip()
             node_words = set(clean_node.split())
             node_words_singular = {w[:-1] if w.endswith('s') and len(w) > 3 else w for w in node_words}
             
-            # Exact substring match
-            if clean_node in clean_query or clean_query in clean_node:
+            # Exact substring match on full node name
+            if clean_node in clean_text or clean_text in clean_node:
                 matches.append(node)
                 continue
-                
-            # Flexible word match (plural/singular)
-            if node_words_singular and node_words_singular.issubset(query_words_singular):
+
+            # Core name extraction without prefixes
+            core = str(node)
+            for prefix in ["Domain: ", "Dataset: ", "Metric: ", "Shared Entity: "]:
+                if core.startswith(prefix):
+                    core = core.replace(prefix, "", 1)
+                    break
+            if core.lower().endswith(".csv"):
+                core = core[:-4]
+
+            clean_core = re.sub(r"[^\w\s]", " ", core).lower().strip()
+            core_snake = clean_core.replace(" ", "_")
+
+            if clean_core and (clean_core in clean_text or core_snake in clean_text or any(core_snake in w for w in text_words)):
                 matches.append(node)
                 continue
-                
-            # Partial overlap for multi-word nodes (at least 50% of node words match)
-            if node_words_singular:
-                overlap = len(node_words_singular.intersection(query_words_singular))
-                if overlap > 0 and overlap >= len(node_words_singular) / 2:
+
+            core_words = set(clean_core.split()) - category_words
+            core_words_singular = {w[:-1] if w.endswith('s') and len(w) > 3 else w for w in core_words}
+
+            if core_words_singular and core_words_singular.issubset(text_words_singular):
+                matches.append(node)
+                continue
+
+            if core_words_singular:
+                overlap = len(core_words_singular.intersection(text_words_singular))
+                if overlap > 0 and overlap >= len(core_words_singular) / 2:
                     matches.append(node)
                     
         return list(set(matches))
@@ -785,15 +804,16 @@ class KnowledgeGraphService:
             "formatted_paths": path_summaries,
         }
 
-    def extract_subgraph_for_query(self, query: str) -> Dict[str, Any]:
+    def extract_subgraph_for_query(self, query: str, response: Optional[str] = None) -> Dict[str, Any]:
         """
-        Extract the exact sub-graph (nodes and edges) associated with a query / answer generation.
-        Maps Query -> Domain -> Dataset -> Shared Entity.
+        Extract the exact sub-graph (nodes and edges) associated with a query and generated response.
+        Maps Query / Response -> Domain -> Dataset -> Shared Entity.
         """
         sub_nodes = set()
         sub_edges = []
         
-        query_node_id = f"Query: {query[:30]}..."
+        header_text = query[:40] if len(query) <= 40 else query[:37] + "..."
+        query_node_id = f"Query: {header_text}"
         nodes_list = [{
             "id": query_node_id,
             "label": query_node_id,
@@ -801,18 +821,19 @@ class KnowledgeGraphService:
             "description": f"User query: {query}"
         }]
 
-        matched_nodes = self.find_matching_nodes(query)
+        search_text = f"{query}\n{response}" if response else query
+        matched_nodes = self.find_matching_nodes(search_text)
         seen_entities = set()
         
-        for node in matched_nodes[:3]:
+        for node in matched_nodes:
             # Link query directly to domains, datasets, shared entities, or metrics that match
             if node.startswith("Domain: ") or node.startswith("Shared Entity: ") or node.startswith("Dataset: ") or node.startswith("Metric: "):
                 sub_nodes.add(node)
                 sub_edges.append({
                     "source": query_node_id,
                     "target": node,
-                    "relation": "asks_about",
-                    "details": "Keyword match"
+                    "relation": "grounded_in" if response else "asks_about",
+                    "details": "Response & Query grounding match" if response else "Keyword match"
                 })
                 
                 # Traverse outwards (incoming and outgoing to catch dataset links)
@@ -861,6 +882,7 @@ class KnowledgeGraphService:
 
         return {
             "query": query,
+            "response": response,
             "nodes": nodes_list,
             "edges": unique_edges
         }
