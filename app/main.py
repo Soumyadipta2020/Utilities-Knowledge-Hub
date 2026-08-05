@@ -4,8 +4,13 @@ Main Entry Point for Utilities Knowledge Hub Flask Web Application.
 
 from flask import Flask, jsonify, render_template, request, session
 import pandas as pd
+from collections import deque
+from datetime import datetime, timedelta, timezone
+import hashlib
+import hmac
 from pathlib import Path
 import sys
+import threading
 
 # Add project root to python path to ensure imports work seamlessly
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -35,6 +40,11 @@ from app.agent.agent_builder import (
 # Initialize Flask App
 app = Flask(__name__, template_folder=str(TEMPLATES_DIR))
 app.secret_key = SECRET_KEY
+app.config.update(
+    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SAMESITE="Lax",
+    MAX_CONTENT_LENGTH=1024 * 1024,
+)
 
 # Initialize Services & Inject dependencies into tools
 graph_service = KnowledgeGraphService(DATA_DIR)
@@ -44,6 +54,209 @@ register_services(graph_service, data_service)
 
 # Build LangChain executor (if OpenRouter API key exists)
 agent_executor = build_agent_executor(OPENROUTER_API_KEY, OPENROUTER_MODEL_NAME, OPENROUTER_BASE_URL)
+
+# Privacy-safe, runtime-only security telemetry. Raw email addresses and query
+# text are intentionally excluded. Production should replace this with an
+# immutable, access-controlled audit store.
+DATA_ACCESS_EVENTS = deque(maxlen=2000)
+DATA_ACCESS_EVENTS_LOCK = threading.Lock()
+DEFAULT_SECRET_KEY = "utilities-knowledge-hub-secret-key-2026"
+
+# Illustrative historical baseline for the executive security demonstration.
+# Live chat and preview activity is added to these values at runtime.
+DEMO_ACCESS_BASELINE = [
+    {"dataset": "customer_master", "touches": 184, "unique_users": 42, "access_requests": 18, "escalated": 4, "minutes_ago": 7},
+    {"dataset": "boiler_telemetry_logs", "touches": 129, "unique_users": 31, "access_requests": 23, "escalated": 9, "minutes_ago": 12},
+    {"dataset": "repair_history", "touches": 96, "unique_users": 27, "access_requests": 12, "escalated": 3, "minutes_ago": 19},
+    {"dataset": "engineer_skill", "touches": 77, "unique_users": 19, "access_requests": 8, "escalated": 2, "minutes_ago": 28},
+    {"dataset": "quotes_and_sales", "touches": 61, "unique_users": 16, "access_requests": 6, "escalated": 1, "minutes_ago": 41},
+    {"dataset": "regional_demand_forecast", "touches": 54, "unique_users": 14, "access_requests": 5, "escalated": 1, "minutes_ago": 55},
+]
+DEMO_UNIQUE_PEOPLE = 73
+
+
+def _matched_dataset_names(response_graph: dict) -> list[str]:
+    """Return unique dataset filenames found in query lineage."""
+    matched_sources = []
+    seen_filenames = set()
+    for node in response_graph.get("nodes", []):
+        node_id = str(node.get("id", ""))
+        if not node_id.startswith("Dataset: "):
+            continue
+        filename = node_id.replace("Dataset: ", "", 1)
+        if filename in seen_filenames:
+            continue
+        seen_filenames.add(filename)
+        matched_sources.append(filename)
+    return matched_sources
+
+
+def _normalize_dataset_name(dataset: str) -> str:
+    """Align local filenames and enterprise storage catalog dataset names."""
+    name = Path(str(dataset)).name.strip()
+    return name[:-4] if name.casefold().endswith(".csv") else name
+
+
+def _infer_access_datasets(
+    user_message: str,
+    agent_response: str,
+    response_graph: dict,
+) -> list[str]:
+    """Map chat access workflows to the enterprise storage catalog."""
+    datasets = [_normalize_dataset_name(name) for name in _matched_dataset_names(response_graph)]
+    combined = f"{user_message} {agent_response}".casefold()
+    aliases = [
+        (("live_metrics", "telemetry", "pressure", "flame", "outage"), "boiler_telemetry_logs"),
+        (("business_operations", "sales funnel", "commercial operational"), "quotes_and_sales"),
+        (("repair", "fault"), "repair_history"),
+        (("engineer skill", "skill matrix"), "engineer_skill"),
+        (("regional demand", "capacity forecast"), "regional_demand_forecast"),
+    ]
+    for terms, mapped_dataset in aliases:
+        if any(term in combined for term in terms) and mapped_dataset not in datasets:
+            datasets.append(mapped_dataset)
+    return datasets
+
+
+def _user_fingerprint(user_email: str) -> str:
+    """Create a stable, non-reversible runtime identifier for unique-user counts."""
+    return hmac.new(
+        SECRET_KEY.encode("utf-8"),
+        user_email.strip().casefold().encode("utf-8"),
+        hashlib.sha256,
+    ).hexdigest()[:12]
+
+
+def _record_data_access_activity(
+    user_email: str,
+    user_message: str,
+    agent_response: str,
+    response_graph: dict,
+    access_required: bool,
+) -> None:
+    """Record privacy-safe dataset touch activity for the security dashboard."""
+    datasets = _infer_access_datasets(user_message, agent_response, response_graph)
+    request_submitted = (
+        "access escalation procedure initiated" in agent_response.casefold()
+        or "tick-" in agent_response.casefold()
+    )
+    if not datasets and (access_required or request_submitted):
+        datasets = ["Unmapped restricted dataset"]
+    if not datasets:
+        return
+
+    access_terms = {
+        "access", "download", "export", "raw", "records", "sample", "show", "view", "request"
+    }
+    query_terms = set(user_message.casefold().replace("_", " ").split())
+    event_type = "Access request" if access_required or request_submitted or access_terms.intersection(query_terms) else "Data query"
+    if request_submitted:
+        decision = "Request submitted"
+    elif access_required:
+        decision = "Escalated for confirmation"
+    else:
+        decision = "Observed under demo policy"
+    _append_data_access_events(user_email, datasets, event_type, decision)
+
+
+def _append_data_access_events(
+    user_identity: str,
+    datasets: list[str],
+    event_type: str,
+    decision: str,
+) -> None:
+    """Append one normalized security event per dataset."""
+    timestamp = datetime.now(timezone.utc).isoformat()
+    fingerprint = _user_fingerprint(user_identity)
+
+    with DATA_ACCESS_EVENTS_LOCK:
+        for dataset in datasets:
+            DATA_ACCESS_EVENTS.append({
+                "timestamp": timestamp,
+                "user": fingerprint,
+                "dataset": _normalize_dataset_name(dataset),
+                "event_type": event_type,
+                "decision": decision,
+            })
+
+
+def _access_activity_summary() -> dict:
+    """Combine seeded demo history with runtime events without exposing identities."""
+    with DATA_ACCESS_EVENTS_LOCK:
+        events = list(DATA_ACCESS_EVENTS)
+
+    by_dataset: dict[str, dict] = {}
+    for event in events:
+        item = by_dataset.setdefault(event["dataset"], {
+            "dataset": event["dataset"],
+            "touches": 0,
+            "unique_users": set(),
+            "access_requests": 0,
+            "escalated": 0,
+            "last_activity": None,
+        })
+        item["touches"] += 1
+        item["unique_users"].add(event["user"])
+        if event["event_type"] == "Access request":
+            item["access_requests"] += 1
+        if event["decision"] == "Escalated for confirmation":
+            item["escalated"] += 1
+        item["last_activity"] = max(item["last_activity"] or event["timestamp"], event["timestamp"])
+
+    live_rows = []
+    for item in by_dataset.values():
+        item["unique_users"] = len(item["unique_users"])
+        live_rows.append(item)
+
+    now = datetime.now(timezone.utc)
+    combined: dict[str, dict] = {}
+    for baseline in DEMO_ACCESS_BASELINE:
+        combined[baseline["dataset"]] = {
+            "dataset": baseline["dataset"],
+            "touches": baseline["touches"],
+            "unique_users": baseline["unique_users"],
+            "access_requests": baseline["access_requests"],
+            "escalated": baseline["escalated"],
+            "last_activity": (now - timedelta(minutes=baseline["minutes_ago"])).isoformat(),
+            "has_live_activity": False,
+        }
+
+    for live in live_rows:
+        item = combined.setdefault(live["dataset"], {
+            "dataset": live["dataset"],
+            "touches": 0,
+            "unique_users": 0,
+            "access_requests": 0,
+            "escalated": 0,
+            "last_activity": None,
+            "has_live_activity": False,
+        })
+        item["touches"] += live["touches"]
+        item["unique_users"] += live["unique_users"]
+        item["access_requests"] += live["access_requests"]
+        item["escalated"] += live["escalated"]
+        item["last_activity"] = max(item["last_activity"] or live["last_activity"], live["last_activity"])
+        item["has_live_activity"] = True
+
+    provider_map = {}
+    for provider in globals().get("STORAGE_PROVIDERS_DATA", []):
+        for dataset in provider.get("hosted_datasets", []):
+            provider_map[_normalize_dataset_name(dataset)] = provider["name"]
+
+    dataset_rows = list(combined.values())
+    for item in dataset_rows:
+        item["storage_provider"] = provider_map.get(item["dataset"], "Storage mapping pending")
+    dataset_rows.sort(key=lambda item: (-item["touches"], item["dataset"].casefold()))
+
+    return {
+        "scope": "Seeded demonstration history plus live activity from this application process",
+        "total_touches": sum(item["touches"] for item in dataset_rows),
+        "unique_users": DEMO_UNIQUE_PEOPLE + len({event["user"] for event in events}),
+        "access_requests": sum(item["access_requests"] for item in dataset_rows),
+        "escalated": sum(item["escalated"] for item in dataset_rows),
+        "datasets": dataset_rows,
+        "privacy_note": "Baseline figures are illustrative. Live additions use keyed fingerprints; email addresses and query text are not stored.",
+    }
 
 
 @app.route("/")
@@ -93,6 +306,13 @@ def chat_api():
 
         access_required_flag = "Dataset Access Required" in agent_response or "Access Denied" in agent_response
         response_graph = graph_service.extract_subgraph_for_query(user_message)
+        _record_data_access_activity(
+            user_email,
+            user_message,
+            agent_response,
+            response_graph,
+            access_required_flag,
+        )
 
         return jsonify({
             "success": True,
@@ -108,6 +328,75 @@ def chat_api():
             "success": False,
             "error": f"Internal server error: {str(e)}"
         }), 500
+
+
+@app.route("/api/trust/summary", methods=["GET"])
+def get_trust_summary_api():
+    """Return security posture without exposing credentials or personal identifiers."""
+    openrouter_configured = bool(
+        OPENROUTER_API_KEY
+        and OPENROUTER_API_KEY != "your_openrouter_api_key_here"
+        and not OPENROUTER_API_KEY.lower().startswith("replace")
+    )
+    flask_secret_is_default = SECRET_KEY == DEFAULT_SECRET_KEY
+    provider_storage = [
+        {
+            "name": provider["name"],
+            "status": provider["status"],
+            "severity": "protected" if provider["status"] in {"Operational", "Connected"} else "warning",
+            "detail": (
+                f"{provider['type']} · {provider['volume']} · {provider['record_count']} records · "
+                f"hosts {', '.join(provider['hosted_datasets'])}."
+            ),
+            "protection": provider["governance"],
+            "category": provider["category"],
+            "is_demonstration": True,
+        }
+        for provider in STORAGE_PROVIDERS_DATA
+    ]
+
+    return jsonify({
+        "success": True,
+        "summary": {
+            "overall_status": "Demo safeguards active; production hardening required",
+            "credentials": [
+                {
+                    "name": "OpenRouter API key",
+                    "environment_variable": "OPENROUTER_API_KEY",
+                    "status": "Configured" if openrouter_configured else "Not configured",
+                    "severity": "protected" if openrouter_configured else "informational",
+                    "detail": (
+                        "Stored server-side and never returned by the security API or browser UI."
+                        if openrouter_configured
+                        else "No external LLM credential is loaded; the deterministic fallback is active."
+                    ),
+                },
+                {
+                    "name": "Flask session signing secret",
+                    "environment_variable": "SECRET_KEY",
+                    "status": "Default value in use" if flask_secret_is_default else "Custom value configured",
+                    "severity": "warning" if flask_secret_is_default else "protected",
+                    "detail": (
+                        "Replace the repository default before deployment; it signs browser sessions."
+                        if flask_secret_is_default
+                        else "A custom server-side secret signs session cookies and is not exposed to the client."
+                    ),
+                },
+            ],
+            "storage": provider_storage,
+            "access_activity": _access_activity_summary(),
+            "protections": [
+                {"name": "Server-side secret isolation", "status": "Active", "severity": "protected", "detail": "Credential values are read on the server and never included in API responses."},
+                {"name": "Privacy-safe access counting", "status": "Active", "severity": "protected", "detail": "Unique-user metrics use keyed fingerprints; raw email addresses and query text are not retained in security telemetry."},
+                {"name": "Dataset filename validation", "status": "Active", "severity": "protected", "detail": "Data-preview requests strip directory components and permit CSV files only."},
+                {"name": "Request size limit", "status": "Active", "severity": "protected", "detail": "Incoming request bodies are limited to 1 MB."},
+                {"name": "Role-based data authorization", "status": "Demo policy only", "severity": "warning", "detail": "Current DataService checks are permissive; production requires SSO-backed RBAC and dataset entitlements."},
+                {"name": "Provider storage controls", "status": "Mapped", "severity": "protected", "detail": "Each enterprise storage location displays its configured IAM, encryption, masking, firewall, or audit controls from Storage & Governance."},
+                {"name": "Immutable audit retention", "status": "Runtime only", "severity": "warning", "detail": "Access counters reset when the process restarts. Production requires durable, tamper-evident audit storage."},
+                {"name": "TLS and secure cookies", "status": "Deployment dependent", "severity": "warning", "detail": "HTTPS termination and Secure cookies must be enabled by the production hosting environment."},
+            ],
+        },
+    })
 
 
 @app.route("/api/pipeline/run-stage/<int:stage_id>", methods=["POST", "GET"])
@@ -440,6 +729,16 @@ def preview_datasource_api(filename: str):
         columns = list(df_clean.columns)
         total_rows = len(df_clean)
         records = df_clean.head(15).to_dict(orient="records")
+
+        audit_identity = session.get("conversation_scope") or (
+            f"anonymous:{request.remote_addr}:{str(request.user_agent.string or 'unknown')[:120]}"
+        )
+        _append_data_access_events(
+            audit_identity,
+            [safe_filename],
+            "Direct preview",
+            "Allowed by demo preview endpoint",
+        )
 
         return jsonify({
             "success": True,

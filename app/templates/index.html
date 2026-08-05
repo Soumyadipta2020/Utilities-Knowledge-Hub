@@ -1490,6 +1490,231 @@
     .relations-tab-header { flex-direction: column; }
     .relations-tab-actions { width: 100%; justify-content: space-between; }
 }
+
+/* Application Security Center */
+.executive-tab {
+    padding: 20px 28px 28px;
+    overflow-y: auto;
+    background:
+        radial-gradient(circle at 85% 10%, rgba(217, 102, 43, 0.08), transparent 28%),
+        #0d0d0d;
+}
+.executive-section-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 18px;
+}
+.executive-eyebrow {
+    color: var(--accent-orange);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+.executive-section-header h3 {
+    margin: 5px 0;
+    font-family: 'Outfit', sans-serif;
+    font-size: 22px;
+    color: #fff;
+}
+.executive-section-header p {
+    max-width: 780px;
+    color: #94a3b8;
+    font-size: 12px;
+    line-height: 1.55;
+}
+.trace-run-btn {
+    flex-shrink: 0;
+    padding: 8px 13px;
+    color: #fff;
+    background: var(--accent-orange);
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 700;
+}
+.trace-run-btn:hover { background: #c25620; }
+.trust-posture-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 16px;
+}
+.trust-posture-card {
+    padding: 14px;
+    background: rgba(18,18,18,.92);
+    border: 1px solid rgba(255,255,255,.075);
+    border-radius: 10px;
+}
+.trust-posture-card.security-overall-card { border-color: rgba(245,158,11,.28); }
+.trust-posture-card > span {
+    color: #64748b;
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+}
+.trust-posture-card > strong {
+    display: block;
+    margin-top: 7px;
+    color: #f8fafc;
+    font-size: 14px;
+}
+.trust-posture-card > small {
+    display: block;
+    margin-top: 4px;
+    color: #94a3b8;
+    font-size: 9.5px;
+    line-height: 1.4;
+}
+.security-main-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 14px;
+}
+.trust-center-panel {
+    padding: 16px;
+    background: rgba(16,16,16,.94);
+    border: 1px solid rgba(255,255,255,.07);
+    border-radius: 10px;
+}
+.security-access-panel { margin-bottom: 14px; }
+.security-section-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 12px;
+}
+.security-section-heading h4 { margin: 0 0 4px; color: #fff; font-size: 12px; }
+.security-section-heading p { color: #64748b; font-size: 9.5px; line-height: 1.45; }
+.security-summary-chip {
+    flex-shrink: 0;
+    padding: 4px 8px;
+    color: #fdba74;
+    background: rgba(217,102,43,.1);
+    border: 1px solid rgba(217,102,43,.24);
+    border-radius: 5px;
+    font-size: 9px;
+    font-weight: 700;
+}
+.security-card-list { display: flex; flex-direction: column; gap: 8px; }
+.security-storage-list { max-height: 310px; padding-right: 4px; overflow-y: auto; }
+.security-status-card {
+    padding: 11px;
+    background: rgba(255,255,255,.025);
+    border: 1px solid rgba(255,255,255,.065);
+    border-radius: 7px;
+}
+.security-status-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+}
+.security-status-heading strong { color: #e2e8f0; font-size: 10.5px; }
+.security-status-card p { margin-top: 7px; color: #94a3b8; font-size: 9.5px; line-height: 1.45; }
+.security-status-badge {
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 8px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+.security-status-badge.protected { color: #4ade80; background: rgba(34,197,94,.1); }
+.security-status-badge.warning { color: #fbbf24; background: rgba(245,158,11,.11); }
+.security-status-badge.informational { color: #7dd3fc; background: rgba(59,130,246,.1); }
+.security-config-name {
+    width: fit-content;
+    margin-top: 7px;
+    padding: 2px 6px;
+    color: #94a3b8;
+    background: rgba(0,0,0,.28);
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 8.5px;
+}
+.security-protection-detail {
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+    margin-top: 8px;
+    padding-top: 8px;
+    color: #cbd5e1;
+    border-top: 1px solid rgba(255,255,255,.05);
+    font-size: 9px;
+    line-height: 1.45;
+}
+.security-protection-detail i { margin-top: 2px; color: #4ade80; }
+.security-table-wrap { overflow-x: auto; border: 1px solid rgba(255,255,255,.06); border-radius: 7px; }
+.security-table { width: 100%; border-collapse: collapse; font-size: 9.5px; text-align: left; }
+.security-table th {
+    padding: 8px 10px;
+    color: #64748b;
+    background: rgba(0,0,0,.26);
+    border-bottom: 1px solid rgba(255,255,255,.07);
+    font-size: 8px;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+.security-table td {
+    padding: 9px 10px;
+    color: #cbd5e1;
+    border-bottom: 1px solid rgba(255,255,255,.045);
+    white-space: nowrap;
+}
+.security-table tr:last-child td { border-bottom: none; }
+.security-table td:first-child { white-space: normal; }
+.security-table td strong { color: #f1f5f9; font-weight: 600; }
+.security-live-badge {
+    display: inline-block;
+    margin-left: 6px;
+    padding: 1px 4px;
+    color: #4ade80;
+    background: rgba(34,197,94,.1);
+    border-radius: 3px;
+    font-size: 7px;
+    font-weight: 800;
+    vertical-align: middle;
+}
+.security-table-escalated { color: #fbbf24; font-weight: 700; }
+.security-empty-state { padding: 18px !important; color: #64748b !important; text-align: center; white-space: normal !important; }
+.security-privacy-note {
+    margin-top: 9px;
+    color: #64748b;
+    font-size: 8.5px;
+    line-height: 1.45;
+}
+.control-register { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.control-register-item {
+    padding: 10px;
+    background: rgba(255,255,255,.025);
+    border: 1px solid rgba(255,255,255,.06);
+    border-radius: 7px;
+}
+.control-register-heading {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 6px;
+    color: #e2e8f0;
+    font-size: 9.5px;
+    font-weight: 700;
+}
+.control-register-item p { color: #94a3b8; font-size: 8.8px; line-height: 1.45; }
+
+@media (max-width: 1150px) {
+    .trust-posture-grid, .control-register { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 820px) {
+    .executive-section-header, .security-section-heading { flex-direction: column; }
+    .security-main-grid, .trust-posture-grid, .control-register { grid-template-columns: 1fr; }
+}
 .arch-bucket {
     transition: all 0.4s ease;
     border: 1px solid rgba(255,255,255,0.08);
@@ -1587,6 +1812,7 @@
             <div class="nav-tab active" onclick="switchMainTab(this, 'tab-conversation')">Conversation</div>
             <div class="nav-tab" onclick="switchMainTab(this, 'tab-harnessing')">Domain Intelligence Sub-System Metrics</div>
             <div class="nav-tab" onclick="switchMainTab(this, 'tab-storage')">Storage & Governance</div>
+            <div class="nav-tab" onclick="switchMainTab(this, 'tab-trust')">Trust Center</div>
         </div>
 
         <div id="tab-conversation" class="tab-content active">
@@ -1645,6 +1871,7 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
             </form>
         </div>
         </div> <!-- End tab-conversation -->
+
 
 
         <!-- Domain Intelligence Sub-System Metrics Tab -->
@@ -2397,6 +2624,108 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
             </div>
         </div> <!-- End tab-storage -->
 
+        <!-- Application Security Center -->
+        <div id="tab-trust" class="tab-content executive-tab">
+            <div class="executive-section-header">
+                <div>
+                    <div class="executive-eyebrow">Application security</div>
+                    <h3>Security status and data-access activity</h3>
+                    <p>Operational view of credential configuration, actual application storage, privacy-safe access attempts, and the safeguards protecting business data. Secret values and personal identities are never displayed.</p>
+                </div>
+                <button type="button" class="trace-run-btn" onclick="loadTrustCenter(true)"><i class="fa-solid fa-rotate"></i>&nbsp; Refresh security status</button>
+            </div>
+
+            <div class="trust-posture-grid">
+                <div class="trust-posture-card security-overall-card">
+                    <span>Overall posture</span>
+                    <strong id="securityOverallStatus">Loading…</strong>
+                    <small>Current application safeguards and deployment gaps</small>
+                </div>
+                <div class="trust-posture-card">
+                    <span>Unique people</span>
+                    <strong id="securityUniqueUsers">—</strong>
+                    <small>Seeded demonstration baseline plus privacy-safe live users</small>
+                </div>
+                <div class="trust-posture-card">
+                    <span>Dataset touches</span>
+                    <strong id="securityTouches">—</strong>
+                    <small>Illustrative history plus new chat and preview activity</small>
+                </div>
+                <div class="trust-posture-card">
+                    <span>Escalated attempts</span>
+                    <strong id="securityEscalated">—</strong>
+                    <small>Requests requiring explicit user confirmation</small>
+                </div>
+            </div>
+
+            <div class="security-main-grid">
+                <section class="trust-center-panel">
+                    <div class="security-section-heading">
+                        <div>
+                            <h4><i class="fa-solid fa-key" style="color:#60a5fa"></i>&nbsp; Credentials and API keys</h4>
+                            <p>Configuration status only. Key values are intentionally unavailable to the browser.</p>
+                        </div>
+                    </div>
+                    <div id="securityCredentials" class="security-card-list">
+                        <div class="security-status-card"><p>Loading credential status…</p></div>
+                    </div>
+                </section>
+
+                <section class="trust-center-panel">
+                    <div class="security-section-heading">
+                        <div>
+                            <h4><i class="fa-solid fa-server" style="color:#c084fc"></i>&nbsp; Enterprise storage locations</h4>
+                            <p>Uses the same demonstration provider topology and governance controls shown in Storage & Governance.</p>
+                        </div>
+                    </div>
+                    <div id="securityStorage" class="security-card-list security-storage-list">
+                        <div class="security-status-card"><p>Loading storage security…</p></div>
+                    </div>
+                </section>
+            </div>
+
+            <section class="trust-center-panel security-access-panel">
+                <div class="security-section-heading">
+                    <div>
+                        <h4><i class="fa-solid fa-user-shield" style="color:#4ade80"></i>&nbsp; Data access activity by dataset</h4>
+                        <p id="securityAccessScope">Runtime activity is loading…</p>
+                    </div>
+                    <span id="securityAccessRequests" class="security-summary-chip">— access requests</span>
+                </div>
+                <div class="security-table-wrap">
+                    <table class="security-table">
+                        <thead>
+                            <tr>
+                                <th>Dataset</th>
+                                <th>Storage location</th>
+                                <th>Touches</th>
+                                <th>Unique people</th>
+                                <th>Access requests</th>
+                                <th>Escalated</th>
+                                <th>Last activity</th>
+                            </tr>
+                        </thead>
+                        <tbody id="securityAccessTable">
+                            <tr><td colspan="7" class="security-empty-state">No activity loaded.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p id="securityPrivacyNote" class="security-privacy-note"></p>
+            </section>
+
+            <section class="trust-center-panel">
+                <div class="security-section-heading">
+                    <div>
+                        <h4><i class="fa-solid fa-shield-halved" style="color:#f59e0b"></i>&nbsp; How business data is protected</h4>
+                        <p>Implemented controls and remaining security work are shown together—without presenting demo safeguards as production-ready.</p>
+                    </div>
+                </div>
+                <div id="securityProtectionRegister" class="control-register">
+                    <div class="control-register-item"><p>Loading protection controls…</p></div>
+                </div>
+            </section>
+        </div>
+
         <!-- Manual Knowledge Graph Relations Floating Window -->
         <div id="relationModal" class="modal-overlay" onclick="closeRelationModalFromBackdrop(event)">
             <div class="relations-tab-panel relations-floating-panel" role="dialog" aria-modal="true" aria-labelledby="relationsDialogTitle">
@@ -2552,6 +2881,98 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
             if (tabId) {
                 const target = document.getElementById(tabId);
                 if (target) target.classList.add('active');
+            }
+            if (tabId === 'tab-trust') loadTrustCenter();
+        }
+
+
+        function escapeTrustHtml(value) {
+            return String(value ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function formatTrustDate(value) {
+            if (!value) return 'Not available';
+            const date = new Date(value);
+            return Number.isNaN(date.getTime()) ? String(value) : date.toLocaleString();
+        }
+
+        function securityStateClass(severity) {
+            if (severity === 'protected') return 'protected';
+            if (severity === 'warning') return 'warning';
+            return 'informational';
+        }
+
+        function securityStatusCard(item, extra = '') {
+            const stateClass = securityStateClass(item.severity);
+            return `<article class="security-status-card">
+                <div class="security-status-heading">
+                    <strong>${escapeTrustHtml(item.name)}</strong>
+                    <span class="security-status-badge ${stateClass}">${escapeTrustHtml(item.status)}</span>
+                </div>
+                ${extra}
+                <p>${escapeTrustHtml(item.detail)}</p>
+                ${item.protection ? `<div class="security-protection-detail"><i class="fa-solid fa-lock"></i><span>${escapeTrustHtml(item.protection)}</span></div>` : ''}
+            </article>`;
+        }
+
+        async function loadTrustCenter() {
+            try {
+                const response = await fetch('/api/trust/summary');
+                const data = await response.json();
+                if (!response.ok || !data.success) throw new Error(data.error || 'Unable to load security status.');
+                const summary = data.summary;
+                const activity = summary.access_activity;
+
+                document.getElementById('securityOverallStatus').textContent = summary.overall_status;
+                document.getElementById('securityUniqueUsers').textContent = activity.unique_users.toLocaleString();
+                document.getElementById('securityTouches').textContent = activity.total_touches.toLocaleString();
+                document.getElementById('securityEscalated').textContent = activity.escalated.toLocaleString();
+                document.getElementById('securityAccessRequests').textContent = `${activity.access_requests.toLocaleString()} access requests`;
+                document.getElementById('securityAccessScope').textContent = activity.scope;
+                document.getElementById('securityPrivacyNote').textContent = activity.privacy_note;
+
+                document.getElementById('securityCredentials').innerHTML = summary.credentials.map(item => {
+                    const extra = `<div class="security-config-name">${escapeTrustHtml(item.environment_variable)}</div>`;
+                    return securityStatusCard(item, extra);
+                }).join('');
+
+                document.getElementById('securityStorage').innerHTML = summary.storage.map(item => {
+                    const providerType = `<div class="security-config-name">${escapeTrustHtml(item.category)} · demonstration topology</div>`;
+                    return securityStatusCard(item, providerType);
+                }).join('');
+
+                const accessBody = document.getElementById('securityAccessTable');
+                if (!activity.datasets.length) {
+                    accessBody.innerHTML = '<tr><td colspan="7" class="security-empty-state">No dataset activity is available.</td></tr>';
+                } else {
+                    accessBody.innerHTML = activity.datasets.map(item => `<tr>
+                        <td><strong>${escapeTrustHtml(item.dataset)}</strong>${item.has_live_activity ? '<span class="security-live-badge">LIVE</span>' : ''}</td>
+                        <td>${escapeTrustHtml(item.storage_provider)}</td>
+                        <td>${item.touches.toLocaleString()}</td>
+                        <td>${item.unique_users.toLocaleString()}</td>
+                        <td>${item.access_requests.toLocaleString()}</td>
+                        <td><span class="security-table-escalated">${item.escalated.toLocaleString()}</span></td>
+                        <td>${escapeTrustHtml(formatTrustDate(item.last_activity))}</td>
+                    </tr>`).join('');
+                }
+
+                document.getElementById('securityProtectionRegister').innerHTML = summary.protections.map(control => {
+                    const stateClass = securityStateClass(control.severity);
+                    return `<div class="control-register-item">
+                        <div class="control-register-heading">
+                            <span>${escapeTrustHtml(control.name)}</span>
+                            <span class="security-status-badge ${stateClass}">${escapeTrustHtml(control.status)}</span>
+                        </div>
+                        <p>${escapeTrustHtml(control.detail)}</p>
+                    </div>`;
+                }).join('');
+            } catch (error) {
+                document.getElementById('securityCredentials').innerHTML = `<div class="security-status-card"><p>Security status could not be loaded: ${escapeTrustHtml(error.message)}</p></div>`;
             }
         }
 
