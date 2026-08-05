@@ -440,11 +440,10 @@
             color: #fff;
         }
 
+        .filter-pill.domain.active { border-color: #22c55e; color: #22c55e; background: rgba(34, 197, 94, 0.15); }
         .filter-pill.dataset.active { border-color: var(--accent-orange); color: var(--accent-orange); background: var(--accent-orange-soft); }
-        .filter-pill.sme.active { border-color: #c084fc; color: #c084fc; background: rgba(192, 132, 252, 0.15); }
-        .filter-pill.equipment.active { border-color: #22c55e; color: #22c55e; background: rgba(34, 197, 94, 0.15); }
-        .filter-pill.error.active { border-color: #f43f5e; color: #f43f5e; background: rgba(244, 63, 94, 0.15); }
-        .filter-pill.metric.active { border-color: #facc15; color: #facc15; background: rgba(250, 204, 21, 0.15); }
+        .filter-pill.entity.active { border-color: #f43f5e; color: #f43f5e; background: rgba(244, 63, 94, 0.15); }
+        .filter-pill.metric.active { border-color: #c084fc; color: #c084fc; background: rgba(192, 132, 252, 0.15); }
 
         .view-mode-toggle {
             display: flex;
@@ -2075,7 +2074,27 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
             const wrapper = canvas.parentElement;
             const ctx = canvas.getContext('2d');
             
-            const nodesToRender = (graphData.nodes || []).filter(n => activeCategoryFilter === 'All' || n.category === activeCategoryFilter);
+            let nodesToRender = [];
+            if (activeCategoryFilter === 'All') {
+                nodesToRender = graphData.nodes || [];
+                nodesToRender.forEach(n => n._isPrimary = true);
+            } else {
+                const primaryNodes = (graphData.nodes || []).filter(n => n.category === activeCategoryFilter);
+                const primaryNodeIds = new Set(primaryNodes.map(n => n.id));
+                
+                const connectedNodeIds = new Set(primaryNodeIds);
+                (graphData.edges || []).forEach(e => {
+                    const src = typeof e.source === 'object' ? e.source.id : e.source;
+                    const tgt = typeof e.target === 'object' ? e.target.id : e.target;
+                    if (primaryNodeIds.has(src)) connectedNodeIds.add(tgt);
+                    if (primaryNodeIds.has(tgt)) connectedNodeIds.add(src);
+                });
+                
+                nodesToRender = (graphData.nodes || []).filter(n => connectedNodeIds.has(n.id));
+                nodesToRender.forEach(n => {
+                    n._isPrimary = primaryNodeIds.has(n.id);
+                });
+            }
 
             let computedHeight = wrapper.clientHeight || 460;
             if (currentViewMode === 'tree') {
@@ -2095,11 +2114,11 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
             canvas.style.height = computedHeight + 'px';
 
             const categoryConfig = {
-                'Dataset':   { color: '#D9662B', bg: 'rgba(217, 102, 43, 0.08)', icon: '\uf1c0', label: 'Datasets' },
-                'SME':       { color: '#c084fc', bg: 'rgba(192, 132, 252, 0.08)', icon: '\uf007', label: 'SMEs' },
-                'Equipment': { color: '#22c55e', bg: 'rgba(34, 197, 94, 0.08)', icon: '\uf0ad', label: 'Equipment' },
-                'Error':     { color: '#f43f5e', bg: 'rgba(244, 63, 94, 0.08)', icon: '\uf071', label: 'Faults' },
-                'Metric':    { color: '#facc15', bg: 'rgba(250, 204, 21, 0.08)', icon: '\uf201', label: 'Metrics' }
+                'Domain Cluster':  { color: '#22c55e', bg: 'rgba(34, 197, 94, 0.08)', icon: '\uf0e8', label: 'Domains' },
+                'Dataset':         { color: '#D9662B', bg: 'rgba(217, 102, 43, 0.08)', icon: '\uf1c0', label: 'Datasets' },
+                'Key Info Link':   { color: '#f43f5e', bg: 'rgba(244, 63, 94, 0.08)', icon: '\uf0c1', label: 'Shared Entities' },
+                'Business Metric': { color: '#c084fc', bg: 'rgba(192, 132, 252, 0.08)', icon: '\uf201', label: 'Metrics' },
+                'Entity':          { color: '#facc15', bg: 'rgba(250, 204, 21, 0.08)', icon: '\uf111', label: 'Entity' }
             };
 
             const nodeMap = {};
@@ -2156,11 +2175,11 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
             } else {
                 // --- Domain Cluster Layout ---
                 const clusterCenters = {
-                    'Equipment': { x: width * 0.22, y: height * 0.30 },
-                    'Error':     { x: width * 0.22, y: height * 0.72 },
-                    'Metric':    { x: width * 0.50, y: height * 0.50 },
-                    'Dataset':   { x: width * 0.78, y: height * 0.30 },
-                    'SME':       { x: width * 0.78, y: height * 0.72 }
+                    'Domain Cluster':  { x: width * 0.25, y: height * 0.30 },
+                    'Key Info Link':   { x: width * 0.25, y: height * 0.72 },
+                    'Entity':          { x: width * 0.50, y: height * 0.50 },
+                    'Dataset':         { x: width * 0.75, y: height * 0.30 },
+                    'Business Metric': { x: width * 0.75, y: height * 0.72 }
                 };
                 nodesToRender.forEach((n, idx) => {
                     const cat = n.category || 'Metric';
@@ -2432,11 +2451,10 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
             <div class="graph-controls-bar">
                 <div class="graph-filter-pills">
                     <button class="filter-pill active" data-cat="All" onclick="filterGraphCategory('All')">All Domains</button>
-                    <button class="filter-pill dataset" data-cat="Dataset" onclick="filterGraphCategory('Dataset')"><i class="fa-solid fa-database"></i> Datasets & Lineage</button>
-                    <button class="filter-pill sme" data-cat="SME" onclick="filterGraphCategory('SME')"><i class="fa-solid fa-user"></i> SME Owners</button>
-                    <button class="filter-pill equipment" data-cat="Equipment" onclick="filterGraphCategory('Equipment')"><i class="fa-solid fa-wrench"></i> Equipment Models</button>
-                    <button class="filter-pill error" data-cat="Error" onclick="filterGraphCategory('Error')"><i class="fa-solid fa-triangle-exclamation"></i> Fault Errors</button>
-                    <button class="filter-pill metric" data-cat="Metric" onclick="filterGraphCategory('Metric')"><i class="fa-solid fa-chart-line"></i> Metrics & Services</button>
+                    <button class="filter-pill domain" data-cat="Domain Cluster" onclick="filterGraphCategory('Domain Cluster')"><i class="fa-solid fa-network-wired"></i> Business Domains</button>
+                    <button class="filter-pill dataset" data-cat="Dataset" onclick="filterGraphCategory('Dataset')"><i class="fa-solid fa-database"></i> Datasets</button>
+                    <button class="filter-pill entity" data-cat="Key Info Link" onclick="filterGraphCategory('Key Info Link')"><i class="fa-solid fa-link"></i> Shared Entities</button>
+                    <button class="filter-pill metric" data-cat="Business Metric" onclick="filterGraphCategory('Business Metric')"><i class="fa-solid fa-chart-line"></i> Metrics</button>
                 </div>
                 <div class="view-mode-toggle">
                     <button class="view-toggle-btn active" id="btnViewTree" onclick="switchGraphView('tree')"><i class="fa-solid fa-tree"></i> Decision Tree</button>
