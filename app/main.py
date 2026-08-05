@@ -177,6 +177,151 @@ def get_harnessing_metrics_api():
         return jsonify({"success": False, "error": str(e)}), 500
 
 
+STORAGE_PROVIDERS_DATA = [
+    {
+        "id": "databricks_uc",
+        "name": "Databricks UC Database",
+        "category": "Databases & Catalogs",
+        "type": "Unity Catalog / Delta Lake",
+        "volume": "48.2 TB",
+        "record_count": "120,000,000",
+        "status": "Operational",
+        "color": "#FF3621",
+        "icon_class": "fa-solid fa-cubes",
+        "description": "Unity Catalog metastore for enterprise Delta Lake tables, ACID transactions, and governed AI pipelines.",
+        "hosted_datasets": ["boiler_master", "telemetry_logs", "engineer_productivity"],
+        "governance": "Azure Entra ID, Delta Sharing, Column-Level Masking"
+    },
+    {
+        "id": "onelake",
+        "name": "Microsoft OneLake",
+        "category": "Cloud Data Lakes",
+        "type": "Fabric Lakehouse / Delta Parquet",
+        "volume": "32.5 TB",
+        "record_count": "85,000,000",
+        "status": "Operational",
+        "color": "#008080",
+        "icon_class": "fa-solid fa-water",
+        "description": "Unified SaaS data lake for Microsoft Fabric, providing multi-cloud data mesh access across utility domains.",
+        "hosted_datasets": ["epc_property_data", "regional_demand_forecast", "regional_capacity_forecast"],
+        "governance": "Microsoft Purview Tags, DirectLake Access Control"
+    },
+    {
+        "id": "salesforce",
+        "name": "Salesforce CRM",
+        "category": "Enterprise SaaS & ERP",
+        "type": "Cloud CRM / SOQL API",
+        "volume": "1.8 TB",
+        "record_count": "4,500,000",
+        "status": "Connected",
+        "color": "#00A1E0",
+        "icon_class": "fa-brands fa-salesforce",
+        "description": "Cloud CRM objects for customer accounts, sales opportunities, contact center logs, and commercial quotes.",
+        "hosted_datasets": ["customer_master", "contact_center_interaction", "quotes_and_sales", "customer_holdings"],
+        "governance": "Salesforce Shield, OAuth 2.0, Field-Level Security"
+    },
+    {
+        "id": "workday",
+        "name": "Workday HCM & Finance",
+        "category": "Enterprise SaaS & ERP",
+        "type": "HCM RaaS API / REST",
+        "volume": "620 GB",
+        "record_count": "850,000",
+        "status": "Connected",
+        "color": "#E28743",
+        "icon_class": "fa-solid fa-user-gear",
+        "description": "Enterprise workforce management, engineer shifts, skill matrix, certifications, and HR productivity metrics.",
+        "hosted_datasets": ["engineer_master", "engineer_availability_and_shifts", "engineer_skill"],
+        "governance": "Workday Enterprise Security, Role-Based Access"
+    },
+    {
+        "id": "sap",
+        "name": "SAP S/4HANA ERP",
+        "category": "Enterprise SaaS & ERP",
+        "type": "ERP Core / OData Gateway",
+        "volume": "14.8 TB",
+        "record_count": "28,000,000",
+        "status": "Connected",
+        "color": "#0FAEFF",
+        "icon_class": "fa-solid fa-boxes-stacked",
+        "description": "Enterprise ERP system hosting material master, van inventory stock, parts replaced, and appliance warranty records.",
+        "hosted_datasets": ["inventory_and_van_stock", "parts_replaced", "product_and_warranty_info"],
+        "governance": "SAP SSO, Key Vault Encryption, Audit Logging"
+    },
+    {
+        "id": "data_lake",
+        "name": "Enterprise Data Lake",
+        "category": "Cloud Data Lakes",
+        "type": "Parquet / ADLS Lakehouse",
+        "volume": "85.0 TB",
+        "record_count": "210,000,000",
+        "status": "Operational",
+        "color": "#A855F7",
+        "icon_class": "fa-solid fa-layer-group",
+        "description": "Centralized Parquet and ORC file storage for historical weather trends, service history logs, and installations.",
+        "hosted_datasets": ["weather", "service_history", "installation_history"],
+        "governance": "Apache Atlas Lineage, KMS Encryption"
+    },
+    {
+        "id": "azure_container",
+        "name": "Azure Blob Container",
+        "category": "Cloud Data Lakes",
+        "type": "Azure Blob / ADLS Gen2",
+        "volume": "64.2 TB",
+        "record_count": "160,000,000",
+        "status": "Operational",
+        "color": "#0078D4",
+        "icon_class": "fa-brands fa-microsoft",
+        "description": "ADLS Gen2 blob storage containers storing IoT fault codes, raw boiler telemetry feeds, and smart meter logs.",
+        "hosted_datasets": ["fault_codes", "boiler_telemetry_logs"],
+        "governance": "Azure Storage Firewalls, SAS Tokens, Entra RBAC"
+    },
+    {
+        "id": "sql_server",
+        "name": "Microsoft SQL Server",
+        "category": "Databases & Catalogs",
+        "type": "RDBMS / T-SQL",
+        "volume": "8.4 TB",
+        "record_count": "42,000,000",
+        "status": "Connected",
+        "color": "#CC292B",
+        "icon_class": "fa-solid fa-database",
+        "description": "Relational database cluster hosting repair histories, visit outcomes, and engineer appointment schedules.",
+        "hosted_datasets": ["repair_history", "visit_outcome", "appointment_schedule"],
+        "governance": "Windows Auth, Always Encrypted DB, Row Level Security"
+    },
+    {
+        "id": "aws_s3",
+        "name": "AWS S3 Buckets",
+        "category": "Cloud Data Lakes",
+        "type": "Object Storage / S3",
+        "volume": "124.0 TB",
+        "record_count": "350,000,000",
+        "status": "Operational",
+        "color": "#FF9900",
+        "icon_class": "fa-brands fa-aws",
+        "description": "Primary object storage buckets retaining raw uploaded files, un-structured PDFs, and knowledge bases.",
+        "hosted_datasets": ["knowledge_base", "business_rules", "epc_pdf_archive"],
+        "governance": "AWS IAM Policies, S3 KMS Key Encryption"
+    }
+]
+
+
+
+@app.route("/api/storage/providers", methods=["GET"])
+def get_storage_providers_api():
+    """
+    API endpoint to return enterprise data storage providers metadata & status.
+    Includes Databricks UC database, OneLake, Salesforce, Workday, SAP, Data Lake, Azure Container, SQL Server, AWS S3.
+    """
+    return jsonify({
+        "success": True,
+        "total_providers": len(STORAGE_PROVIDERS_DATA),
+        "providers": STORAGE_PROVIDERS_DATA
+    })
+
+
+
 def classify_node_category(node_id: str) -> tuple[str, str]:
     """Classify node into executive domain category and icon."""
     nid = str(node_id).lower()
@@ -265,7 +410,8 @@ def get_datasets_api():
         # 2. Get Datasets from CSV files
         if DATA_DIR.exists():
             for csv_file in DATA_DIR.glob("*.csv"):
-                datasets.add(csv_file.name)
+                datasets.add(csv_file.stem)
+
 
         return jsonify({
             "success": True,

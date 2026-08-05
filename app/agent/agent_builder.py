@@ -192,6 +192,37 @@ def run_deterministic_agent_fallback(
             return tool_fn.invoke(args_dict)
         return tool_fn(**args_dict)
 
+    # Rule 0.5: Explicit request for storage sources / storage systems
+    storage_keywords = [
+        "databricks", "onelake", "salesforce", "workday", "sap", "data lake",
+        "azure container", "sql server", "aws s3", "data storage", "storage sources", "storage topology"
+    ]
+    if any(k in input_lower for k in storage_keywords):
+        return (
+            "💾 **Enterprise Data Storage Systems Topology & Connected Sources:**\n\n"
+            "Below is the current data storage breakdown across all enterprise platforms integrated into the Agentic Knowledge Hub:\n\n"
+            "1. **Databricks UC Database (Unity Catalog)**: `48.2 TB` | 120M Rows | *Delta Lake & Governed AI Pipelines*\n"
+            "   • Datasets: `boiler_master`, `telemetry_logs`, `engineer_productivity`\n"
+            "2. **Microsoft OneLake**: `32.5 TB` | 85M Rows | *Fabric Lakehouse Multi-Cloud Mesh*\n"
+            "   • Datasets: `epc_property_data`, `regional_demand_forecast`, `regional_capacity_forecast`\n"
+            "3. **Salesforce CRM**: `1.8 TB` | 4.5M Records | *Cloud CRM Objects & Sales Pipeline*\n"
+            "   • Datasets: `customer_master`, `contact_center_interaction`, `quotes_and_sales`\n"
+            "4. **Workday HCM & Finance**: `620 GB` | 850K Records | *Enterprise Workforce & Shift Operations*\n"
+            "   • Datasets: `engineer_master`, `engineer_availability_and_shifts`, `engineer_skill`\n"
+            "5. **SAP S/4HANA ERP**: `14.8 TB` | 28M Records | *ERP Core, Van Inventory & Warranty Data*\n"
+            "   • Datasets: `inventory_and_van_stock`, `parts_replaced`, `product_and_warranty_info`\n"
+            "6. **Enterprise Data Lake**: `85.0 TB` | 210M Records | *Central Parquet & Historical Archives*\n"
+            "   • Datasets: `weather`, `service_history`, `installation_history`\n"
+            "7. **Azure Container (ADLS Gen2)**: `64.2 TB` | 160M Blobs | *IoT Telemetry & Smart Meter Feeds*\n"
+            "   • Datasets: `fault_codes`, `boiler_telemetry_logs`\n"
+            "8. **Microsoft SQL Server**: `8.4 TB` | 42M Records | *Relational DB & Engineer Scheduling*\n"
+            "   • Datasets: `repair_history`, `visit_outcome`, `appointment_schedule`\n"
+            "9. **AWS S3 Buckets**: `124.0 TB` | 350M Objects | *Raw Unstructured Documents & Knowledge Bases*\n"
+            "   • Datasets: `knowledge_base`, `business_rules`, `epc_pdf_archive`\n\n"
+            "💡 *Tip: Navigate to the **Storage & Governance** tab in the top navigation bar to view interactive capacity meters, real-time health telemetry, and lineage security policies.*"
+        )
+
+
     # Rule 0: Follow-up question asking where to get data / dataset access for previous turn topic
     followup_data_keywords = [
         "where", "how can i get", "get the data", "get data", "find the data",

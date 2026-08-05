@@ -8,6 +8,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         :root {
@@ -25,6 +27,135 @@
             --agent-msg-bg: rgba(22, 22, 22, 0.95);
             --card-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.8);
         }
+
+        /* Enterprise Multi-Cloud Storage Hub Styling */
+        .storage-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(285px, 1fr));
+            gap: 14px;
+            margin-bottom: 16px;
+        }
+
+        .storage-card {
+            background: rgba(22, 22, 22, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+        }
+
+        .storage-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(217, 102, 43, 0.5);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+        }
+
+        .storage-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .storage-card-title-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .storage-icon-box {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            flex-shrink: 0;
+        }
+
+        .storage-card-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            color: #fff;
+            line-height: 1.2;
+        }
+
+        .storage-card-type {
+            font-size: 10.5px;
+            color: var(--text-muted);
+        }
+
+        .storage-meta-row {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+
+        .storage-badge {
+            font-size: 9.5px;
+            font-weight: 600;
+            padding: 2px 7px;
+            border-radius: 4px;
+            white-space: nowrap;
+        }
+
+        .storage-badge-volume {
+            color: #22c55e;
+            background: rgba(34, 197, 94, 0.12);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .storage-badge-records {
+            color: #3b82f6;
+            background: rgba(59, 130, 246, 0.12);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .storage-card-desc {
+            font-size: 11px;
+            color: #94a3b8;
+            line-height: 1.45;
+            margin-bottom: 10px;
+        }
+
+        .storage-dataset-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+
+        .storage-tag {
+            font-size: 9px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #cbd5e1;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+
+        .storage-filter-btn {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--text-muted);
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .storage-filter-btn.active, .storage-filter-btn:hover {
+            background: var(--accent-orange);
+            color: #fff;
+            border-color: var(--accent-orange);
+        }
+
 
         * {
             box-sizing: border-box;
@@ -1545,109 +1676,358 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
                 <h4 style="font-size: 11px; color: #fff; text-transform: uppercase; margin-bottom: 8px; margin-top: 0; flex-shrink: 0;">F1 Score Trend</h4>
                 <div style="position: relative; flex: 1; width: 100%; min-height: 0;">
                     <canvas id="chart-benchmarking"></canvas>
-            </div> <!-- End chart-benchmarking wrapper -->
+                </div> <!-- End chart-benchmarking wrapper -->
             </div> <!-- End sub-benchmarking -->
-        </div> <!-- End tab-harnessing -->
+        </div> <!-- End tab-harnessing inner -->
         </div> <!-- End tab-harnessing wrapper -->
 
-        <div id="tab-storage" class="tab-content" style="padding: 16px 24px; overflow: hidden; flex-direction: column; height: 100%; box-sizing: border-box;">
+        <div id="tab-storage" class="tab-content" style="padding: 16px 24px; overflow-y: auto; flex-direction: column; height: 100%; box-sizing: border-box;">
+
             <!-- DHS Data Source Banner -->
-            <div style="background: linear-gradient(90deg, rgba(217,102,43,0.15) 0%, rgba(217,102,43,0.05) 100%); border-left: 3px solid var(--accent-orange); padding: 12px 16px; border-radius: 4px; margin-bottom: 16px; display: flex; align-items: center; gap: 12px; flex-shrink: 0;">
-                <div style="background: var(--accent-orange); padding: 6px; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            <div style="background: linear-gradient(90deg, rgba(217,102,43,0.15) 0%, rgba(217,102,43,0.05) 100%); border-left: 3px solid var(--accent-orange); padding: 12px 16px; border-radius: 6px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div style="background: var(--accent-orange); padding: 7px; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    </div>
+                    <div>
+                        <h4 style="margin: 0; font-size: 13.5px; color: #fff;">Enterprise Multi-Cloud Storage Hub & Governance Matrix</h4>
+                        <p style="margin: 3px 0 0 0; font-size: 11.5px; color: var(--text-muted);">Unified Enterprise Storage Layer: Databricks UC database, OneLake, Salesforce, Workday, SAP, Data Lake, Azure Container, SQL Server, AWS S3.</p>
+                    </div>
                 </div>
-                <div>
-                    <h4 style="margin: 0; font-size: 13px; color: #fff;">DHS Data Source: Governance_Security_Source.xlsx</h4>
-                    <p style="margin: 4px 0 0 0; font-size: 11.5px; color: var(--text-muted);">Powers this layer with: Azure Entra ID role access matrix, Purview data lineage tags, Key Vault policies.</p>
+                <div style="display: flex; gap: 8px;">
+                    <span style="font-size: 11px; font-weight: bold; color: #22c55e; background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.3); padding: 4px 10px; border-radius: 20px;">9 / 9 Storage Sources Active</span>
                 </div>
             </div>
 
-            <!-- Top Half: Two Columns -->
-            <div style="display: flex; gap: 32px; flex-shrink: 0; margin-bottom: 16px;">
-                <!-- Left Column -->
-                <div style="flex: 1.2; display: flex; flex-direction: column;">
-                    <h4 class="tab-section-title" style="margin-top: 0; flex-shrink: 0;">Data Topology</h4>
-                    <div class="process-flow" style="flex-shrink: 0;">
-                <div class="process-step">
-                    <h4 style="margin: 0; line-height: 1.2; color: var(--accent-orange); font-size: 12px; margin-bottom: 6px;">1. Object Storage</h4>
-                    <div style="margin-bottom: 6px;"><span style="font-size: 9.5px; font-weight: bold; color: #22c55e; background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.3); padding: 2px 6px; border-radius: 4px; white-space: nowrap; display: inline-block;">124 TB</span></div>
-                    <p style="margin: 0;">Raw files in AWS S3 buckets</p>
+            <!-- Top Summary Cards -->
+            <div class="dashboard-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 16px; flex-shrink: 0;">
+                <div class="metric-card" style="border-left: 3px solid #FF3621;">
+                    <div class="metric-title">Total Data Storage Volume</div>
+                    <div class="metric-value" style="font-size: 20px; color: #fff;">389.7 TB</div>
+                    <div class="metric-change" style="color: #22c55e;">Multi-Cloud Object & Lakes</div>
                 </div>
-                <div class="process-arrow">➔</div>
-                <div class="process-step">
-                    <h4 style="margin: 0; line-height: 1.2; color: var(--accent-orange); font-size: 12px; margin-bottom: 6px;">2. Document DB</h4>
-                    <div style="margin-bottom: 6px;"><span style="font-size: 9.5px; font-weight: bold; color: #22c55e; background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.3); padding: 2px 6px; border-radius: 4px; white-space: nowrap; display: inline-block;">18.4 GB</span></div>
-                    <p style="margin: 0;">Parsed JSON in MongoDB</p>
+                <div class="metric-card" style="border-left: 3px solid #008080;">
+                    <div class="metric-title">Total Ingested Records</div>
+                    <div class="metric-value" style="font-size: 20px; color: #fff;">1.01 Billion</div>
+                    <div class="metric-change" style="color: #22c55e;">Synced & Indexed</div>
                 </div>
-                <div class="process-arrow">➔</div>
-                <div class="process-step">
-                    <h4 style="margin: 0; line-height: 1.2; color: var(--accent-orange); font-size: 12px; margin-bottom: 6px;">3. Vector Store</h4>
-                    <div style="margin-bottom: 6px;"><span style="font-size: 9.5px; font-weight: bold; color: #22c55e; background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.3); padding: 2px 6px; border-radius: 4px; white-space: nowrap; display: inline-block;">42% Util</span></div>
-                    <p style="margin: 0;">High-dim embeddings in Milvus</p>
+                <div class="metric-card" style="border-left: 3px solid #00A1E0;">
+                    <div class="metric-title">Storage Connectors</div>
+                    <div class="metric-value" style="font-size: 20px; color: #fff;">9 Systems</div>
+                    <div class="metric-change" style="color: #22c55e;">100% Operational</div>
                 </div>
-                <div class="process-arrow">➔</div>
-                <div class="process-step">
-                    <h4 style="margin: 0; line-height: 1.2; color: var(--accent-orange); font-size: 12px; margin-bottom: 6px;">4. Graph DB</h4>
-                    <div style="margin-bottom: 6px;"><span style="font-size: 9.5px; font-weight: bold; color: #22c55e; background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.3); padding: 2px 6px; border-radius: 4px; white-space: nowrap; display: inline-block;">3.2M Edges</span></div>
-                    <p style="margin: 0;">Relationships in Neo4j</p>
+                <div class="metric-card" style="border-left: 3px solid #A855F7;">
+                    <div class="metric-title">Governance & Lineage</div>
+                    <div class="metric-value" style="font-size: 20px; color: #fff;">Purview & Entra</div>
+                    <div class="metric-change" style="color: #22c55e;">Policy Governed</div>
                 </div>
             </div>
-                    
-                    <div class="explanation-text" style="margin-top: 4px; font-size: 11.5px; line-height: 1.5;">
-                        <strong>How it works:</strong> The backend is powered by a multi-database architecture optimized for AI. Object storage retains raw files for auditability. Document databases store parsed semi-structured data. For lightning-fast semantic search, we use a scalable Vector Database to query embeddings. Finally, a Graph Database maintains the complex web of relationships for entity traversal and reasoning.
-                    </div>
+
+            <!-- Filter Controls -->
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; flex-shrink: 0;">
+                <h4 class="tab-section-title" style="margin: 0;">Connected Data Storage Providers (9)</h4>
+                <div style="display: flex; gap: 6px;">
+                    <button class="storage-filter-btn active" onclick="filterStorageCards('all', this)">All Storage (9)</button>
+                    <button class="storage-filter-btn" onclick="filterStorageCards('Cloud Data Lakes', this)">Cloud Data Lakes (4)</button>
+                    <button class="storage-filter-btn" onclick="filterStorageCards('Enterprise SaaS & ERP', this)">Enterprise SaaS & ERP (3)</button>
+                    <button class="storage-filter-btn" onclick="filterStorageCards('Databases & Catalogs', this)">Databases & Catalogs (2)</button>
                 </div>
-                
-                <!-- Right Column -->
-                <div style="flex: 1; display: flex; flex-direction: column;">
-                    <h4 class="tab-section-title" style="margin-top: 0; flex-shrink: 0;">Capacity & Health</h4>
+            </div>
+
+            <!-- Storage Providers Cards Grid (9 items) -->
+            <div class="storage-grid" id="storageProvidersGrid">
+                <!-- 1. Databricks UC Database -->
+                <div class="storage-card" data-category="Databases & Catalogs" onclick="openStorageModal('databricks_uc')">
                     <div>
-                        <div class="dashboard-grid">
-                <div class="metric-card">
-                    <div class="metric-title">Vector DB Util</div>
-                    <div class="metric-value">42%</div>
-                    <div class="metric-change" style="color: var(--text-muted);">Scale: Normal</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-title">Graph DB Size</div>
-                    <div class="metric-value">18.4 GB</div>
-                    <div class="metric-change" style="color: var(--text-muted);">Optimal Cache Hit</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-title">Cold Storage</div>
-                    <div class="metric-value">124 TB</div>
-                    <div class="metric-change" style="color: var(--text-muted);">Archived Data</div>
-                </div>
-            </div>
+                        <div class="storage-card-header">
+                            <div class="storage-card-title-group">
+                                <div class="storage-icon-box" style="background: rgba(255, 54, 33, 0.15); color: #FF3621;">
+                                    <i class="fa-solid fa-cubes"></i>
+                                </div>
+                                <div>
+                                    <div class="storage-card-title">Databricks UC Database</div>
+                                    <div class="storage-card-type">Unity Catalog / Delta Lake</div>
+                                </div>
+                            </div>
+                            <span class="status-badge" style="background: rgba(34, 197, 94, 0.15); color: #22c55e;">Operational</span>
+                        </div>
+                        <div class="storage-meta-row">
+                            <span class="storage-badge storage-badge-volume">48.2 TB</span>
+                            <span class="storage-badge storage-badge-records">120M Rows</span>
+                        </div>
+                        <p class="storage-card-desc">Unity Catalog metastore for enterprise Delta Lake tables, ACID transactions, and governed AI pipelines.</p>
                     </div>
-                    <h4 class="tab-section-title" style="margin-top: 16px; margin-bottom: 8px; flex-shrink: 0;">System Status</h4>
                     <div>
-                        <div class="feature-list">
-                <div class="feature-item">
-                    <span>Milvus Vector Cluster</span>
-                    <span class="status-badge">Operational</span>
-                </div>
-                <div class="feature-item">
-                    <span>Neo4j Graph Database</span>
-                    <span class="status-badge">Operational</span>
-                </div>
-                <div class="feature-item">
-                    <span>AWS S3 Datalake Storage</span>
-                    <span class="status-badge">Operational</span>
-                </div>
-            </div>
+                        <div style="font-size: 10px; color: var(--text-muted); margin-bottom: 4px; font-weight: 600;">HOSTED DATASETS:</div>
+                        <div class="storage-dataset-tags">
+                            <span class="storage-tag">boiler_master</span>
+                            <span class="storage-tag">telemetry_logs</span>
+                            <span class="storage-tag">engineer_productivity</span>
+                        </div>
                     </div>
                 </div>
+
+                <!-- 2. Microsoft OneLake -->
+                <div class="storage-card" data-category="Cloud Data Lakes" onclick="openStorageModal('onelake')">
+                    <div>
+                        <div class="storage-card-header">
+                            <div class="storage-card-title-group">
+                                <div class="storage-icon-box" style="background: rgba(0, 128, 128, 0.15); color: #008080;">
+                                    <i class="fa-solid fa-water"></i>
+                                </div>
+                                <div>
+                                    <div class="storage-card-title">Microsoft OneLake</div>
+                                    <div class="storage-card-type">Fabric Lakehouse / Parquet</div>
+                                </div>
+                            </div>
+                            <span class="status-badge" style="background: rgba(34, 197, 94, 0.15); color: #22c55e;">Operational</span>
+                        </div>
+                        <div class="storage-meta-row">
+                            <span class="storage-badge storage-badge-volume">32.5 TB</span>
+                            <span class="storage-badge storage-badge-records">85M Rows</span>
+                        </div>
+                        <p class="storage-card-desc">Unified SaaS data lake for Microsoft Fabric, providing multi-cloud data mesh access across utility domains.</p>
+                    </div>
+                    <div>
+                        <div style="font-size: 10px; color: var(--text-muted); margin-bottom: 4px; font-weight: 600;">HOSTED DATASETS:</div>
+                        <div class="storage-dataset-tags">
+                            <span class="storage-tag">epc_property_data</span>
+                            <span class="storage-tag">regional_demand_forecast</span>
+                            <span class="storage-tag">regional_capacity_forecast</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Salesforce CRM -->
+                <div class="storage-card" data-category="Enterprise SaaS & ERP" onclick="openStorageModal('salesforce')">
+                    <div>
+                        <div class="storage-card-header">
+                            <div class="storage-card-title-group">
+                                <div class="storage-icon-box" style="background: rgba(0, 161, 224, 0.15); color: #00A1E0;">
+                                    <i class="fa-brands fa-salesforce"></i>
+                                </div>
+                                <div>
+                                    <div class="storage-card-title">Salesforce CRM</div>
+                                    <div class="storage-card-type">Cloud CRM / SOQL API</div>
+                                </div>
+                            </div>
+                            <span class="status-badge" style="background: rgba(59, 130, 246, 0.15); color: #3b82f6;">Connected</span>
+                        </div>
+                        <div class="storage-meta-row">
+                            <span class="storage-badge storage-badge-volume">1.8 TB</span>
+                            <span class="storage-badge storage-badge-records">4.5M Records</span>
+                        </div>
+                        <p class="storage-card-desc">Cloud CRM objects for customer accounts, sales opportunities, contact center logs, and commercial quotes.</p>
+                    </div>
+                    <div>
+                        <div style="font-size: 10px; color: var(--text-muted); margin-bottom: 4px; font-weight: 600;">HOSTED DATASETS:</div>
+                        <div class="storage-dataset-tags">
+                            <span class="storage-tag">customer_master</span>
+                            <span class="storage-tag">contact_center_interaction</span>
+                            <span class="storage-tag">quotes_and_sales</span>
+                            <span class="storage-tag">customer_holdings</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Workday HCM & Finance -->
+                <div class="storage-card" data-category="Enterprise SaaS & ERP" onclick="openStorageModal('workday')">
+                    <div>
+                        <div class="storage-card-header">
+                            <div class="storage-card-title-group">
+                                <div class="storage-icon-box" style="background: rgba(226, 135, 67, 0.15); color: #E28743;">
+                                    <i class="fa-solid fa-user-gear"></i>
+                                </div>
+                                <div>
+                                    <div class="storage-card-title">Workday HCM & Finance</div>
+                                    <div class="storage-card-type">HCM RaaS API / REST</div>
+                                </div>
+                            </div>
+                            <span class="status-badge" style="background: rgba(59, 130, 246, 0.15); color: #3b82f6;">Connected</span>
+                        </div>
+                        <div class="storage-meta-row">
+                            <span class="storage-badge storage-badge-volume">620 GB</span>
+                            <span class="storage-badge storage-badge-records">850K Records</span>
+                        </div>
+                        <p class="storage-card-desc">Enterprise workforce management, engineer shifts, skill matrix, certifications, and HR productivity metrics.</p>
+                    </div>
+                    <div>
+                        <div style="font-size: 10px; color: var(--text-muted); margin-bottom: 4px; font-weight: 600;">HOSTED DATASETS:</div>
+                        <div class="storage-dataset-tags">
+                            <span class="storage-tag">engineer_master</span>
+                            <span class="storage-tag">engineer_availability_and_shifts</span>
+                            <span class="storage-tag">engineer_skill</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. SAP S/4HANA ERP -->
+                <div class="storage-card" data-category="Enterprise SaaS & ERP" onclick="openStorageModal('sap')">
+                    <div>
+                        <div class="storage-card-header">
+                            <div class="storage-card-title-group">
+                                <div class="storage-icon-box" style="background: rgba(15, 174, 255, 0.15); color: #0FAEFF;">
+                                    <i class="fa-solid fa-boxes-stacked"></i>
+                                </div>
+                                <div>
+                                    <div class="storage-card-title">SAP S/4HANA ERP</div>
+                                    <div class="storage-card-type">ERP Core / OData Gateway</div>
+                                </div>
+                            </div>
+                            <span class="status-badge" style="background: rgba(59, 130, 246, 0.15); color: #3b82f6;">Connected</span>
+                        </div>
+                        <div class="storage-meta-row">
+                            <span class="storage-badge storage-badge-volume">14.8 TB</span>
+                            <span class="storage-badge storage-badge-records">28M Records</span>
+                        </div>
+                        <p class="storage-card-desc">Enterprise ERP system hosting material master, van inventory stock, parts replaced, and appliance warranty records.</p>
+                    </div>
+                    <div>
+                        <div style="font-size: 10px; color: var(--text-muted); margin-bottom: 4px; font-weight: 600;">HOSTED DATASETS:</div>
+                        <div class="storage-dataset-tags">
+                            <span class="storage-tag">inventory_and_van_stock</span>
+                            <span class="storage-tag">parts_replaced</span>
+                            <span class="storage-tag">product_and_warranty_info</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6. Enterprise Data Lake -->
+                <div class="storage-card" data-category="Cloud Data Lakes" onclick="openStorageModal('data_lake')">
+                    <div>
+                        <div class="storage-card-header">
+                            <div class="storage-card-title-group">
+                                <div class="storage-icon-box" style="background: rgba(168, 85, 247, 0.15); color: #A855F7;">
+                                    <i class="fa-solid fa-layer-group"></i>
+                                </div>
+                                <div>
+                                    <div class="storage-card-title">Enterprise Data Lake</div>
+                                    <div class="storage-card-type">Parquet / ADLS Lakehouse</div>
+                                </div>
+                            </div>
+                            <span class="status-badge" style="background: rgba(34, 197, 94, 0.15); color: #22c55e;">Operational</span>
+                        </div>
+                        <div class="storage-meta-row">
+                            <span class="storage-badge storage-badge-volume">85.0 TB</span>
+                            <span class="storage-badge storage-badge-records">210M Records</span>
+                        </div>
+                        <p class="storage-card-desc">Centralized Parquet and ORC file storage for historical weather trends, service history logs, and installations.</p>
+                    </div>
+                    <div>
+                        <div style="font-size: 10px; color: var(--text-muted); margin-bottom: 4px; font-weight: 600;">HOSTED DATASETS:</div>
+                        <div class="storage-dataset-tags">
+                            <span class="storage-tag">weather</span>
+                            <span class="storage-tag">service_history</span>
+                            <span class="storage-tag">installation_history</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 7. Azure Container -->
+                <div class="storage-card" data-category="Cloud Data Lakes" onclick="openStorageModal('azure_container')">
+                    <div>
+                        <div class="storage-card-header">
+                            <div class="storage-card-title-group">
+                                <div class="storage-icon-box" style="background: rgba(0, 120, 212, 0.15); color: #0078D4;">
+                                    <i class="fa-brands fa-microsoft"></i>
+                                </div>
+                                <div>
+                                    <div class="storage-card-title">Azure Blob Container</div>
+                                    <div class="storage-card-type">Azure Blob / ADLS Gen2</div>
+                                </div>
+                            </div>
+                            <span class="status-badge" style="background: rgba(34, 197, 94, 0.15); color: #22c55e;">Operational</span>
+                        </div>
+                        <div class="storage-meta-row">
+                            <span class="storage-badge storage-badge-volume">64.2 TB</span>
+                            <span class="storage-badge storage-badge-records">160M Blobs</span>
+                        </div>
+                        <p class="storage-card-desc">ADLS Gen2 blob storage containers storing IoT fault codes, raw boiler telemetry feeds, and smart meter logs.</p>
+                    </div>
+                    <div>
+                        <div style="font-size: 10px; color: var(--text-muted); margin-bottom: 4px; font-weight: 600;">HOSTED DATASETS:</div>
+                        <div class="storage-dataset-tags">
+                            <span class="storage-tag">fault_codes</span>
+                            <span class="storage-tag">boiler_telemetry_logs</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 8. Microsoft SQL Server -->
+                <div class="storage-card" data-category="Databases & Catalogs" onclick="openStorageModal('sql_server')">
+                    <div>
+                        <div class="storage-card-header">
+                            <div class="storage-card-title-group">
+                                <div class="storage-icon-box" style="background: rgba(204, 41, 43, 0.15); color: #CC292B;">
+                                    <i class="fa-solid fa-database"></i>
+                                </div>
+                                <div>
+                                    <div class="storage-card-title">Microsoft SQL Server</div>
+                                    <div class="storage-card-type">RDBMS / T-SQL</div>
+                                </div>
+                            </div>
+                            <span class="status-badge" style="background: rgba(59, 130, 246, 0.15); color: #3b82f6;">Connected</span>
+                        </div>
+                        <div class="storage-meta-row">
+                            <span class="storage-badge storage-badge-volume">8.4 TB</span>
+                            <span class="storage-badge storage-badge-records">42M Records</span>
+                        </div>
+                        <p class="storage-card-desc">Relational database cluster hosting repair histories, visit outcomes, and engineer appointment schedules.</p>
+                    </div>
+                    <div>
+                        <div style="font-size: 10px; color: var(--text-muted); margin-bottom: 4px; font-weight: 600;">HOSTED DATASETS:</div>
+                        <div class="storage-dataset-tags">
+                            <span class="storage-tag">repair_history</span>
+                            <span class="storage-tag">visit_outcome</span>
+                            <span class="storage-tag">appointment_schedule</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 9. AWS S3 Buckets -->
+                <div class="storage-card" data-category="Cloud Data Lakes" onclick="openStorageModal('aws_s3')">
+                    <div>
+                        <div class="storage-card-header">
+                            <div class="storage-card-title-group">
+                                <div class="storage-icon-box" style="background: rgba(255, 153, 0, 0.15); color: #FF9900;">
+                                    <i class="fa-brands fa-aws"></i>
+                                </div>
+                                <div>
+                                    <div class="storage-card-title">AWS S3 Buckets</div>
+                                    <div class="storage-card-type">Object Storage / S3</div>
+                                </div>
+                            </div>
+                            <span class="status-badge" style="background: rgba(34, 197, 94, 0.15); color: #22c55e;">Operational</span>
+                        </div>
+                        <div class="storage-meta-row">
+                            <span class="storage-badge storage-badge-volume">124.0 TB</span>
+                            <span class="storage-badge storage-badge-records">350M Objects</span>
+                        </div>
+                        <p class="storage-card-desc">Primary object storage buckets retaining raw uploaded files, un-structured PDFs, and knowledge bases.</p>
+                    </div>
+                    <div>
+                        <div style="font-size: 10px; color: var(--text-muted); margin-bottom: 4px; font-weight: 600;">HOSTED DATASETS:</div>
+                        <div class="storage-dataset-tags">
+                            <span class="storage-tag">knowledge_base</span>
+                            <span class="storage-tag">business_rules</span>
+                            <span class="storage-tag">epc_pdf_archive</span>
+                        </div>
+                    </div>
+                </div>
+
             </div>
-            
-            <!-- Bottom Half: Full Width Chart -->
-            <div style="flex: 1; display: flex; flex-direction: column; background: rgba(20, 20, 20, 0.8); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 10px; padding: 12px; min-height: 0;">
-                <h4 style="font-size: 11px; color: #fff; text-transform: uppercase; margin-bottom: 8px; margin-top: 0; flex-shrink: 0;">Database Utilization</h4>
-                <div style="position: relative; flex: 1; width: 100%; min-height: 0;">
+
+            <!-- Bottom Section: Storage Volume Comparison Chart -->
+            <div style="background: rgba(20, 20, 20, 0.85); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 10px; padding: 14px; margin-top: 4px; flex-shrink: 0;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <h4 style="font-size: 11.5px; color: #fff; text-transform: uppercase; margin: 0; font-family: 'Outfit', sans-serif;">Storage Providers Capacity Utilization (TB)</h4>
+                    <span style="font-size: 10.5px; color: var(--text-muted);">Real-Time Storage Telemetry</span>
+                </div>
+                <div style="position: relative; height: 160px; width: 100%;">
                     <canvas id="chart-storage"></canvas>
                 </div>
             </div>
-        </div>
+        </div> <!-- End tab-storage -->
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js">
@@ -3114,6 +3494,95 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
             alert("Error saving relation");
         });
     }
+
+    // Filter Storage Cards Grid
+    function filterStorageCards(category, btnEl) {
+        document.querySelectorAll('.storage-filter-btn').forEach(b => b.classList.remove('active'));
+        if (btnEl) btnEl.classList.add('active');
+
+        const cards = document.querySelectorAll('#storageProvidersGrid .storage-card');
+        cards.forEach(card => {
+            if (category === 'all' || card.getAttribute('data-category') === category) {
+                card.style.display = 'flex';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+
+    // Open Storage Modal / Alert Details
+    function openStorageModal(providerId) {
+        fetch('/api/storage/providers')
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    const provider = data.providers.find(p => p.id === providerId);
+                    if (provider) {
+                        alert(
+                            `📦 STORAGE PROVIDER: ${provider.name.toUpperCase()}\n` +
+                            `----------------------------------------\n` +
+                            `• Type / Format: ${provider.type}\n` +
+                            `• Storage Category: ${provider.category}\n` +
+                            `• Data Volume: ${provider.volume} (${provider.record_count})\n` +
+                            `• System Status: ${provider.status}\n` +
+                            `• Governance & Security: ${provider.governance}\n` +
+                            `• Mapped Enterprise Datasets: ${provider.hosted_datasets.join(', ')}\n\n` +
+                            `Description: ${provider.description}`
+                        );
+                    }
+                }
+            })
+            .catch(e => console.error("Storage provider fetch error", e));
+    }
+
+    // Initialize Storage Capacity Chart on DOM load
+    document.addEventListener('DOMContentLoaded', () => {
+        const storageCanvas = document.getElementById('chart-storage');
+        if (storageCanvas && typeof Chart !== 'undefined') {
+            new Chart(storageCanvas, {
+                type: 'bar',
+                data: {
+                    labels: ['Databricks UC', 'OneLake', 'Salesforce', 'Workday', 'SAP', 'Data Lake', 'Azure Cont.', 'SQL Server', 'AWS S3'],
+                    datasets: [{
+                        label: 'Storage Capacity (TB)',
+                        data: [48.2, 32.5, 1.8, 0.6, 14.8, 85.0, 64.2, 8.4, 124.0],
+                        backgroundColor: [
+                            '#FF3621', '#008080', '#00A1E0', '#E28743', '#0FAEFF', '#A855F7', '#0078D4', '#CC292B', '#FF9900'
+                        ],
+                        borderColor: [
+                            '#FF3621', '#008080', '#00A1E0', '#E28743', '#0FAEFF', '#A855F7', '#0078D4', '#CC292B', '#FF9900'
+                        ],
+                        borderWidth: 1,
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return ' ' + context.raw + ' TB Volume';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: '#94a3b8', font: { size: 10 } },
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' }
+                        },
+                        y: {
+                            ticks: { color: '#94a3b8', font: { size: 10 } },
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' }
+                        }
+                    }
+                }
+            });
+        }
+    });
 </script>
 </body>
 </html>
