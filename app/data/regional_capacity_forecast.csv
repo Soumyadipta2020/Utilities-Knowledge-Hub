@@ -1,0 +1,271 @@
+date,region,eng_skill_type,gross_hours,non_productive_event,overtime,available_hours
+2026-07-06,London,Installation,181,26,3,85
+2026-07-07,London,Service,195,12,4,226
+2026-07-08,London,Installation,103,20,19,98
+2026-07-09,London,Installation,184,13,19,111
+2026-07-10,London,Installation,120,15,2,263
+2026-07-11,London,Service,112,12,12,162
+2026-07-12,London,Installation,280,15,15,153
+2026-07-13,London,Service,120,15,6,147
+2026-07-14,London,Installation,131,12,6,127
+2026-07-15,London,Installation,251,19,19,185
+2026-07-16,London,Repair,288,17,16,81
+2026-07-17,London,Service,116,25,11,267
+2026-07-18,London,Installation,295,24,0,270
+2026-07-19,London,Installation,274,29,2,225
+2026-07-20,London,Repair,290,25,11,207
+2026-07-21,London,Installation,148,17,18,123
+2026-07-22,London,Repair,218,20,12,198
+2026-07-23,London,Installation,292,22,13,86
+2026-07-24,London,Service,202,21,0,191
+2026-07-25,London,Service,124,10,12,200
+2026-07-26,London,Service,227,22,5,157
+2026-07-27,London,Installation,285,25,13,191
+2026-07-28,London,Service,117,20,15,235
+2026-07-29,London,Repair,155,23,15,83
+2026-07-30,London,Installation,179,29,13,236
+2026-07-31,London,Repair,187,21,4,174
+2026-08-01,London,Repair,206,17,6,163
+2026-08-02,London,Repair,242,20,18,164
+2026-08-03,London,Installation,158,28,19,140
+2026-08-04,London,Service,180,26,3,178
+2026-07-06,South East,Installation,225,24,19,266
+2026-07-07,South East,Service,297,18,4,173
+2026-07-08,South East,Installation,100,20,11,238
+2026-07-09,South East,Repair,224,20,19,217
+2026-07-10,South East,Installation,130,19,1,268
+2026-07-11,South East,Service,196,23,0,156
+2026-07-12,South East,Service,107,30,20,275
+2026-07-13,South East,Service,214,30,12,222
+2026-07-14,South East,Service,170,24,8,130
+2026-07-15,South East,Service,182,10,3,93
+2026-07-16,South East,Service,180,22,17,86
+2026-07-17,South East,Service,183,29,1,244
+2026-07-18,South East,Service,230,11,4,207
+2026-07-19,South East,Service,233,15,7,103
+2026-07-20,South East,Repair,187,12,15,182
+2026-07-21,South East,Installation,139,27,2,133
+2026-07-22,South East,Service,161,11,20,254
+2026-07-23,South East,Service,110,17,7,119
+2026-07-24,South East,Repair,293,30,12,84
+2026-07-25,South East,Installation,117,11,6,230
+2026-07-26,South East,Repair,101,21,2,228
+2026-07-27,South East,Service,138,27,0,240
+2026-07-28,South East,Installation,199,15,6,273
+2026-07-29,South East,Repair,200,13,20,153
+2026-07-30,South East,Installation,271,26,12,132
+2026-07-31,South East,Service,290,16,6,274
+2026-08-01,South East,Repair,192,24,1,245
+2026-08-02,South East,Installation,106,19,0,135
+2026-08-03,South East,Installation,199,20,14,180
+2026-08-04,South East,Installation,173,17,2,237
+2026-07-06,South West,Service,102,18,0,157
+2026-07-07,South West,Service,113,21,6,245
+2026-07-08,South West,Repair,206,30,0,156
+2026-07-09,South West,Repair,216,16,3,242
+2026-07-10,South West,Service,122,17,14,228
+2026-07-11,South West,Repair,116,14,6,96
+2026-07-12,South West,Service,227,23,14,185
+2026-07-13,South West,Installation,116,18,9,264
+2026-07-14,South West,Installation,169,16,7,256
+2026-07-15,South West,Repair,243,25,7,263
+2026-07-16,South West,Installation,194,24,15,219
+2026-07-17,South West,Installation,137,20,20,168
+2026-07-18,South West,Repair,219,21,9,117
+2026-07-19,South West,Repair,210,12,19,144
+2026-07-20,South West,Repair,292,27,5,90
+2026-07-21,South West,Installation,187,27,20,270
+2026-07-22,South West,Installation,201,12,13,108
+2026-07-23,South West,Service,165,27,5,269
+2026-07-24,South West,Service,183,21,17,181
+2026-07-25,South West,Installation,204,13,7,243
+2026-07-26,South West,Installation,127,25,4,98
+2026-07-27,South West,Service,238,30,3,128
+2026-07-28,South West,Service,153,15,2,97
+2026-07-29,South West,Repair,269,22,0,258
+2026-07-30,South West,Service,177,23,19,230
+2026-07-31,South West,Service,273,25,1,207
+2026-08-01,South West,Installation,221,22,17,277
+2026-08-02,South West,Repair,275,25,0,177
+2026-08-03,South West,Repair,239,12,2,142
+2026-08-04,South West,Service,254,25,1,162
+2026-07-06,Midlands,Installation,205,13,0,255
+2026-07-07,Midlands,Repair,117,26,5,198
+2026-07-08,Midlands,Installation,267,11,8,229
+2026-07-09,Midlands,Service,215,19,5,90
+2026-07-10,Midlands,Service,275,14,2,130
+2026-07-11,Midlands,Repair,298,30,5,277
+2026-07-12,Midlands,Service,187,28,15,138
+2026-07-13,Midlands,Service,135,14,19,224
+2026-07-14,Midlands,Installation,210,10,16,257
+2026-07-15,Midlands,Repair,221,11,8,191
+2026-07-16,Midlands,Repair,270,21,15,182
+2026-07-17,Midlands,Service,122,28,5,250
+2026-07-18,Midlands,Installation,167,25,2,248
+2026-07-19,Midlands,Installation,110,17,6,117
+2026-07-20,Midlands,Repair,115,26,0,108
+2026-07-21,Midlands,Repair,135,20,7,202
+2026-07-22,Midlands,Repair,154,13,5,179
+2026-07-23,Midlands,Service,294,12,15,211
+2026-07-24,Midlands,Installation,292,23,20,172
+2026-07-25,Midlands,Repair,110,20,12,87
+2026-07-26,Midlands,Repair,255,17,4,202
+2026-07-27,Midlands,Service,253,26,9,207
+2026-07-28,Midlands,Repair,116,27,2,260
+2026-07-29,Midlands,Repair,200,18,14,246
+2026-07-30,Midlands,Repair,178,25,16,204
+2026-07-31,Midlands,Installation,254,29,18,115
+2026-08-01,Midlands,Repair,236,26,19,241
+2026-08-02,Midlands,Repair,173,29,16,138
+2026-08-03,Midlands,Service,189,19,6,165
+2026-08-04,Midlands,Repair,271,16,19,115
+2026-07-06,North West,Installation,182,16,14,228
+2026-07-07,North West,Service,253,30,10,126
+2026-07-08,North West,Repair,283,18,18,197
+2026-07-09,North West,Service,164,13,12,220
+2026-07-10,North West,Repair,226,24,17,229
+2026-07-11,North West,Service,168,11,13,240
+2026-07-12,North West,Repair,199,20,3,115
+2026-07-13,North West,Service,117,18,3,220
+2026-07-14,North West,Service,110,28,1,82
+2026-07-15,North West,Repair,210,17,7,136
+2026-07-16,North West,Service,105,27,18,161
+2026-07-17,North West,Installation,257,10,5,103
+2026-07-18,North West,Service,204,17,7,197
+2026-07-19,North West,Service,100,17,9,191
+2026-07-20,North West,Service,120,23,14,193
+2026-07-21,North West,Repair,105,27,8,132
+2026-07-22,North West,Repair,105,25,16,237
+2026-07-23,North West,Repair,136,12,19,258
+2026-07-24,North West,Service,180,21,12,150
+2026-07-25,North West,Repair,253,25,0,255
+2026-07-26,North West,Installation,105,22,18,168
+2026-07-27,North West,Repair,285,24,13,102
+2026-07-28,North West,Repair,193,18,15,120
+2026-07-29,North West,Installation,235,16,1,177
+2026-07-30,North West,Installation,140,12,19,258
+2026-07-31,North West,Repair,215,14,9,116
+2026-08-01,North West,Repair,179,15,16,97
+2026-08-02,North West,Installation,267,15,9,220
+2026-08-03,North West,Service,150,29,2,97
+2026-08-04,North West,Service,299,24,17,274
+2026-07-06,North East,Installation,147,17,0,163
+2026-07-07,North East,Installation,229,11,12,114
+2026-07-08,North East,Service,161,29,11,226
+2026-07-09,North East,Service,281,13,7,121
+2026-07-10,North East,Service,173,24,16,205
+2026-07-11,North East,Installation,219,30,16,170
+2026-07-12,North East,Service,228,25,4,89
+2026-07-13,North East,Repair,129,29,13,177
+2026-07-14,North East,Repair,224,16,0,135
+2026-07-15,North East,Installation,294,14,20,157
+2026-07-16,North East,Service,212,18,15,182
+2026-07-17,North East,Service,218,14,13,93
+2026-07-18,North East,Repair,195,11,11,199
+2026-07-19,North East,Installation,175,21,16,221
+2026-07-20,North East,Repair,184,16,9,209
+2026-07-21,North East,Installation,282,27,8,95
+2026-07-22,North East,Installation,195,10,14,183
+2026-07-23,North East,Installation,183,19,11,93
+2026-07-24,North East,Installation,109,27,18,209
+2026-07-25,North East,Installation,282,24,20,148
+2026-07-26,North East,Installation,198,18,12,136
+2026-07-27,North East,Service,149,23,18,129
+2026-07-28,North East,Installation,165,16,0,96
+2026-07-29,North East,Service,156,24,5,252
+2026-07-30,North East,Repair,257,21,15,146
+2026-07-31,North East,Service,270,28,16,254
+2026-08-01,North East,Service,211,25,8,164
+2026-08-02,North East,Installation,176,18,3,117
+2026-08-03,North East,Service,125,27,16,172
+2026-08-04,North East,Installation,184,19,2,142
+2026-07-06,Yorkshire,Repair,114,23,12,190
+2026-07-07,Yorkshire,Repair,194,13,9,140
+2026-07-08,Yorkshire,Service,203,23,7,153
+2026-07-09,Yorkshire,Service,253,20,18,176
+2026-07-10,Yorkshire,Installation,102,14,17,189
+2026-07-11,Yorkshire,Service,220,15,1,114
+2026-07-12,Yorkshire,Service,110,15,9,164
+2026-07-13,Yorkshire,Service,257,10,6,123
+2026-07-14,Yorkshire,Installation,174,29,16,98
+2026-07-15,Yorkshire,Installation,166,15,20,278
+2026-07-16,Yorkshire,Installation,172,11,12,166
+2026-07-17,Yorkshire,Repair,230,19,9,247
+2026-07-18,Yorkshire,Installation,183,16,7,198
+2026-07-19,Yorkshire,Service,115,28,3,117
+2026-07-20,Yorkshire,Installation,118,19,10,256
+2026-07-21,Yorkshire,Repair,204,13,20,251
+2026-07-22,Yorkshire,Installation,108,21,5,180
+2026-07-23,Yorkshire,Service,164,22,5,207
+2026-07-24,Yorkshire,Repair,134,20,13,248
+2026-07-25,Yorkshire,Service,164,23,2,204
+2026-07-26,Yorkshire,Service,231,29,15,151
+2026-07-27,Yorkshire,Service,297,10,20,172
+2026-07-28,Yorkshire,Service,126,25,16,131
+2026-07-29,Yorkshire,Repair,235,22,16,231
+2026-07-30,Yorkshire,Installation,251,27,9,217
+2026-07-31,Yorkshire,Service,204,28,20,96
+2026-08-01,Yorkshire,Installation,159,20,18,137
+2026-08-02,Yorkshire,Service,271,28,8,181
+2026-08-03,Yorkshire,Service,156,24,7,181
+2026-08-04,Yorkshire,Repair,237,27,13,84
+2026-07-06,Wales,Installation,154,27,17,153
+2026-07-07,Wales,Installation,184,15,17,247
+2026-07-08,Wales,Repair,265,17,15,85
+2026-07-09,Wales,Installation,174,18,13,121
+2026-07-10,Wales,Service,295,19,9,218
+2026-07-11,Wales,Service,161,12,8,125
+2026-07-12,Wales,Installation,296,27,14,210
+2026-07-13,Wales,Service,191,12,11,125
+2026-07-14,Wales,Installation,104,29,2,96
+2026-07-15,Wales,Installation,276,27,6,202
+2026-07-16,Wales,Repair,126,26,12,134
+2026-07-17,Wales,Installation,291,12,7,248
+2026-07-18,Wales,Repair,264,21,6,90
+2026-07-19,Wales,Installation,190,10,11,246
+2026-07-20,Wales,Repair,121,14,3,232
+2026-07-21,Wales,Repair,241,27,10,110
+2026-07-22,Wales,Repair,237,23,9,89
+2026-07-23,Wales,Installation,166,22,4,151
+2026-07-24,Wales,Repair,119,25,9,269
+2026-07-25,Wales,Repair,183,15,2,115
+2026-07-26,Wales,Repair,296,20,10,111
+2026-07-27,Wales,Service,159,11,8,159
+2026-07-28,Wales,Installation,239,19,17,248
+2026-07-29,Wales,Repair,207,12,10,148
+2026-07-30,Wales,Installation,101,13,15,90
+2026-07-31,Wales,Service,167,15,18,223
+2026-08-01,Wales,Service,266,28,3,241
+2026-08-02,Wales,Service,288,26,7,184
+2026-08-03,Wales,Installation,286,16,15,220
+2026-08-04,Wales,Installation,270,22,6,215
+2026-07-06,Scotland,Installation,205,28,9,148
+2026-07-07,Scotland,Repair,265,29,15,80
+2026-07-08,Scotland,Installation,164,14,18,127
+2026-07-09,Scotland,Installation,110,17,7,270
+2026-07-10,Scotland,Service,155,18,3,227
+2026-07-11,Scotland,Installation,103,23,3,167
+2026-07-12,Scotland,Installation,265,13,11,163
+2026-07-13,Scotland,Repair,269,16,20,117
+2026-07-14,Scotland,Installation,269,17,15,205
+2026-07-15,Scotland,Service,210,24,5,95
+2026-07-16,Scotland,Repair,152,23,3,153
+2026-07-17,Scotland,Repair,296,10,15,275
+2026-07-18,Scotland,Repair,264,17,14,131
+2026-07-19,Scotland,Service,222,17,14,114
+2026-07-20,Scotland,Service,241,26,20,117
+2026-07-21,Scotland,Repair,276,13,8,248
+2026-07-22,Scotland,Service,245,13,7,152
+2026-07-23,Scotland,Installation,235,15,20,207
+2026-07-24,Scotland,Installation,297,27,13,225
+2026-07-25,Scotland,Service,127,19,13,144
+2026-07-26,Scotland,Repair,271,29,18,224
+2026-07-27,Scotland,Installation,150,17,10,91
+2026-07-28,Scotland,Installation,185,25,7,190
+2026-07-29,Scotland,Installation,135,17,13,91
+2026-07-30,Scotland,Installation,118,13,17,192
+2026-07-31,Scotland,Repair,124,11,8,82
+2026-08-01,Scotland,Repair,153,12,10,140
+2026-08-02,Scotland,Installation,291,30,7,91
+2026-08-03,Scotland,Service,268,10,15,135
+2026-08-04,Scotland,Installation,249,17,18,151

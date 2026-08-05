@@ -1,0 +1,11 @@
+boiler_id,boiler_type,energy_rating,energy_consumption,life_span,manufacturer,imported,warranty,addition_warranty_purchased,addition_warranty_end_date
+PROD001,Conventional,A,14506,13,Worcester Bosch,Yes,7,Yes,2031-06-07
+PROD002,Conventional,A,19674,16,Glow-worm,Yes,5,Yes,2029-05-30
+PROD003,Combi,A,19195,13,Vaillant,No,8,No,
+PROD004,Conventional,A,12615,16,Baxi,No,9,Yes,2027-11-27
+PROD005,Combi,A,11519,16,Baxi,Yes,10,No,
+PROD006,Conventional,A,17527,18,Baxi,Yes,11,Yes,2028-11-16
+PROD007,Conventional,C,19459,13,Baxi,Yes,5,Yes,2027-10-09
+PROD008,System,B,11654,16,Worcester Bosch,No,12,No,
+PROD009,Combi,C,13432,20,Baxi,No,6,Yes,2029-05-12
+PROD010,Conventional,B,12677,17,Glow-worm,No,9,Yes,2029-11-03

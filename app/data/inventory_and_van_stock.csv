@@ -1,0 +1,101 @@
+location,part_category,manufacturer,part_type,in_stock,recycled
+Central Hub,Boiler Parts,Worcester Bosch,Part_Cum,27,No
+Van 1,Boiler Parts,Baxi,Part_Cum,48,No
+Van 2,Boiler Parts,Viessmann,Part_Cum,44,Yes
+Van 3,Boiler Parts,Worcester Bosch,Part_Cum,47,Yes
+North Depot,Boiler Parts,Glow-worm,Part_Cum,36,Yes
+Central Hub,Boiler Parts,Glow-worm,Part_Vero,17,Yes
+Van 1,Boiler Parts,Vaillant,Part_Vero,10,Yes
+Van 2,Boiler Parts,Glow-worm,Part_Vero,2,Yes
+Van 3,Boiler Parts,Vaillant,Part_Vero,13,Yes
+North Depot,Boiler Parts,Vaillant,Part_Vero,18,No
+Central Hub,Boiler Parts,Worcester Bosch,Part_Quidem,42,No
+Van 1,Boiler Parts,Vaillant,Part_Quidem,39,Yes
+Van 2,Boiler Parts,Worcester Bosch,Part_Quidem,7,Yes
+Van 3,Boiler Parts,Baxi,Part_Quidem,40,No
+North Depot,Boiler Parts,Glow-worm,Part_Quidem,27,Yes
+Central Hub,Boiler Parts,Glow-worm,Part_Fugiat,4,Yes
+Van 1,Boiler Parts,Ideal,Part_Fugiat,24,Yes
+Van 2,Boiler Parts,Vaillant,Part_Fugiat,23,Yes
+Van 3,Boiler Parts,Viessmann,Part_Fugiat,11,No
+North Depot,Boiler Parts,Worcester Bosch,Part_Fugiat,5,Yes
+Central Hub,Boiler Parts,Vaillant,Part_Temporibus,4,Yes
+Van 1,Boiler Parts,Ideal,Part_Temporibus,6,No
+Van 2,Boiler Parts,Vaillant,Part_Temporibus,44,Yes
+Van 3,Boiler Parts,Baxi,Part_Temporibus,45,No
+North Depot,Boiler Parts,Ideal,Part_Temporibus,10,Yes
+Central Hub,Boiler Parts,Ideal,Part_Laboriosam,27,Yes
+Van 1,Boiler Parts,Viessmann,Part_Laboriosam,50,No
+Van 2,Boiler Parts,Baxi,Part_Laboriosam,20,No
+Van 3,Boiler Parts,Viessmann,Part_Laboriosam,13,Yes
+North Depot,Boiler Parts,Vaillant,Part_Laboriosam,25,No
+Central Hub,Boiler Parts,Ideal,Part_Culpa,49,No
+Van 1,Boiler Parts,Worcester Bosch,Part_Culpa,37,Yes
+Van 2,Boiler Parts,Glow-worm,Part_Culpa,8,Yes
+Van 3,Boiler Parts,Vaillant,Part_Culpa,47,Yes
+North Depot,Boiler Parts,Viessmann,Part_Culpa,30,No
+Central Hub,Boiler Parts,Glow-worm,Part_Impedit,37,Yes
+Van 1,Boiler Parts,Worcester Bosch,Part_Impedit,33,Yes
+Van 2,Boiler Parts,Viessmann,Part_Impedit,14,Yes
+Van 3,Boiler Parts,Vaillant,Part_Impedit,3,Yes
+North Depot,Boiler Parts,Vaillant,Part_Impedit,34,Yes
+Central Hub,Boiler Parts,Baxi,Part_Nostrum,33,Yes
+Van 1,Boiler Parts,Baxi,Part_Nostrum,16,No
+Van 2,Boiler Parts,Viessmann,Part_Nostrum,8,Yes
+Van 3,Boiler Parts,Worcester Bosch,Part_Nostrum,27,No
+North Depot,Boiler Parts,Vaillant,Part_Nostrum,8,Yes
+Central Hub,Boiler Parts,Glow-worm,Part_Dolore,40,Yes
+Van 1,Boiler Parts,Viessmann,Part_Dolore,9,No
+Van 2,Boiler Parts,Worcester Bosch,Part_Dolore,27,Yes
+Van 3,Boiler Parts,Glow-worm,Part_Dolore,48,No
+North Depot,Boiler Parts,Ideal,Part_Dolore,10,No
+Central Hub,Boiler Parts,Baxi,Part_Odit,1,Yes
+Van 1,Boiler Parts,Worcester Bosch,Part_Odit,49,Yes
+Van 2,Boiler Parts,Glow-worm,Part_Odit,44,Yes
+Van 3,Boiler Parts,Glow-worm,Part_Odit,1,Yes
+North Depot,Boiler Parts,Baxi,Part_Odit,10,Yes
+Central Hub,Boiler Parts,Worcester Bosch,Part_A,44,Yes
+Van 1,Boiler Parts,Ideal,Part_A,6,No
+Van 2,Boiler Parts,Viessmann,Part_A,41,No
+Van 3,Boiler Parts,Worcester Bosch,Part_A,50,Yes
+North Depot,Boiler Parts,Glow-worm,Part_A,9,No
+Central Hub,Boiler Parts,Baxi,Part_Fuga,24,Yes
+Van 1,Boiler Parts,Viessmann,Part_Fuga,41,No
+Van 2,Boiler Parts,Baxi,Part_Fuga,16,Yes
+Van 3,Boiler Parts,Worcester Bosch,Part_Fuga,34,Yes
+North Depot,Boiler Parts,Viessmann,Part_Fuga,42,No
+Central Hub,Boiler Parts,Baxi,Part_Provident,31,Yes
+Van 1,Boiler Parts,Vaillant,Part_Provident,11,No
+Van 2,Boiler Parts,Viessmann,Part_Provident,39,Yes
+Van 3,Boiler Parts,Baxi,Part_Provident,24,No
+North Depot,Boiler Parts,Worcester Bosch,Part_Provident,32,No
+Central Hub,Boiler Parts,Ideal,Part_Dolorum,1,Yes
+Van 1,Boiler Parts,Viessmann,Part_Dolorum,3,Yes
+Van 2,Boiler Parts,Glow-worm,Part_Dolorum,16,Yes
+Van 3,Boiler Parts,Ideal,Part_Dolorum,22,No
+North Depot,Boiler Parts,Worcester Bosch,Part_Dolorum,23,No
+Central Hub,Boiler Parts,Viessmann,Part_Quae,9,No
+Van 1,Boiler Parts,Ideal,Part_Quae,36,Yes
+Van 2,Boiler Parts,Vaillant,Part_Quae,26,Yes
+Van 3,Boiler Parts,Baxi,Part_Quae,32,Yes
+North Depot,Boiler Parts,Baxi,Part_Quae,23,Yes
+Central Hub,Boiler Parts,Baxi,Part_Corrupti,19,Yes
+Van 1,Boiler Parts,Viessmann,Part_Corrupti,24,Yes
+Van 2,Boiler Parts,Viessmann,Part_Corrupti,45,Yes
+Van 3,Boiler Parts,Glow-worm,Part_Corrupti,30,Yes
+North Depot,Boiler Parts,Ideal,Part_Corrupti,13,Yes
+Central Hub,Boiler Parts,Ideal,Part_Sunt,38,No
+Van 1,Boiler Parts,Viessmann,Part_Sunt,22,Yes
+Van 2,Boiler Parts,Viessmann,Part_Sunt,49,Yes
+Van 3,Boiler Parts,Vaillant,Part_Sunt,4,Yes
+North Depot,Boiler Parts,Baxi,Part_Sunt,3,Yes
+Central Hub,Boiler Parts,Ideal,Part_In,16,Yes
+Van 1,Boiler Parts,Viessmann,Part_In,33,Yes
+Van 2,Boiler Parts,Baxi,Part_In,40,No
+Van 3,Boiler Parts,Glow-worm,Part_In,11,No
+North Depot,Boiler Parts,Ideal,Part_In,15,Yes
+Central Hub,Boiler Parts,Ideal,Part_Tempore,45,Yes
+Van 1,Boiler Parts,Viessmann,Part_Tempore,41,Yes
+Van 2,Boiler Parts,Ideal,Part_Tempore,17,Yes
+Van 3,Boiler Parts,Vaillant,Part_Tempore,43,Yes
+North Depot,Boiler Parts,Vaillant,Part_Tempore,44,No

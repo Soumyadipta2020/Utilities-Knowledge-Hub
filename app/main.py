@@ -16,16 +16,11 @@ from app.config import (
     FLASK_HOST,
     FLASK_PORT,
     SECRET_KEY,
-    KB_FILE_PATH,
-    METRICS_FILE_PATH,
-    ACCESS_FILE_PATH,
-    OPERATIONS_FILE_PATH,
     TEMPLATES_DIR,
     OPENROUTER_API_KEY,
     OPENROUTER_MODEL_NAME,
     OPENROUTER_BASE_URL,
     DATA_DIR,
-    ensure_mock_data_exists,
 )
 from app.services.graph_service import KnowledgeGraphService
 from app.services.data_service import DataService
@@ -37,12 +32,9 @@ from app.agent.agent_builder import build_agent_executor, process_chat_message
 app = Flask(__name__, template_folder=str(TEMPLATES_DIR))
 app.secret_key = SECRET_KEY
 
-# Ensure Excel mock data files exist
-ensure_mock_data_exists()
-
 # Initialize Services & Inject dependencies into tools
-graph_service = KnowledgeGraphService(KB_FILE_PATH)
-data_service = DataService(METRICS_FILE_PATH, ACCESS_FILE_PATH, OPERATIONS_FILE_PATH)
+graph_service = KnowledgeGraphService(DATA_DIR)
+data_service = DataService(DATA_DIR)
 pipeline_engine = KnowledgeHarnessingPipeline(DATA_DIR, graph_service, data_service)
 register_services(graph_service, data_service)
 
@@ -122,8 +114,7 @@ def run_pipeline_stage_api(stage_id: int):
     """
     try:
         if stage_id == 1:
-            from app.data.generate_mock_data import generate_all_mock_data
-            generate_all_mock_data(DATA_DIR)
+            pass # mock generation logic was here
 
         stage_result = pipeline_engine.execute_stage(stage_id)
         harnessing_metrics = pipeline_engine.get_harnessing_metrics()
@@ -148,8 +139,7 @@ def run_pipeline_api():
     Runs all 12 backend stages and returns live execution results and metrics.
     """
     try:
-        from app.data.generate_mock_data import generate_all_mock_data
-        generate_all_mock_data(DATA_DIR)
+        # mock generation logic was here
 
         stages = pipeline_engine.execute_full_pipeline()
         harnessing_metrics = pipeline_engine.get_harnessing_metrics()
@@ -260,7 +250,7 @@ def get_graph_data_api():
 def get_datasets_api():
     """
     API endpoint to retrieve all available datasets.
-    Includes datasets defined in the Knowledge Graph and sheets from Business_Operations.xlsx.
+    Includes datasets defined in the Knowledge Graph and CSV files in data_dir.
     """
     try:
         datasets = set()
@@ -272,15 +262,10 @@ def get_datasets_api():
             if cat == "Dataset":
                 datasets.add(str(node_id))
                 
-        # 2. Get Datasets from Business_Operations.xlsx sheets
-        ops_file = DATA_DIR / "Business_Operations.xlsx"
-        if ops_file.exists():
-            try:
-                xls = pd.ExcelFile(ops_file)
-                for sheet in xls.sheet_names:
-                    datasets.add(sheet)
-            except Exception as e:
-                print(f"Error reading sheets from {ops_file}: {e}")
+        # 2. Get Datasets from CSV files
+        if DATA_DIR.exists():
+            for csv_file in DATA_DIR.glob("*.csv"):
+                datasets.add(csv_file.name)
 
         return jsonify({
             "success": True,
@@ -293,37 +278,29 @@ def get_datasets_api():
 def preview_datasource_api(filename: str):
     """
     API endpoint to preview content, columns, total row count, and sample records
-    from any of the 6 DHS Excel data sources.
+    from any of the CSV data sources.
     """
     try:
         # Sanitize filename
         safe_filename = Path(filename).name
+        if not safe_filename.endswith(".csv"):
+            safe_filename += ".csv"
         filepath = DATA_DIR / safe_filename
 
         if not filepath.exists():
             return jsonify({"success": False, "error": f"File {safe_filename} not found."}), 404
 
-        df = pd.read_excel(filepath)
+        df = pd.read_csv(filepath)
         df_clean = df.fillna("")
 
         columns = list(df_clean.columns)
         total_rows = len(df_clean)
         records = df_clean.head(15).to_dict(orient="records")
 
-        # Map metadata description per DHS source file
-        descriptions = {
-            "Information_Harnessing_Source.xlsx": "Raw ingestion streams, operational manual chunks, Data Factory connector states, and IoT telemetry metrics.",
-            "Knowledge_Harnessing_Source.xlsx": "Extracted subject-predicate-object knowledge graph triples, SME attribution mappings, and ontology nodes.",
-            "Inference_Harnessing_Source.xlsx": "Diagnostic decision trees, fault resolution paths, model routing confidence scores, and error handling rules.",
-            "Outcome_Harnessing_Source.xlsx": "Commercial sales activity, automated IT access ticket outcomes, resolution metrics, and SLA performance.",
-            "Benchmarking_Harnessing_Source.xlsx": "Golden Q&A evaluation datasets, F1 precision scores (0.99), LLM-as-a-Judge ratings, and hallucination guardrails.",
-            "Governance_Security_Source.xlsx": "Azure Entra ID role permissions matrix, Microsoft Purview data lineage tags, and Key Vault secret policies."
-        }
-
         return jsonify({
             "success": True,
             "filename": safe_filename,
-            "description": descriptions.get(safe_filename, "DHS Enterprise Excel Data Source."),
+            "description": f"Synthetic dataset: {safe_filename}",
             "total_rows": total_rows,
             "columns": columns,
             "records": records

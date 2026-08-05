@@ -1,0 +1,234 @@
+customer_id,boiler_id,installation_date,boiler_type,boiler_manufacturer,model,energy_rating,voltage,have_insurance,last_service_date,fault_history
+CUST00003,PROD005,2026-07-14,Combi,Baxi,Baxi Model G,A,230V,No,,EA
+CUST00007,PROD002,2020-05-29,Conventional,Glow-worm,Glow-worm Model H,A,230V,No,2021-04-11,F22
+CUST00011,PROD004,2026-02-05,Conventional,Baxi,Baxi Model M,A,230V,Yes,,Ignition Failure
+CUST00012,PROD008,2020-07-01,System,Worcester Bosch,Worcester Bosch Model M,B,230V,No,2020-10-23,F75
+CUST00014,PROD002,2023-05-30,Conventional,Glow-worm,Glow-worm Model A,A,230V,No,2024-05-04,Ignition Failure
+CUST00015,PROD008,2026-05-10,System,Worcester Bosch,Worcester Bosch Model S,B,230V,No,,F22
+CUST00019,PROD005,2021-12-25,Combi,Baxi,Baxi Model H,A,230V,No,2022-11-20,EA
+CUST00024,PROD004,2026-05-30,Conventional,Baxi,Baxi Model F,A,230V,No,,F75
+CUST00025,PROD008,2023-02-21,System,Worcester Bosch,Worcester Bosch Model F,B,230V,Yes,2023-11-22,None
+CUST00027,PROD005,2024-07-11,Combi,Baxi,Baxi Model T,A,230V,Yes,2024-11-18,None
+CUST00028,PROD008,2025-06-05,System,Worcester Bosch,Worcester Bosch Model B,B,230V,Yes,2026-02-09,F22
+CUST00034,PROD007,2024-03-17,Conventional,Baxi,Baxi Model A,C,230V,No,2025-03-15,Ignition Failure
+CUST00036,PROD007,2025-09-22,Conventional,Baxi,Baxi Model H,C,230V,No,2026-02-16,None
+CUST00038,PROD001,2025-01-18,Conventional,Worcester Bosch,Worcester Bosch Model X,A,230V,No,2025-09-19,F75
+CUST00040,PROD010,2024-08-09,Conventional,Glow-worm,Glow-worm Model D,B,230V,No,2025-05-05,EA
+CUST00041,PROD002,2026-06-07,Conventional,Glow-worm,Glow-worm Model V,A,230V,No,,Ignition Failure
+CUST00043,PROD003,2025-04-15,Combi,Vaillant,Vaillant Model Q,A,230V,Yes,2025-11-26,EA
+CUST00044,PROD001,2026-01-11,Conventional,Worcester Bosch,Worcester Bosch Model J,A,230V,Yes,,Ignition Failure
+CUST00045,PROD004,2025-07-30,Conventional,Baxi,Baxi Model S,A,230V,Yes,2026-05-21,F75
+CUST00048,PROD005,2022-05-03,Combi,Baxi,Baxi Model Z,A,230V,Yes,2023-04-14,F75
+CUST00051,PROD002,2023-10-23,Conventional,Glow-worm,Glow-worm Model H,A,230V,No,2024-03-20,Ignition Failure
+CUST00052,PROD001,2026-07-30,Conventional,Worcester Bosch,Worcester Bosch Model G,A,230V,No,,EA
+CUST00054,PROD004,2024-03-05,Conventional,Baxi,Baxi Model H,A,230V,Yes,2024-10-01,F75
+CUST00055,PROD004,2026-06-14,Conventional,Baxi,Baxi Model A,A,230V,Yes,,F22
+CUST00057,PROD008,2024-08-29,System,Worcester Bosch,Worcester Bosch Model C,B,230V,Yes,2025-01-13,F75
+CUST00058,PROD009,2020-05-14,Combi,Baxi,Baxi Model N,C,230V,Yes,2020-12-10,EA
+CUST00059,PROD008,2024-10-08,System,Worcester Bosch,Worcester Bosch Model C,B,230V,No,2025-02-19,None
+CUST00060,PROD007,2026-04-29,Conventional,Baxi,Baxi Model J,C,230V,No,,Ignition Failure
+CUST00062,PROD006,2024-04-24,Conventional,Baxi,Baxi Model A,A,230V,No,2025-01-28,F22
+CUST00063,PROD005,2017-08-30,Combi,Baxi,Baxi Model Y,A,230V,No,2018-05-23,Ignition Failure
+CUST00064,PROD005,2026-07-28,Combi,Baxi,Baxi Model Y,A,230V,Yes,,Ignition Failure
+CUST00065,PROD004,2019-09-04,Conventional,Baxi,Baxi Model G,A,230V,No,2020-05-15,F22
+CUST00069,PROD002,2025-12-26,Conventional,Glow-worm,Glow-worm Model U,A,230V,Yes,,None
+CUST00070,PROD002,2026-03-27,Conventional,Glow-worm,Glow-worm Model Y,A,230V,No,,EA
+CUST00073,PROD002,2024-09-10,Conventional,Glow-worm,Glow-worm Model W,A,230V,No,2025-06-12,None
+CUST00074,PROD010,2025-09-30,Conventional,Glow-worm,Glow-worm Model Z,B,230V,Yes,2026-02-03,F75
+CUST00075,PROD005,2021-12-24,Combi,Baxi,Baxi Model E,A,230V,No,2022-10-20,Ignition Failure
+CUST00076,PROD005,2022-01-14,Combi,Baxi,Baxi Model G,A,230V,No,2022-07-25,F75
+CUST00078,PROD006,2021-10-08,Conventional,Baxi,Baxi Model O,A,230V,No,2022-05-17,Ignition Failure
+CUST00082,PROD006,2021-05-08,Conventional,Baxi,Baxi Model W,A,230V,No,2021-10-05,F75
+CUST00083,PROD003,2025-11-16,Combi,Vaillant,Vaillant Model D,A,230V,Yes,,F75
+CUST00084,PROD009,2025-12-08,Combi,Baxi,Baxi Model W,C,230V,No,2026-07-19,F22
+CUST00086,PROD002,2022-03-07,Conventional,Glow-worm,Glow-worm Model E,A,230V,No,2022-12-02,None
+CUST00088,PROD001,2023-01-07,Conventional,Worcester Bosch,Worcester Bosch Model I,A,230V,Yes,2023-10-03,None
+CUST00090,PROD010,2026-05-17,Conventional,Glow-worm,Glow-worm Model F,B,230V,No,,EA
+CUST00092,PROD010,2025-11-30,Conventional,Glow-worm,Glow-worm Model V,B,230V,Yes,2026-05-27,EA
+CUST00094,PROD008,2026-05-10,System,Worcester Bosch,Worcester Bosch Model D,B,230V,Yes,,F22
+CUST00095,PROD003,2025-07-17,Combi,Vaillant,Vaillant Model Q,A,230V,No,2026-04-28,F22
+CUST00096,PROD007,2023-05-10,Conventional,Baxi,Baxi Model Q,C,230V,Yes,2024-04-19,EA
+CUST00098,PROD006,2023-11-29,Conventional,Baxi,Baxi Model J,A,230V,Yes,2024-11-28,None
+CUST00101,PROD001,2026-07-15,Conventional,Worcester Bosch,Worcester Bosch Model O,A,230V,No,,EA
+CUST00103,PROD007,2018-02-15,Conventional,Baxi,Baxi Model F,C,230V,No,2018-09-30,F75
+CUST00105,PROD007,2024-02-16,Conventional,Baxi,Baxi Model I,C,230V,Yes,2024-08-02,F75
+CUST00110,PROD003,2022-11-12,Combi,Vaillant,Vaillant Model E,A,230V,No,2023-09-02,F22
+CUST00111,PROD008,2022-11-08,System,Worcester Bosch,Worcester Bosch Model W,B,230V,Yes,2023-03-19,F22
+CUST00112,PROD005,2024-07-23,Combi,Baxi,Baxi Model G,A,230V,No,2025-07-05,F22
+CUST00115,PROD010,2024-06-17,Conventional,Glow-worm,Glow-worm Model H,B,230V,No,2025-01-25,None
+CUST00116,PROD008,2023-08-03,System,Worcester Bosch,Worcester Bosch Model U,B,230V,Yes,2024-07-12,F22
+CUST00120,PROD002,2025-08-28,Conventional,Glow-worm,Glow-worm Model E,A,230V,Yes,2026-03-10,EA
+CUST00122,PROD005,2026-04-02,Combi,Baxi,Baxi Model U,A,230V,No,,F75
+CUST00124,PROD004,2026-05-10,Conventional,Baxi,Baxi Model F,A,230V,Yes,,F75
+CUST00127,PROD007,2022-01-12,Conventional,Baxi,Baxi Model M,C,230V,No,2022-10-30,EA
+CUST00129,PROD005,2025-05-21,Combi,Baxi,Baxi Model X,A,230V,Yes,2025-12-03,None
+CUST00130,PROD001,2020-07-13,Conventional,Worcester Bosch,Worcester Bosch Model X,A,230V,No,2021-02-23,None
+CUST00133,PROD003,2020-02-19,Combi,Vaillant,Vaillant Model H,A,230V,No,2021-01-26,F22
+CUST00135,PROD009,2024-04-02,Combi,Baxi,Baxi Model P,C,230V,No,2024-10-30,F22
+CUST00141,PROD006,2024-10-02,Conventional,Baxi,Baxi Model T,A,230V,Yes,2025-02-09,Ignition Failure
+CUST00146,PROD003,2021-09-10,Combi,Vaillant,Vaillant Model A,A,230V,Yes,2022-05-29,F22
+CUST00147,PROD002,2026-07-23,Conventional,Glow-worm,Glow-worm Model X,A,230V,No,,F75
+CUST00148,PROD008,2025-03-21,System,Worcester Bosch,Worcester Bosch Model H,B,230V,Yes,2026-03-07,F75
+CUST00150,PROD005,2023-01-13,Combi,Baxi,Baxi Model E,A,230V,No,2023-06-14,None
+CUST00151,PROD006,2021-03-16,Conventional,Baxi,Baxi Model A,A,230V,No,2022-01-07,F75
+CUST00157,PROD005,2024-08-03,Combi,Baxi,Baxi Model I,A,230V,Yes,2025-03-14,F22
+CUST00159,PROD005,2026-01-26,Combi,Baxi,Baxi Model Q,A,230V,Yes,,Ignition Failure
+CUST00160,PROD003,2024-02-12,Combi,Vaillant,Vaillant Model J,A,230V,No,2024-11-16,F75
+CUST00162,PROD004,2025-09-21,Conventional,Baxi,Baxi Model U,A,230V,Yes,2026-07-25,F22
+CUST00163,PROD002,2025-06-08,Conventional,Glow-worm,Glow-worm Model Z,A,230V,No,2025-11-07,Ignition Failure
+CUST00164,PROD010,2026-08-01,Conventional,Glow-worm,Glow-worm Model L,B,230V,No,,F75
+CUST00166,PROD003,2026-02-07,Combi,Vaillant,Vaillant Model K,A,230V,No,,EA
+CUST00167,PROD003,2026-07-31,Combi,Vaillant,Vaillant Model S,A,230V,No,,None
+CUST00168,PROD002,2026-01-12,Conventional,Glow-worm,Glow-worm Model Y,A,230V,No,,Ignition Failure
+CUST00171,PROD010,2026-03-09,Conventional,Glow-worm,Glow-worm Model Q,B,230V,Yes,,None
+CUST00172,PROD008,2020-06-03,System,Worcester Bosch,Worcester Bosch Model S,B,230V,No,2020-11-22,F75
+CUST00174,PROD005,2018-08-09,Combi,Baxi,Baxi Model R,A,230V,Yes,2019-05-08,Ignition Failure
+CUST00175,PROD004,2024-12-12,Conventional,Baxi,Baxi Model U,A,230V,No,2025-05-28,F75
+CUST00176,PROD004,2025-06-04,Conventional,Baxi,Baxi Model U,A,230V,No,2026-04-19,None
+CUST00177,PROD002,2023-02-28,Conventional,Glow-worm,Glow-worm Model W,A,230V,Yes,2024-01-10,F22
+CUST00179,PROD010,2026-02-27,Conventional,Glow-worm,Glow-worm Model G,B,230V,Yes,,None
+CUST00180,PROD004,2023-06-18,Conventional,Baxi,Baxi Model Y,A,230V,Yes,2024-02-18,None
+CUST00182,PROD003,2024-12-09,Combi,Vaillant,Vaillant Model Y,A,230V,No,2025-11-15,None
+CUST00183,PROD007,2019-03-21,Conventional,Baxi,Baxi Model W,C,230V,Yes,2020-01-31,EA
+CUST00184,PROD002,2020-02-08,Conventional,Glow-worm,Glow-worm Model W,A,230V,Yes,2020-10-23,EA
+CUST00185,PROD001,2026-07-17,Conventional,Worcester Bosch,Worcester Bosch Model P,A,230V,Yes,,F75
+CUST00187,PROD002,2024-02-08,Conventional,Glow-worm,Glow-worm Model X,A,230V,No,2024-09-11,Ignition Failure
+CUST00188,PROD007,2019-08-13,Conventional,Baxi,Baxi Model K,C,230V,Yes,2020-03-14,F22
+CUST00197,PROD005,2019-01-15,Combi,Baxi,Baxi Model F,A,230V,No,2019-09-05,None
+CUST00199,PROD008,2025-09-18,System,Worcester Bosch,Worcester Bosch Model C,B,230V,Yes,2026-03-02,F75
+CUST00200,PROD004,2022-08-13,Conventional,Baxi,Baxi Model I,A,230V,Yes,2023-02-24,F75
+CUST00202,PROD007,2026-07-02,Conventional,Baxi,Baxi Model F,C,230V,No,,None
+CUST00204,PROD006,2026-06-16,Conventional,Baxi,Baxi Model W,A,230V,No,,F75
+CUST00205,PROD009,2026-03-03,Combi,Baxi,Baxi Model A,C,230V,Yes,,F75
+CUST00206,PROD002,2025-10-28,Conventional,Glow-worm,Glow-worm Model W,A,230V,Yes,,EA
+CUST00207,PROD010,2025-05-04,Conventional,Glow-worm,Glow-worm Model H,B,230V,No,2026-02-10,Ignition Failure
+CUST00208,PROD004,2025-07-23,Conventional,Baxi,Baxi Model P,A,230V,No,2025-12-23,F22
+CUST00210,PROD006,2024-04-26,Conventional,Baxi,Baxi Model D,A,230V,Yes,2025-02-12,EA
+CUST00211,PROD003,2025-07-25,Combi,Vaillant,Vaillant Model R,A,230V,Yes,2025-12-10,None
+CUST00215,PROD001,2021-10-10,Conventional,Worcester Bosch,Worcester Bosch Model O,A,230V,No,2022-06-01,EA
+CUST00217,PROD009,2025-10-24,Combi,Baxi,Baxi Model Z,C,230V,Yes,,Ignition Failure
+CUST00218,PROD003,2026-05-02,Combi,Vaillant,Vaillant Model K,A,230V,Yes,,None
+CUST00219,PROD007,2026-03-28,Conventional,Baxi,Baxi Model N,C,230V,No,,F22
+CUST00220,PROD010,2026-07-04,Conventional,Glow-worm,Glow-worm Model B,B,230V,Yes,,F22
+CUST00225,PROD001,2026-03-03,Conventional,Worcester Bosch,Worcester Bosch Model L,A,230V,Yes,,EA
+CUST00232,PROD009,2021-11-15,Combi,Baxi,Baxi Model V,C,230V,No,2022-10-24,F75
+CUST00234,PROD008,2024-03-10,System,Worcester Bosch,Worcester Bosch Model P,B,230V,No,2024-08-17,None
+CUST00235,PROD007,2024-02-15,Conventional,Baxi,Baxi Model E,C,230V,No,2025-01-14,F75
+CUST00236,PROD010,2025-11-07,Conventional,Glow-worm,Glow-worm Model P,B,230V,Yes,2026-05-07,None
+CUST00237,PROD001,2025-01-19,Conventional,Worcester Bosch,Worcester Bosch Model Y,A,230V,No,2025-10-10,Ignition Failure
+CUST00238,PROD003,2024-05-12,Combi,Vaillant,Vaillant Model B,A,230V,Yes,2024-09-22,F75
+CUST00241,PROD002,2023-01-01,Conventional,Glow-worm,Glow-worm Model O,A,230V,No,2023-11-10,EA
+CUST00242,PROD010,2021-04-17,Conventional,Glow-worm,Glow-worm Model N,B,230V,No,2021-10-04,None
+CUST00243,PROD007,2026-01-21,Conventional,Baxi,Baxi Model F,C,230V,No,,None
+CUST00246,PROD001,2025-01-01,Conventional,Worcester Bosch,Worcester Bosch Model V,A,230V,Yes,2025-06-20,F22
+CUST00251,PROD008,2024-07-20,System,Worcester Bosch,Worcester Bosch Model F,B,230V,No,2025-07-08,None
+CUST00254,PROD006,2026-04-13,Conventional,Baxi,Baxi Model H,A,230V,No,,EA
+CUST00258,PROD003,2019-01-19,Combi,Vaillant,Vaillant Model M,A,230V,No,2019-06-21,Ignition Failure
+CUST00261,PROD002,2023-11-30,Conventional,Glow-worm,Glow-worm Model M,A,230V,No,2024-03-21,F22
+CUST00262,PROD009,2021-05-18,Combi,Baxi,Baxi Model L,C,230V,Yes,2021-09-11,EA
+CUST00263,PROD006,2020-03-04,Conventional,Baxi,Baxi Model A,A,230V,Yes,2020-07-09,F75
+CUST00264,PROD009,2026-03-05,Combi,Baxi,Baxi Model M,C,230V,No,,None
+CUST00266,PROD002,2026-07-18,Conventional,Glow-worm,Glow-worm Model F,A,230V,No,,EA
+CUST00270,PROD009,2021-07-05,Combi,Baxi,Baxi Model U,C,230V,Yes,2022-05-23,None
+CUST00271,PROD005,2021-05-17,Combi,Baxi,Baxi Model M,A,230V,Yes,2022-03-21,EA
+CUST00273,PROD008,2018-01-29,System,Worcester Bosch,Worcester Bosch Model R,B,230V,No,2018-07-28,F22
+CUST00274,PROD010,2024-12-19,Conventional,Glow-worm,Glow-worm Model R,B,230V,No,2025-10-16,Ignition Failure
+CUST00275,PROD002,2026-07-01,Conventional,Glow-worm,Glow-worm Model V,A,230V,No,,Ignition Failure
+CUST00276,PROD006,2023-02-24,Conventional,Baxi,Baxi Model V,A,230V,No,2023-08-08,F22
+CUST00277,PROD010,2022-01-26,Conventional,Glow-worm,Glow-worm Model Z,B,230V,No,2022-11-08,F75
+CUST00280,PROD005,2023-04-15,Combi,Baxi,Baxi Model U,A,230V,No,2024-03-21,F22
+CUST00282,PROD006,2025-08-22,Conventional,Baxi,Baxi Model B,A,230V,Yes,2026-03-29,F22
+CUST00284,PROD008,2026-01-20,System,Worcester Bosch,Worcester Bosch Model T,B,230V,No,,None
+CUST00285,PROD004,2026-04-10,Conventional,Baxi,Baxi Model Z,A,230V,No,,F75
+CUST00286,PROD010,2025-08-03,Conventional,Glow-worm,Glow-worm Model E,B,230V,No,2026-02-01,Ignition Failure
+CUST00287,PROD002,2025-04-15,Conventional,Glow-worm,Glow-worm Model O,A,230V,Yes,2025-11-11,Ignition Failure
+CUST00289,PROD007,2023-08-27,Conventional,Baxi,Baxi Model T,C,230V,No,2024-02-19,None
+CUST00290,PROD007,2024-06-27,Conventional,Baxi,Baxi Model L,C,230V,No,2025-05-08,None
+CUST00292,PROD001,2025-03-19,Conventional,Worcester Bosch,Worcester Bosch Model U,A,230V,No,2026-01-05,F22
+CUST00296,PROD010,2022-05-19,Conventional,Glow-worm,Glow-worm Model X,B,230V,Yes,2022-09-15,EA
+CUST00298,PROD003,2025-04-05,Combi,Vaillant,Vaillant Model I,A,230V,Yes,2025-08-27,EA
+CUST00301,PROD008,2025-08-11,System,Worcester Bosch,Worcester Bosch Model Y,B,230V,Yes,2026-03-23,F75
+CUST00303,PROD002,2025-10-11,Conventional,Glow-worm,Glow-worm Model P,A,230V,No,2026-04-20,F75
+CUST00305,PROD001,2022-03-12,Conventional,Worcester Bosch,Worcester Bosch Model L,A,230V,Yes,2023-02-21,Ignition Failure
+CUST00308,PROD005,2024-12-20,Combi,Baxi,Baxi Model T,A,230V,Yes,2025-11-26,F75
+CUST00310,PROD007,2022-04-29,Conventional,Baxi,Baxi Model E,C,230V,Yes,2023-04-19,Ignition Failure
+CUST00312,PROD010,2023-09-27,Conventional,Glow-worm,Glow-worm Model S,B,230V,No,2024-04-15,Ignition Failure
+CUST00313,PROD006,2025-10-22,Conventional,Baxi,Baxi Model U,A,230V,No,,Ignition Failure
+CUST00318,PROD009,2025-07-12,Combi,Baxi,Baxi Model E,C,230V,Yes,2026-06-04,Ignition Failure
+CUST00319,PROD007,2025-11-30,Conventional,Baxi,Baxi Model E,C,230V,No,2026-07-21,F75
+CUST00320,PROD007,2021-02-21,Conventional,Baxi,Baxi Model T,C,230V,Yes,2021-10-28,F22
+CUST00321,PROD007,2025-04-25,Conventional,Baxi,Baxi Model Q,C,230V,No,2025-12-03,Ignition Failure
+CUST00326,PROD001,2025-04-16,Conventional,Worcester Bosch,Worcester Bosch Model O,A,230V,No,2025-11-03,None
+CUST00327,PROD001,2023-06-09,Conventional,Worcester Bosch,Worcester Bosch Model D,A,230V,No,2024-01-06,F22
+CUST00330,PROD007,2026-03-19,Conventional,Baxi,Baxi Model X,C,230V,Yes,,F22
+CUST00333,PROD009,2026-01-24,Combi,Baxi,Baxi Model Y,C,230V,No,,Ignition Failure
+CUST00334,PROD002,2026-01-17,Conventional,Glow-worm,Glow-worm Model G,A,230V,No,,None
+CUST00335,PROD002,2021-12-16,Conventional,Glow-worm,Glow-worm Model Z,A,230V,No,2022-11-20,None
+CUST00337,PROD009,2025-03-20,Combi,Baxi,Baxi Model X,C,230V,Yes,2026-01-26,None
+CUST00340,PROD003,2026-03-23,Combi,Vaillant,Vaillant Model A,A,230V,No,,F75
+CUST00341,PROD010,2026-04-23,Conventional,Glow-worm,Glow-worm Model H,B,230V,Yes,,F75
+CUST00343,PROD004,2025-09-25,Conventional,Baxi,Baxi Model U,A,230V,No,2026-01-08,EA
+CUST00344,PROD010,2024-10-05,Conventional,Glow-worm,Glow-worm Model C,B,230V,No,2025-09-28,F22
+CUST00347,PROD006,2022-06-12,Conventional,Baxi,Baxi Model T,A,230V,Yes,2023-03-15,None
+CUST00349,PROD006,2026-07-29,Conventional,Baxi,Baxi Model X,A,230V,Yes,,Ignition Failure
+CUST00350,PROD001,2026-07-05,Conventional,Worcester Bosch,Worcester Bosch Model F,A,230V,Yes,,None
+CUST00353,PROD003,2026-05-13,Combi,Vaillant,Vaillant Model L,A,230V,Yes,,F75
+CUST00357,PROD006,2021-07-12,Conventional,Baxi,Baxi Model N,A,230V,No,2022-05-19,F75
+CUST00359,PROD007,2024-05-09,Conventional,Baxi,Baxi Model P,C,230V,Yes,2025-04-25,F22
+CUST00360,PROD010,2026-01-25,Conventional,Glow-worm,Glow-worm Model W,B,230V,Yes,,F75
+CUST00362,PROD001,2022-09-16,Conventional,Worcester Bosch,Worcester Bosch Model J,A,230V,Yes,2023-04-01,EA
+CUST00367,PROD010,2025-01-01,Conventional,Glow-worm,Glow-worm Model A,B,230V,Yes,2025-08-18,EA
+CUST00369,PROD001,2021-08-20,Conventional,Worcester Bosch,Worcester Bosch Model K,A,230V,Yes,2022-04-29,None
+CUST00370,PROD006,2024-07-23,Conventional,Baxi,Baxi Model M,A,230V,Yes,2025-05-07,None
+CUST00372,PROD006,2024-04-08,Conventional,Baxi,Baxi Model T,A,230V,Yes,2024-09-21,Ignition Failure
+CUST00374,PROD005,2024-02-02,Combi,Baxi,Baxi Model Z,A,230V,Yes,2024-09-19,None
+CUST00376,PROD009,2025-10-16,Combi,Baxi,Baxi Model O,C,230V,Yes,2026-07-14,EA
+CUST00377,PROD006,2023-10-12,Conventional,Baxi,Baxi Model U,A,230V,No,2024-07-30,Ignition Failure
+CUST00378,PROD008,2025-03-12,System,Worcester Bosch,Worcester Bosch Model G,B,230V,No,2025-11-21,Ignition Failure
+CUST00385,PROD008,2021-01-24,System,Worcester Bosch,Worcester Bosch Model J,B,230V,No,2021-11-02,F75
+CUST00386,PROD008,2025-10-13,System,Worcester Bosch,Worcester Bosch Model H,B,230V,Yes,,F22
+CUST00387,PROD008,2021-07-23,System,Worcester Bosch,Worcester Bosch Model F,B,230V,No,2022-06-24,F75
+CUST00394,PROD004,2021-02-13,Conventional,Baxi,Baxi Model W,A,230V,No,2021-12-31,Ignition Failure
+CUST00400,PROD002,2024-01-08,Conventional,Glow-worm,Glow-worm Model T,A,230V,Yes,2024-09-23,None
+CUST00404,PROD006,2023-08-28,Conventional,Baxi,Baxi Model E,A,230V,Yes,2024-01-18,Ignition Failure
+CUST00405,PROD002,2023-05-12,Conventional,Glow-worm,Glow-worm Model F,A,230V,No,2023-09-15,EA
+CUST00409,PROD005,2026-04-13,Combi,Baxi,Baxi Model G,A,230V,No,,None
+CUST00410,PROD010,2024-03-15,Conventional,Glow-worm,Glow-worm Model D,B,230V,Yes,2024-09-25,F22
+CUST00413,PROD001,2026-08-01,Conventional,Worcester Bosch,Worcester Bosch Model C,A,230V,No,,Ignition Failure
+CUST00420,PROD008,2024-11-05,System,Worcester Bosch,Worcester Bosch Model P,B,230V,No,2025-02-22,Ignition Failure
+CUST00421,PROD002,2025-11-11,Conventional,Glow-worm,Glow-worm Model D,A,230V,Yes,2026-04-14,EA
+CUST00422,PROD001,2026-07-02,Conventional,Worcester Bosch,Worcester Bosch Model K,A,230V,Yes,,None
+CUST00423,PROD010,2023-08-23,Conventional,Glow-worm,Glow-worm Model Y,B,230V,No,2024-06-10,F22
+CUST00424,PROD005,2024-12-08,Combi,Baxi,Baxi Model N,A,230V,No,2025-11-03,F22
+CUST00425,PROD009,2019-04-09,Combi,Baxi,Baxi Model T,C,230V,Yes,2019-09-04,F75
+CUST00426,PROD003,2020-06-21,Combi,Vaillant,Vaillant Model V,A,230V,No,2020-12-19,None
+CUST00427,PROD003,2022-11-14,Combi,Vaillant,Vaillant Model P,A,230V,No,2023-03-08,Ignition Failure
+CUST00428,PROD007,2023-10-11,Conventional,Baxi,Baxi Model M,C,230V,Yes,2024-04-30,F22
+CUST00429,PROD008,2026-03-07,System,Worcester Bosch,Worcester Bosch Model U,B,230V,No,,F75
+CUST00434,PROD007,2019-06-15,Conventional,Baxi,Baxi Model E,C,230V,No,2020-01-12,F75
+CUST00439,PROD007,2025-07-12,Conventional,Baxi,Baxi Model B,C,230V,Yes,2026-03-10,None
+CUST00443,PROD010,2020-10-16,Conventional,Glow-worm,Glow-worm Model O,B,230V,No,2021-09-08,F75
+CUST00444,PROD003,2024-08-02,Combi,Vaillant,Vaillant Model W,A,230V,No,2025-01-31,Ignition Failure
+CUST00449,PROD009,2022-06-19,Combi,Baxi,Baxi Model Z,C,230V,No,2023-01-18,F75
+CUST00450,PROD001,2023-11-20,Conventional,Worcester Bosch,Worcester Bosch Model M,A,230V,Yes,2024-08-30,F22
+CUST00452,PROD002,2023-01-09,Conventional,Glow-worm,Glow-worm Model G,A,230V,No,2023-07-01,F75
+CUST00454,PROD004,2026-05-15,Conventional,Baxi,Baxi Model Z,A,230V,Yes,,None
+CUST00455,PROD008,2024-02-18,System,Worcester Bosch,Worcester Bosch Model T,B,230V,No,2024-07-01,F75
+CUST00461,PROD010,2026-04-25,Conventional,Glow-worm,Glow-worm Model F,B,230V,No,,F75
+CUST00462,PROD002,2023-12-14,Conventional,Glow-worm,Glow-worm Model A,A,230V,Yes,2024-05-01,EA
+CUST00464,PROD010,2026-02-24,Conventional,Glow-worm,Glow-worm Model L,B,230V,Yes,,F22
+CUST00465,PROD008,2019-10-04,System,Worcester Bosch,Worcester Bosch Model W,B,230V,Yes,2020-07-17,Ignition Failure
+CUST00466,PROD002,2021-11-21,Conventional,Glow-worm,Glow-worm Model D,A,230V,No,2022-10-25,Ignition Failure
+CUST00467,PROD005,2023-07-09,Combi,Baxi,Baxi Model H,A,230V,No,2024-05-31,Ignition Failure
+CUST00470,PROD010,2025-02-01,Conventional,Glow-worm,Glow-worm Model Y,B,230V,No,2025-09-28,EA
+CUST00476,PROD007,2025-05-13,Conventional,Baxi,Baxi Model Y,C,230V,No,2026-02-17,F75
+CUST00479,PROD009,2022-04-18,Combi,Baxi,Baxi Model I,C,230V,No,2023-02-27,None
+CUST00482,PROD010,2026-07-25,Conventional,Glow-worm,Glow-worm Model S,B,230V,Yes,,F75
+CUST00485,PROD003,2024-02-11,Combi,Vaillant,Vaillant Model E,A,230V,Yes,2024-09-21,F75
+CUST00487,PROD007,2021-07-31,Conventional,Baxi,Baxi Model G,C,230V,No,2021-11-26,F22
+CUST00489,PROD009,2024-06-08,Combi,Baxi,Baxi Model Q,C,230V,No,2024-11-16,Ignition Failure
+CUST00491,PROD002,2024-12-06,Conventional,Glow-worm,Glow-worm Model R,A,230V,Yes,2025-08-25,EA
+CUST00493,PROD005,2024-01-10,Combi,Baxi,Baxi Model C,A,230V,Yes,2024-09-20,F22
+CUST00497,PROD005,2020-02-09,Combi,Baxi,Baxi Model V,A,230V,Yes,2020-08-15,Ignition Failure
+CUST00499,PROD006,2026-07-23,Conventional,Baxi,Baxi Model S,A,230V,Yes,,None
+CUST00500,PROD003,2025-12-31,Combi,Vaillant,Vaillant Model G,A,230V,No,,Ignition Failure

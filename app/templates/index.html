@@ -2119,6 +2119,18 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
                 Object.keys(tierNodes).forEach(lvlKey => {
                     const lvl = parseInt(lvlKey);
                     const list = tierNodes[lvl];
+                    
+                    // Sort the list so that nodes with the same parent (e.g. Domain) are grouped together visually
+                    list.sort((a, b) => {
+                        const parentA = (a.parents && a.parents.length > 0) ? a.parents[0] : '';
+                        const parentB = (b.parents && b.parents.length > 0) ? b.parents[0] : '';
+                        if (parentA < parentB) return -1;
+                        if (parentA > parentB) return 1;
+                        if (a.id < b.id) return -1;
+                        if (a.id > b.id) return 1;
+                        return 0;
+                    });
+
                     const centerX = colWidth * lvl + colWidth / 2;
                     list.forEach((n, idx) => {
                         const cat = n.category || 'Metric';

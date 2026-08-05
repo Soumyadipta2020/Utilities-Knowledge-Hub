@@ -17,53 +17,108 @@ class KnowledgeGraphService:
     Powered by LangChain NetworkxEntityGraph for graph-based RAG and entity knowledge retrieval.
     """
 
-    def __init__(self, excel_path: Path):
-        self.excel_path = excel_path
+    def __init__(self, data_dir: Path):
+        self.data_dir = data_dir
         self.graph = nx.DiGraph()
         self.langchain_graph = NetworkxEntityGraph()
         self.df = None
         self.load_graph()
 
-    def load_graph(self) -> None:
-        """Read Knowledge_Base.xlsx and populate NetworkX DiGraph and LangChain NetworkxEntityGraph."""
-        if not self.excel_path.exists():
-            raise FileNotFoundError(f"Knowledge Base Excel file not found at: {self.excel_path}")
+    def _add_triple(self, source: str, relationship: str, target: str, details: str = "") -> None:
+        self.graph.add_node(source, entity_type="source")
+        self.graph.add_node(target, entity_type="target")
+        self.graph.add_edge(source, target, relationship=relationship, details=details)
+        self.langchain_graph.add_triple(KnowledgeTriple(source, relationship, target))
+        if self.df is None:
+            self.df = pd.DataFrame(columns=["source", "relationship", "target", "details"])
+        self.df.loc[len(self.df)] = {"source": source, "relationship": relationship, "target": target, "details": details}
 
-        self.df = pd.read_excel(self.excel_path)
+    def load_graph(self) -> None:
+        """Read CSV datasets and populate NetworkX DiGraph with executive-friendly semantic lineage."""
+        if not self.data_dir.exists():
+            raise FileNotFoundError(f"Data directory not found at: {self.data_dir}")
+
         self.graph.clear()
         self.langchain_graph = NetworkxEntityGraph()
+        self.df = pd.DataFrame(columns=["source", "relationship", "target", "details"])
 
-        for _, row in self.df.iterrows():
-            source = str(row["source"]).strip()
-            relationship = str(row["relationship"]).strip()
-            target = str(row["target"]).strip()
-            details = str(row.get("details", "")).strip()
+        # Define Business Domains based on filename patterns
+        domain_mapping = {
+            "customer": "Domain: Customer Operations",
+            "property": "Domain: Customer Operations",
+            "boiler": "Domain: Assets & Equipment",
+            "quote": "Domain: Sales & Pipeline",
+            "installation": "Domain: Sales & Pipeline",
+            "appointment": "Domain: Field Service",
+            "service": "Domain: Field Service",
+            "repair": "Domain: Field Service",
+            "engineer": "Domain: HR & Productivity",
+            "weather": "Domain: External Operations",
+            "business_rules": "Domain: Enterprise Governance",
+            "iot": "Domain: IoT Telemetry"
+        }
 
-            # NetworkX graph representation
-            self.graph.add_node(source, entity_type="source")
-            self.graph.add_node(target, entity_type="target")
-            self.graph.add_edge(source, target, relationship=relationship, details=details)
+        # Create Domain Nodes
+        domains = set(domain_mapping.values())
+        for domain in domains:
+            self.graph.add_node(domain, entity_type="Domain", category="Domain Cluster", details="High-level business function")
 
-            # LangChain NetworkxEntityGraph representation using KnowledgeTriple
-            self.langchain_graph.add_triple(KnowledgeTriple(source, relationship, target))
-
-        # Dynamically inject sheets from Business_Operations.xlsx as datasets
-        ops_file = self.excel_path.parent / "Business_Operations.xlsx"
-        if ops_file.exists():
-            try:
-                xls = pd.ExcelFile(ops_file)
-                main_dataset_node = "Business_Operations.xlsx"
-                self.graph.add_node(main_dataset_node, entity_type="source", category="File", details="Business Operations Excel Source")
+        try:
+            for csv_file in self.data_dir.glob("*.csv"):
+                dataset_name = csv_file.name
+                dataset_node = f"Dataset: {dataset_name}"
                 
-                for sheet in xls.sheet_names:
-                    # Add each sheet as a dataset node
-                    self.graph.add_node(sheet, entity_type="target", category="Dataset", details=f"Sheet in {ops_file.name}")
+                # Classify Domain
+                assigned_domain = "Domain: General Operations"
+                for key, dom in domain_mapping.items():
+                    if key in dataset_name.lower():
+                        assigned_domain = dom
+                        break
+                        
+                if not self.graph.has_node(assigned_domain):
+                    self.graph.add_node(assigned_domain, entity_type="Domain", category="Domain Cluster", details="High-level business function")
                     
-                    # Create an edge from the main dataset to the sheet
-                    self.graph.add_edge(main_dataset_node, sheet, relationship="contains_dataset_sheet", details="Excel workbook hierarchy")
-                    self.langchain_graph.add_triple(KnowledgeTriple(main_dataset_node, "contains_dataset_sheet", sheet))
-            except Exception as e:
-                print(f"Error loading Business_Operations sheets into graph: {e}")
+                self.graph.add_node(dataset_node, entity_type="Dataset", category="Dataset", details=f"Source File: {dataset_name}")
+                self._add_triple(assigned_domain, "contains_dataset", dataset_node, details="Domain taxonomy mapping")
+                
+                # Detect common info (Shared Entities)
+                try:
+                    df_sample = pd.read_csv(csv_file, nrows=0)
+                    columns = list(df_sample.columns)
+                except:
+                    columns = []
+                    
+                shared_keys = ["customer_id", "boiler_id", "job_id", "pay_id", "lead_id"]
+                for col in columns:
+                    if col in shared_keys:
+                        entity_name = f"Shared Entity: {col.replace('_', ' ').title()}"
+                        if not self.graph.has_node(entity_name):
+                            self.graph.add_node(entity_name, entity_type="Shared_Entity", category="Key Info Link", details=f"Cross-dataset linkage key: {col}")
+                        
+                        # Dataset -> Shared Entity
+                        self._add_triple(dataset_node, "linked_by_info", entity_name, details="Foreign key relationship")
+                        
+                # Define Business Metrics mapping
+                metric_mapping = {
+                    "quotes_and_sales": ["Net Sales", "Leads", "Net Appt", "Sales Conversion", "Revenue"],
+                    "installation_history": ["Installations"],
+                    "repair_history": ["Repair"],
+                    "service_history": ["Service"],
+                    "appointment_schedule": ["Reschedule Rate"],
+                    "engineer_productivity": ["FTE", "Gross Hours", "Workload Hours", "Productivity per week"]
+                }
+                
+                # Attach metrics to datasets
+                for key, metrics in metric_mapping.items():
+                    if key in dataset_name.lower():
+                        for metric in metrics:
+                            metric_node = f"Metric: {metric}"
+                            if not self.graph.has_node(metric_node):
+                                self.graph.add_node(metric_node, entity_type="Metric", category="Business Metric", details=f"KPI derived from {dataset_name}")
+                            self._add_triple(dataset_node, "calculates_metric", metric_node, details="Metric calculation derivation")
+                        
+        except Exception as e:
+            print(f"Error loading graph from CSVs: {e}")
 
     def add_custom_relation(self, source: str, target: str, details: str) -> None:
         """Add a custom relationship between two nodes (e.g. from UI) to the graph."""
@@ -258,68 +313,69 @@ class KnowledgeGraphService:
     def extract_subgraph_for_query(self, query: str) -> Dict[str, Any]:
         """
         Extract the exact sub-graph (nodes and edges) associated with a query / answer generation.
-        Used to demonstrate how a specific response was generated from Knowledge Graph traversal.
+        Maps Query -> Domain -> Dataset -> Shared Entity.
         """
         sub_nodes = set()
         sub_edges = []
+        
+        query_node_id = f"Query: {query[:30]}..."
+        nodes_list = [{
+            "id": query_node_id,
+            "label": query_node_id,
+            "category": "Query",
+            "description": f"User query: {query}"
+        }]
 
-        hybrid = self.hybrid_graph_rag_search(query)
-        rag_docs = hybrid.get("rag_context_documents", [])
-        graph_traversals = hybrid.get("graph_traversals", [])
-
-        # Process RAG items
-        for item in rag_docs:
-            src = item.get("source")
-            tgt = item.get("target")
-            rel = item.get("relationship", "connected_to")
-            details = item.get("details", "")
-            if src and tgt:
-                sub_nodes.add(src)
-                sub_nodes.add(tgt)
+        matched_nodes = self.find_matching_nodes(query)
+        seen_entities = set()
+        
+        for node in matched_nodes[:3]:
+            # Link query directly to domains, datasets, shared entities, or metrics that match
+            if node.startswith("Domain: ") or node.startswith("Shared Entity: ") or node.startswith("Dataset: ") or node.startswith("Metric: "):
+                sub_nodes.add(node)
                 sub_edges.append({
-                    "source": src,
-                    "target": tgt,
-                    "relation": rel,
-                    "details": details
+                    "source": query_node_id,
+                    "target": node,
+                    "relation": "asks_about",
+                    "details": "Keyword match"
                 })
+                
+                # Traverse outwards (incoming and outgoing to catch dataset links)
+                if node not in seen_entities:
+                    seen_entities.add(node)
+                    t_res = self.traverse_graph(node)
+                    if t_res.get("found"):
+                        for edge in t_res.get("outgoing_edges", []) + t_res.get("incoming_edges", []):
+                            src = edge.get("from")
+                            tgt = edge.get("to")
+                            rel = edge.get("relationship", "connected_to")
+                            details = edge.get("details", "")
+                            if src and tgt:
+                                sub_nodes.add(src)
+                                sub_nodes.add(tgt)
+                                sub_edges.append({
+                                    "source": src,
+                                    "target": tgt,
+                                    "relation": rel,
+                                    "details": details
+                                })
 
-        # Process Graph Traversals
-        for trav in graph_traversals:
-            for edge in trav.get("outgoing_edges", []) + trav.get("incoming_edges", []):
-                src = edge.get("from")
-                tgt = edge.get("to")
-                rel = edge.get("relationship", "connected_to")
-                details = edge.get("details", "")
-                if src and tgt:
-                    sub_nodes.add(src)
-                    sub_nodes.add(tgt)
-                    sub_edges.append({
-                        "source": src,
-                        "target": tgt,
-                        "relation": rel,
-                        "details": details
-                    })
-
-        # Check for query keyword heuristics
-        query_lower = query.lower()
-        if any(w in query_lower for w in ["pressure", "psi", "flame", "temp", "telemetry", "flow"]):
-            sub_nodes.update(["Live_Metrics_Dataset", "David Ross (Lead Telemetry Engineer)"])
-            sub_edges.append({"source": "Live_Metrics_Dataset", "target": "David Ross (Lead Telemetry Engineer)", "relation": "managed_by_sme", "details": "Telemetry Owner"})
-        elif any(w in query_lower for w in ["sales", "funnel", "lead", "quote", "appointment", "conversion", "job", "service"]):
-            sub_nodes.update(["Sales_Funnel_Dataset", "Sarah Jenkins (Head of Commercial Analytics)"])
-            sub_edges.append({"source": "Sales_Funnel_Dataset", "target": "Sarah Jenkins (Head of Commercial Analytics)", "relation": "managed_by_sme", "details": "Commercial SME"})
-
-        nodes_list = []
         for n in sub_nodes:
             attrs = self.graph.nodes[n] if n in self.graph.nodes else {}
+            category = "Entity"
+            if n.startswith("Domain: "): category = "Domain Cluster"
+            elif n.startswith("Dataset: "): category = "Dataset"
+            elif n.startswith("Shared Entity: "): category = "Key Info Link"
+            elif n.startswith("Metric: "): category = "Business Metric"
+            elif "category" in attrs: category = attrs["category"]
+            
             nodes_list.append({
                 "id": str(n),
-                "label": str(n),
-                "category": attrs.get("category", "Entity"),
-                "description": attrs.get("description", "")
+                "label": str(n).replace("Domain: ", "").replace("Dataset: ", "").replace("Shared Entity: ", "").replace("Metric: ", ""),
+                "category": category,
+                "description": attrs.get("details", "")
             })
 
-        # Deduplicate edges
         unique_edges = []
         seen = set()
         for e in sub_edges:
@@ -337,33 +393,28 @@ class KnowledgeGraphService:
     def get_decision_tree_metadata(self) -> Dict[str, Dict[str, Any]]:
         """
         Compute decision tree hierarchy metadata for graph nodes.
-        Enforces clear tier levels:
-          Tier 0: Root Systems & Equipment Models
-          Tier 1: Fault Errors, Core Datasets & Service Lines
-          Tier 2: Root Causes & Lineage Data Sources
-          Tier 3: Remedy Actions, Required Parts & SME Owners
-        Returns a mapping of node_id -> { tree_level, node_type, parents, children }.
+        Enforces clear executive tier levels:
+          Tier 0: Domains (Top level cluster)
+          Tier 1: Datasets (Middle level containers)
+          Tier 2: Shared Entities (Bottom level linkages)
         """
         metadata = {}
         for n in self.graph.nodes:
-            nid_lower = n.lower()
-
-            # Explicit categorical tier rules
-            if any(k in nid_lower for k in ["sme", "jenkins", "david ross", "marcus vance", "claire williams", "valve", "electrode", "pump", "loop", "pipe", "remedy"]):
-                lvl = 3
-                node_type = "remedy_action"
-            elif any(k in nid_lower for k in ["low gas pressure", "overheating", "sap is-u", "grid mon", "net sale", "telemetry"]):
-                lvl = 2
-                node_type = "root_cause"
-            elif any(k in nid_lower for k in ["error", "dataset", "forecast", "dashboard", "hub", "heating", "maintenance", "plumbing", "electrical", "appliance", "appointment"]):
-                lvl = 1
-                node_type = "decision_fault"
-            elif any(k in nid_lower for k in ["worcester", "ideal", "baxi", "platform", "home energy", "lead", "quote"]):
+            if n.startswith("Domain: "):
                 lvl = 0
                 node_type = "root"
-            else:
+            elif n.startswith("Dataset: "):
                 lvl = 1
                 node_type = "decision_fault"
+            elif n.startswith("Shared Entity: "):
+                lvl = 2
+                node_type = "root_cause"
+            elif n.startswith("Metric: "):
+                lvl = 3
+                node_type = "remedy_action"
+            else:
+                lvl = 3
+                node_type = "remedy_action"
 
             parents = list(self.graph.predecessors(n))
             children = list(self.graph.successors(n))
@@ -374,7 +425,6 @@ class KnowledgeGraphService:
                 "parents": parents,
                 "children": children
             }
-
         return metadata
 
     def query_langchain_graph(self, query: str) -> List[str]:

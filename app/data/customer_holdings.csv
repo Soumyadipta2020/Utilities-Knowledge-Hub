@@ -1,0 +1,501 @@
+customer_id,city,pincode,region,terrian
+CUST00001,Manchester,G3C 1YH,North West,Suburban
+CUST00002,Bristol,SP1E 1YA,Scotland,Urban
+CUST00003,Manchester,DH1W 1NZ,North East,Rural
+CUST00004,Bristol,N0W 7ES,North West,Coastal
+CUST00005,Newcastle,FK9V 7SY,Wales,Suburban
+CUST00006,Leeds,EH79 5AU,North West,Suburban
+CUST00007,Bristol,HR4 8AW,Midlands,Coastal
+CUST00008,Sheffield,LN7R 1NJ,Midlands,Urban
+CUST00009,Bristol,N6T 5TL,Scotland,Coastal
+CUST00010,Leeds,CM8 3HU,North West,Coastal
+CUST00011,Liverpool,M35 4AX,South West,Suburban
+CUST00012,London,W10 7UT,North East,Rural
+CUST00013,Newcastle,BS90 2YN,South West,Urban
+CUST00014,Southampton,L8G 7NY,Midlands,Coastal
+CUST00015,Manchester,CB3X 4DG,London,Urban
+CUST00016,Southampton,SM97 0JN,South West,Urban
+CUST00017,Manchester,TN9 6EX,Midlands,Urban
+CUST00018,Sheffield,PH9 7ET,North East,Urban
+CUST00019,Sheffield,LA19 6PZ,North West,Coastal
+CUST00020,London,B4K 2UW,Wales,Rural
+CUST00021,Sheffield,CA75 5PE,Midlands,Urban
+CUST00022,London,TW80 1PL,South East,Rural
+CUST00023,Liverpool,W6 3WQ,Scotland,Rural
+CUST00024,Sheffield,M82 7UE,South West,Suburban
+CUST00025,London,CA31 1FU,London,Rural
+CUST00026,Manchester,EH78 6HZ,South East,Coastal
+CUST00027,Sheffield,HR84 4NY,Yorkshire,Suburban
+CUST00028,Manchester,HP8 7PH,South West,Suburban
+CUST00029,Newcastle,LN6P 7BF,South East,Suburban
+CUST00030,Manchester,AL26 1UL,London,Suburban
+CUST00031,Sheffield,WF8P 7XB,Scotland,Coastal
+CUST00032,Manchester,DY1 1ET,Midlands,Urban
+CUST00033,Bristol,M5 6FJ,Yorkshire,Coastal
+CUST00034,Newcastle,G19 9JU,North West,Coastal
+CUST00035,London,SG0 4XG,Midlands,Rural
+CUST00036,Newcastle,EN7M 6UE,South East,Urban
+CUST00037,Birmingham,IV4A 9UN,Wales,Rural
+CUST00038,Bristol,SK2 0NT,Scotland,Suburban
+CUST00039,Newcastle,KT2H 8QW,Scotland,Coastal
+CUST00040,Liverpool,TS45 7DF,London,Rural
+CUST00041,Birmingham,E7F 9RQ,Yorkshire,Suburban
+CUST00042,Newcastle,N9D 7NS,Scotland,Urban
+CUST00043,Birmingham,CH13 6TQ,North West,Urban
+CUST00044,Manchester,PO64 5HT,Yorkshire,Suburban
+CUST00045,Southampton,HU0P 3ET,North West,Coastal
+CUST00046,London,B5 2YH,Yorkshire,Rural
+CUST00047,Leeds,N29 4FF,North West,Suburban
+CUST00048,Southampton,G0 3YP,Yorkshire,Suburban
+CUST00049,Newcastle,E1H 5WY,South East,Suburban
+CUST00050,Newcastle,M7 0UR,North East,Rural
+CUST00051,Leeds,N9 1FL,South East,Coastal
+CUST00052,Southampton,M7J 1EX,Scotland,Coastal
+CUST00053,Southampton,JE61 6PL,South East,Rural
+CUST00054,Bristol,E6 5FX,London,Urban
+CUST00055,Birmingham,HU60 9NQ,South West,Rural
+CUST00056,Birmingham,E58 1LY,Yorkshire,Urban
+CUST00057,Sheffield,FK0E 4PQ,North West,Coastal
+CUST00058,Glasgow,B18 6ST,Scotland,Rural
+CUST00059,Newcastle,B2 9BD,Yorkshire,Coastal
+CUST00060,Southampton,DN8 5SE,South West,Urban
+CUST00061,Manchester,S90 3NH,Scotland,Suburban
+CUST00062,Leeds,DD26 8XQ,Yorkshire,Urban
+CUST00063,Birmingham,OX6 6NE,London,Urban
+CUST00064,Birmingham,HX1P 3SY,London,Urban
+CUST00065,Manchester,E81 5QF,North West,Coastal
+CUST00066,Southampton,BS2X 7YY,South East,Urban
+CUST00067,Liverpool,WN5 7DU,London,Coastal
+CUST00068,Manchester,E4H 0BQ,Yorkshire,Urban
+CUST00069,Bristol,S7K 7YH,Yorkshire,Urban
+CUST00070,Birmingham,SP1 0JT,Midlands,Urban
+CUST00071,Bristol,IP6 9BP,North East,Rural
+CUST00072,Southampton,EN9 5DY,Scotland,Urban
+CUST00073,Bristol,CO91 8RP,Scotland,Urban
+CUST00074,Newcastle,N0F 2HP,Wales,Suburban
+CUST00075,Sheffield,B5 9RF,Yorkshire,Rural
+CUST00076,Liverpool,EC7W 7JX,North East,Suburban
+CUST00077,Leeds,W7U 6WW,South West,Suburban
+CUST00078,Birmingham,BL7 8EW,Yorkshire,Suburban
+CUST00079,Leeds,G6B 7QA,Scotland,Suburban
+CUST00080,Liverpool,N3 5EP,Scotland,Coastal
+CUST00081,Sheffield,SN27 9AD,South East,Rural
+CUST00082,London,PL8P 4JN,Yorkshire,Urban
+CUST00083,Glasgow,PH80 2NS,Wales,Suburban
+CUST00084,London,SG1V 1WX,Midlands,Coastal
+CUST00085,London,BH65 0QD,North East,Suburban
+CUST00086,London,SY5E 5XP,Yorkshire,Rural
+CUST00087,Birmingham,W0 3BH,Wales,Coastal
+CUST00088,Glasgow,EN03 5BP,Scotland,Coastal
+CUST00089,Liverpool,HR27 5WL,Wales,Coastal
+CUST00090,Liverpool,M51 5NN,South West,Rural
+CUST00091,London,BH59 4BD,North East,Coastal
+CUST00092,Bristol,W0C 3QQ,Wales,Urban
+CUST00093,Newcastle,IG7 9FW,South East,Suburban
+CUST00094,Sheffield,G7 8EL,Yorkshire,Urban
+CUST00095,Newcastle,DH12 7GT,South East,Rural
+CUST00096,Leeds,WD2 5WJ,Wales,Urban
+CUST00097,Birmingham,N7U 9DD,North East,Urban
+CUST00098,Sheffield,E2F 7TW,London,Urban
+CUST00099,Sheffield,S80 8FN,North West,Suburban
+CUST00100,London,M1E 8LF,South East,Urban
+CUST00101,Sheffield,DA9W 2ZZ,North West,Rural
+CUST00102,Leeds,TD9M 9SZ,North East,Suburban
+CUST00103,Newcastle,GU7H 4TD,South East,Rural
+CUST00104,Birmingham,N92 5QR,Wales,Coastal
+CUST00105,Southampton,W14 3FE,London,Urban
+CUST00106,London,N95 2UW,Yorkshire,Urban
+CUST00107,Birmingham,W3D 0BN,South East,Coastal
+CUST00108,London,M56 0RB,London,Suburban
+CUST00109,Birmingham,S8 8LZ,Yorkshire,Rural
+CUST00110,Manchester,NW5 3ZW,Yorkshire,Rural
+CUST00111,London,TR7 2ZW,Wales,Rural
+CUST00112,Newcastle,WC4W 8WX,Scotland,Coastal
+CUST00113,Leeds,S9 0ZU,North West,Rural
+CUST00114,Bristol,W2J 2JB,Scotland,Coastal
+CUST00115,Glasgow,CV63 8ZU,Wales,Suburban
+CUST00116,Manchester,LS8P 2TX,Yorkshire,Rural
+CUST00117,Glasgow,EX9R 3LX,London,Urban
+CUST00118,Birmingham,HD75 4EY,North West,Urban
+CUST00119,Sheffield,M04 5TL,Wales,Rural
+CUST00120,Southampton,M2B 3BW,North West,Suburban
+CUST00121,London,LN1X 0XG,North West,Coastal
+CUST00122,Southampton,HG4 1YJ,Midlands,Urban
+CUST00123,Leeds,B67 4BA,South West,Coastal
+CUST00124,Bristol,GL7 2WT,South East,Coastal
+CUST00125,Leeds,DE0Y 4YH,Wales,Urban
+CUST00126,Sheffield,SG12 7PJ,Wales,Rural
+CUST00127,Manchester,GU9 4QJ,Scotland,Urban
+CUST00128,Manchester,TD4Y 4QZ,Scotland,Suburban
+CUST00129,Newcastle,PL5P 8HJ,Scotland,Coastal
+CUST00130,London,BS9 0XW,Midlands,Suburban
+CUST00131,Leeds,PA7B 0TF,Scotland,Suburban
+CUST00132,Leeds,SK40 4AH,North West,Suburban
+CUST00133,Newcastle,B1 0NS,London,Rural
+CUST00134,Newcastle,IM18 5EG,London,Coastal
+CUST00135,Manchester,B04 8SX,Scotland,Suburban
+CUST00136,London,E06 3HD,Midlands,Suburban
+CUST00137,Newcastle,L0 7JX,Scotland,Rural
+CUST00138,Southampton,N99 3NF,North East,Coastal
+CUST00139,Birmingham,G6 0QR,Midlands,Rural
+CUST00140,Newcastle,W33 2TB,Wales,Coastal
+CUST00141,London,N17 1XH,London,Coastal
+CUST00142,London,L9 7HP,London,Coastal
+CUST00143,Manchester,W3 6JX,South East,Suburban
+CUST00144,Newcastle,EX5 7EU,Midlands,Suburban
+CUST00145,London,G04 4FH,South West,Urban
+CUST00146,Bristol,HR4R 7GQ,Wales,Rural
+CUST00147,Glasgow,B8A 0AS,South West,Suburban
+CUST00148,Leeds,W50 7AA,South East,Rural
+CUST00149,Birmingham,NN4 8SG,Yorkshire,Urban
+CUST00150,Birmingham,M5E 1QR,Yorkshire,Rural
+CUST00151,Sheffield,B1 6RX,Scotland,Coastal
+CUST00152,Manchester,TN5W 8BJ,Scotland,Suburban
+CUST00153,Birmingham,M8 2PA,South East,Suburban
+CUST00154,Newcastle,CW9 9RX,Midlands,Coastal
+CUST00155,Southampton,N0B 3DP,Yorkshire,Suburban
+CUST00156,Newcastle,LU35 6GY,Midlands,Rural
+CUST00157,Newcastle,E14 6FR,Midlands,Coastal
+CUST00158,Manchester,HX41 1GS,Wales,Coastal
+CUST00159,Southampton,E5 9ZP,South West,Urban
+CUST00160,Liverpool,L9J 6GF,Wales,Suburban
+CUST00161,Sheffield,FY64 1QL,Wales,Rural
+CUST00162,Manchester,G4 6PZ,South West,Suburban
+CUST00163,London,M59 7PG,Midlands,Coastal
+CUST00164,Leeds,N64 5EY,Wales,Urban
+CUST00165,Glasgow,W3 4DS,South East,Suburban
+CUST00166,Bristol,SE2 6DT,South West,Coastal
+CUST00167,Newcastle,SN8 1JQ,South West,Suburban
+CUST00168,Glasgow,SY56 0EL,Midlands,Rural
+CUST00169,Newcastle,W56 9WF,Scotland,Suburban
+CUST00170,Manchester,E2 4PT,Wales,Urban
+CUST00171,Leeds,SR75 4BE,London,Rural
+CUST00172,Glasgow,EH8E 5XS,South West,Suburban
+CUST00173,Newcastle,KY6A 7YS,South East,Urban
+CUST00174,Newcastle,E8 5PH,North East,Urban
+CUST00175,London,HD9P 9EQ,London,Urban
+CUST00176,Southampton,CR5B 4EG,North West,Urban
+CUST00177,Newcastle,S62 8GX,South East,Suburban
+CUST00178,Leeds,PR05 7FH,Yorkshire,Urban
+CUST00179,Sheffield,LU6Y 7GD,London,Suburban
+CUST00180,Bristol,W97 9EL,Yorkshire,Rural
+CUST00181,Sheffield,CF34 7LQ,Scotland,Suburban
+CUST00182,Bristol,PE5Y 2ZF,South East,Urban
+CUST00183,Glasgow,G5T 4YL,Midlands,Urban
+CUST00184,Manchester,CO2H 5JR,North West,Urban
+CUST00185,Manchester,LD11 8LQ,Yorkshire,Urban
+CUST00186,Southampton,CA7X 1XR,South West,Rural
+CUST00187,Sheffield,HR8 9UP,North East,Urban
+CUST00188,Leeds,BA12 7AS,London,Coastal
+CUST00189,Glasgow,EN1 2BR,South East,Rural
+CUST00190,Glasgow,E0 7DF,North East,Urban
+CUST00191,Newcastle,N1 2UD,North East,Coastal
+CUST00192,Southampton,WS4 6FF,London,Coastal
+CUST00193,London,W53 6ZT,Midlands,Coastal
+CUST00194,Bristol,S5G 2JL,London,Coastal
+CUST00195,Newcastle,PL4Y 4HW,North West,Suburban
+CUST00196,Liverpool,L7 1JU,South East,Rural
+CUST00197,Bristol,CO6 5XG,London,Suburban
+CUST00198,Sheffield,B06 8SS,Scotland,Suburban
+CUST00199,Liverpool,G4B 1WH,North East,Urban
+CUST00200,London,WD3A 1SE,South West,Coastal
+CUST00201,London,B2 2UQ,Midlands,Rural
+CUST00202,Sheffield,TF4Y 0PS,Midlands,Urban
+CUST00203,London,N0H 5GL,North West,Urban
+CUST00204,London,B0W 3BU,Midlands,Coastal
+CUST00205,Sheffield,ST6H 3SP,North West,Suburban
+CUST00206,Birmingham,ZE0E 8BR,North East,Urban
+CUST00207,Southampton,AL53 9NZ,South West,Suburban
+CUST00208,Glasgow,L20 0JX,South West,Suburban
+CUST00209,Leeds,SS4B 8JS,North East,Rural
+CUST00210,Glasgow,S57 9EW,South East,Urban
+CUST00211,Manchester,CO3M 5RP,London,Rural
+CUST00212,London,E21 7TP,Yorkshire,Suburban
+CUST00213,Glasgow,W47 1DG,North West,Suburban
+CUST00214,Glasgow,CT1 5RW,Wales,Suburban
+CUST00215,Newcastle,NW83 7EF,Wales,Rural
+CUST00216,Glasgow,IG19 1AD,London,Suburban
+CUST00217,Sheffield,CM0 0GY,Yorkshire,Coastal
+CUST00218,Birmingham,N32 4TF,South West,Suburban
+CUST00219,Liverpool,W0B 6FS,Scotland,Rural
+CUST00220,Bristol,B6U 7XU,South East,Rural
+CUST00221,Birmingham,B59 0LB,Yorkshire,Urban
+CUST00222,Southampton,EC4V 3YR,North West,Rural
+CUST00223,Glasgow,SN5W 5YY,Yorkshire,Urban
+CUST00224,Sheffield,W01 3ZJ,South West,Urban
+CUST00225,London,L2F 5BA,North East,Suburban
+CUST00226,Newcastle,N6 5NP,Scotland,Rural
+CUST00227,Liverpool,HD2Y 3YG,London,Suburban
+CUST00228,Sheffield,S9 2ZP,London,Urban
+CUST00229,Glasgow,CT51 5PG,Yorkshire,Coastal
+CUST00230,London,L15 1AB,Scotland,Rural
+CUST00231,Glasgow,WS65 1UY,North West,Suburban
+CUST00232,Glasgow,M0 4ED,Yorkshire,Coastal
+CUST00233,Sheffield,N9 0SG,South West,Rural
+CUST00234,Manchester,L68 4NJ,Midlands,Rural
+CUST00235,Sheffield,B50 1NZ,South East,Coastal
+CUST00236,Southampton,BT7 4RU,South West,Rural
+CUST00237,Liverpool,N65 7BL,Yorkshire,Coastal
+CUST00238,London,E15 9JX,Midlands,Suburban
+CUST00239,Sheffield,GU16 8YW,Scotland,Rural
+CUST00240,Leeds,L32 6DS,Midlands,Suburban
+CUST00241,Glasgow,E6 8PL,Scotland,Urban
+CUST00242,Birmingham,E19 4XQ,Midlands,Urban
+CUST00243,Manchester,BD24 2ZZ,Wales,Suburban
+CUST00244,Newcastle,SM3 7LQ,North East,Suburban
+CUST00245,Manchester,WF13 4TP,Scotland,Urban
+CUST00246,London,DN67 0WG,North West,Rural
+CUST00247,Newcastle,G3 0JB,North West,Urban
+CUST00248,Liverpool,MK61 3QU,South West,Urban
+CUST00249,Bristol,HS2 1NA,Yorkshire,Rural
+CUST00250,Manchester,L33 6WA,North West,Rural
+CUST00251,Leeds,B3E 4SR,Wales,Rural
+CUST00252,Leeds,S9B 8QX,North East,Rural
+CUST00253,Bristol,RH5 4NH,Wales,Urban
+CUST00254,London,S5S 0UN,Scotland,Urban
+CUST00255,Southampton,L5T 8UQ,Wales,Urban
+CUST00256,London,M17 4XG,South West,Coastal
+CUST00257,Newcastle,M65 4YN,Midlands,Rural
+CUST00258,Sheffield,E7D 6WN,London,Coastal
+CUST00259,Liverpool,W2F 1UP,Midlands,Rural
+CUST00260,Sheffield,G92 1FZ,Midlands,Suburban
+CUST00261,Manchester,L5 5WH,North East,Coastal
+CUST00262,Glasgow,CO1 8YN,South West,Rural
+CUST00263,Sheffield,N6S 5UQ,Yorkshire,Suburban
+CUST00264,Southampton,L09 1QB,Scotland,Suburban
+CUST00265,Sheffield,CF0A 6TR,North West,Suburban
+CUST00266,London,RG0M 1WL,North West,Coastal
+CUST00267,Southampton,M1 7HZ,Midlands,Suburban
+CUST00268,Manchester,CW0 3UP,North East,Coastal
+CUST00269,London,W2 8DE,Scotland,Rural
+CUST00270,Sheffield,E2 4QP,Scotland,Urban
+CUST00271,Southampton,RM2N 7ZL,London,Urban
+CUST00272,Southampton,FK67 2EF,London,Coastal
+CUST00273,Manchester,W9S 2ZR,North West,Rural
+CUST00274,Glasgow,LA01 5AW,South West,Rural
+CUST00275,Southampton,E6S 7QR,Midlands,Coastal
+CUST00276,Sheffield,W7W 1UP,South East,Rural
+CUST00277,Manchester,IM6H 7TY,Midlands,Rural
+CUST00278,London,SW01 6BX,North East,Suburban
+CUST00279,Newcastle,GU8V 7PQ,North East,Rural
+CUST00280,Manchester,W5T 1EJ,South East,Urban
+CUST00281,Leeds,CF0E 2SE,North West,Suburban
+CUST00282,Birmingham,DN73 1SB,South West,Suburban
+CUST00283,Newcastle,G7A 8SY,Wales,Urban
+CUST00284,Liverpool,TW2B 9ZP,North East,Urban
+CUST00285,Leeds,IV5 7FF,South East,Rural
+CUST00286,Newcastle,NR3H 9NQ,Wales,Suburban
+CUST00287,Birmingham,SO1 8UY,North West,Suburban
+CUST00288,Birmingham,TS08 0RF,Midlands,Coastal
+CUST00289,Bristol,M42 4HX,South East,Suburban
+CUST00290,Bristol,NW3Y 3WN,London,Urban
+CUST00291,Newcastle,B0T 3ZT,Yorkshire,Rural
+CUST00292,Sheffield,E22 6BS,Yorkshire,Rural
+CUST00293,Southampton,AB5 2BF,South East,Suburban
+CUST00294,Liverpool,N1U 8JG,Scotland,Coastal
+CUST00295,Manchester,CA53 5PQ,Midlands,Coastal
+CUST00296,London,AL1X 7JZ,South East,Suburban
+CUST00297,Bristol,S4 0WQ,London,Suburban
+CUST00298,Sheffield,DG5V 1GX,Scotland,Suburban
+CUST00299,Liverpool,S13 1FA,Midlands,Urban
+CUST00300,Glasgow,M81 4SR,Midlands,Suburban
+CUST00301,Glasgow,B9 9BD,North East,Urban
+CUST00302,Bristol,IM60 2XJ,London,Coastal
+CUST00303,Southampton,WV5A 1BA,Scotland,Urban
+CUST00304,Bristol,DL5 6WF,North West,Suburban
+CUST00305,Leeds,E29 8TX,North East,Suburban
+CUST00306,Bristol,HU2 1NZ,North West,Coastal
+CUST00307,Sheffield,HA9E 5SG,London,Rural
+CUST00308,Leeds,KY4N 5UT,Yorkshire,Urban
+CUST00309,Newcastle,PL1M 8HL,Yorkshire,Suburban
+CUST00310,Glasgow,BB9W 9HB,Midlands,Coastal
+CUST00311,Glasgow,N63 2TW,North West,Urban
+CUST00312,Southampton,G82 2GY,North West,Rural
+CUST00313,Southampton,DY14 3BH,Scotland,Coastal
+CUST00314,Manchester,N1 4YX,South West,Rural
+CUST00315,Newcastle,M6 8RQ,North East,Coastal
+CUST00316,Leeds,W23 8LH,South West,Coastal
+CUST00317,Manchester,L6 1UU,North West,Suburban
+CUST00318,Birmingham,BA30 9YG,London,Urban
+CUST00319,Bristol,M28 9YA,Yorkshire,Rural
+CUST00320,Birmingham,WR72 6ZF,North East,Rural
+CUST00321,Liverpool,PH91 6RF,Scotland,Coastal
+CUST00322,Sheffield,E27 8WE,North West,Coastal
+CUST00323,Bristol,B6J 5BW,Wales,Suburban
+CUST00324,Birmingham,TA9B 2LU,Wales,Urban
+CUST00325,Southampton,B09 8AR,Wales,Urban
+CUST00326,Leeds,SA94 8SY,North West,Coastal
+CUST00327,Glasgow,NR87 5XX,North East,Suburban
+CUST00328,London,ST21 7GE,South West,Rural
+CUST00329,Southampton,SO0E 0DF,South East,Suburban
+CUST00330,Newcastle,BT9 6RZ,Midlands,Rural
+CUST00331,Newcastle,W70 8NH,Wales,Rural
+CUST00332,Bristol,B53 2DL,Scotland,Suburban
+CUST00333,Birmingham,B11 8YQ,London,Rural
+CUST00334,Liverpool,JE90 2SW,North East,Urban
+CUST00335,Newcastle,M8 7RY,Scotland,Rural
+CUST00336,Southampton,B7B 1RJ,London,Rural
+CUST00337,Leeds,B4D 1RP,Scotland,Coastal
+CUST00338,Liverpool,M2T 7HJ,South East,Suburban
+CUST00339,Southampton,N21 1UZ,Scotland,Rural
+CUST00340,Glasgow,ME9 7GW,North East,Coastal
+CUST00341,London,LS80 6GT,North West,Suburban
+CUST00342,Bristol,L6 5QZ,Yorkshire,Suburban
+CUST00343,Bristol,PO55 7SH,Yorkshire,Urban
+CUST00344,London,G9S 1LJ,North East,Suburban
+CUST00345,Liverpool,CV7A 6UF,South West,Suburban
+CUST00346,Birmingham,EN8 6EG,South West,Coastal
+CUST00347,Glasgow,W5 5QX,Yorkshire,Rural
+CUST00348,Southampton,PL3W 4QP,Wales,Suburban
+CUST00349,London,PO47 2PS,Midlands,Suburban
+CUST00350,Sheffield,N54 9RL,North West,Coastal
+CUST00351,Bristol,B23 1HG,North West,Urban
+CUST00352,London,NR00 8DE,North West,Coastal
+CUST00353,Sheffield,HA33 7FF,Wales,Urban
+CUST00354,Leeds,WN7 8LX,Scotland,Rural
+CUST00355,Birmingham,SW9P 5UX,South East,Coastal
+CUST00356,Sheffield,CV4 0WF,South West,Suburban
+CUST00357,Bristol,SY74 6NZ,South West,Rural
+CUST00358,Birmingham,IV32 6JL,Midlands,Urban
+CUST00359,London,M4S 6HD,North East,Urban
+CUST00360,London,FK97 5AF,Yorkshire,Urban
+CUST00361,Liverpool,W03 2AU,Yorkshire,Urban
+CUST00362,Newcastle,SN05 2BL,London,Suburban
+CUST00363,Glasgow,TW6 1JR,Wales,Suburban
+CUST00364,Sheffield,L7 4PG,South East,Suburban
+CUST00365,Newcastle,GU3N 3EJ,South East,Rural
+CUST00366,Sheffield,E6U 0BY,Yorkshire,Suburban
+CUST00367,London,G71 0BQ,Yorkshire,Rural
+CUST00368,Sheffield,NW5 3AR,London,Coastal
+CUST00369,Glasgow,NP7 9GX,Scotland,Suburban
+CUST00370,Birmingham,G7 4XQ,South West,Rural
+CUST00371,Glasgow,TF9 5DX,Wales,Suburban
+CUST00372,Sheffield,G9E 6PE,South East,Coastal
+CUST00373,Newcastle,L1 3EB,South West,Suburban
+CUST00374,Liverpool,PE4A 3ZD,Yorkshire,Urban
+CUST00375,Sheffield,N8 5BZ,Scotland,Rural
+CUST00376,Southampton,L8 1JX,North East,Coastal
+CUST00377,Southampton,DD8Y 1YQ,Scotland,Urban
+CUST00378,Bristol,S8F 8ZT,South East,Rural
+CUST00379,Manchester,UB59 9XH,North East,Urban
+CUST00380,Sheffield,AB04 8FN,North West,Rural
+CUST00381,London,M8 1BT,North West,Urban
+CUST00382,Bristol,L3E 1YR,North West,Suburban
+CUST00383,Glasgow,W91 0YR,South West,Suburban
+CUST00384,Birmingham,KT13 6BN,North West,Suburban
+CUST00385,London,G06 9YW,South East,Coastal
+CUST00386,Bristol,OX08 4DR,South West,Urban
+CUST00387,Liverpool,IV93 3DL,South West,Rural
+CUST00388,Sheffield,HX53 5ZA,South East,Coastal
+CUST00389,Bristol,L3 2DE,Midlands,Suburban
+CUST00390,Bristol,AL5 4TU,North East,Suburban
+CUST00391,Newcastle,M8H 0RY,South West,Rural
+CUST00392,Newcastle,DH9 0TA,London,Urban
+CUST00393,Bristol,HX1A 6JR,Wales,Suburban
+CUST00394,Glasgow,L87 0JW,London,Rural
+CUST00395,Liverpool,HU4 8LB,Yorkshire,Coastal
+CUST00396,Liverpool,G56 1RW,South West,Rural
+CUST00397,Birmingham,PL5 8FH,South East,Suburban
+CUST00398,Liverpool,G48 6FY,North East,Suburban
+CUST00399,Sheffield,CM2N 0PS,North East,Urban
+CUST00400,Sheffield,CV3 2GA,North West,Coastal
+CUST00401,Newcastle,B51 2WZ,Wales,Coastal
+CUST00402,London,G33 6AL,Wales,Suburban
+CUST00403,Birmingham,G7 5TJ,Scotland,Urban
+CUST00404,Birmingham,SR56 8ET,Wales,Rural
+CUST00405,Liverpool,BH8P 3NT,Midlands,Coastal
+CUST00406,Glasgow,B8C 7DW,Wales,Suburban
+CUST00407,Liverpool,BB27 7DL,North East,Urban
+CUST00408,Manchester,HX1V 8ZG,North West,Coastal
+CUST00409,London,G2W 2BS,London,Urban
+CUST00410,Bristol,B94 7UU,Midlands,Urban
+CUST00411,Newcastle,LE67 9ZA,South East,Coastal
+CUST00412,Liverpool,B22 5BF,Yorkshire,Rural
+CUST00413,Newcastle,E6 2NZ,South East,Suburban
+CUST00414,London,BD1 5QR,Wales,Suburban
+CUST00415,Sheffield,M5 8HH,Wales,Coastal
+CUST00416,Bristol,NG1R 6ZP,Scotland,Rural
+CUST00417,Newcastle,W87 2ZJ,North West,Suburban
+CUST00418,Manchester,RG13 6BP,Wales,Suburban
+CUST00419,Sheffield,GL4B 4WX,North West,Coastal
+CUST00420,Leeds,SR99 2HP,Scotland,Coastal
+CUST00421,Birmingham,W85 6BW,London,Suburban
+CUST00422,Liverpool,N5B 4AP,North East,Coastal
+CUST00423,Liverpool,E4T 0LS,South West,Rural
+CUST00424,London,DD1 0HD,London,Suburban
+CUST00425,Birmingham,LS8 5FE,Wales,Urban
+CUST00426,Leeds,E0E 9DP,North West,Urban
+CUST00427,Leeds,M3 3HN,Yorkshire,Rural
+CUST00428,Newcastle,G41 9XW,North East,Coastal
+CUST00429,Newcastle,TR4W 2DN,London,Coastal
+CUST00430,Southampton,ZE01 0DS,South West,Urban
+CUST00431,Southampton,SN7W 4PH,Midlands,Rural
+CUST00432,Leeds,W1 4TU,Wales,Coastal
+CUST00433,Bristol,IV2 5TU,Midlands,Suburban
+CUST00434,Liverpool,WD24 9YF,Wales,Urban
+CUST00435,Manchester,M8 6YS,London,Coastal
+CUST00436,Birmingham,BR53 6YP,Yorkshire,Suburban
+CUST00437,Glasgow,SP9R 9ZT,Yorkshire,Rural
+CUST00438,Manchester,BR91 5UB,Yorkshire,Rural
+CUST00439,Southampton,TS0E 7XN,Midlands,Urban
+CUST00440,Newcastle,GU9 6QD,Wales,Urban
+CUST00441,Manchester,M05 0XQ,Yorkshire,Suburban
+CUST00442,Leeds,S5T 6RS,Scotland,Urban
+CUST00443,Manchester,S56 4FF,London,Suburban
+CUST00444,Glasgow,E26 9SZ,Midlands,Coastal
+CUST00445,Birmingham,S90 3WL,South West,Suburban
+CUST00446,Leeds,W5 9UD,Scotland,Urban
+CUST00447,London,E3H 8YN,Yorkshire,Coastal
+CUST00448,Newcastle,OX56 4NG,North West,Suburban
+CUST00449,Liverpool,G9A 9AN,Midlands,Coastal
+CUST00450,Sheffield,EN2 4LA,Wales,Urban
+CUST00451,Liverpool,TS2 3UG,North East,Urban
+CUST00452,Liverpool,W66 7GH,Wales,Rural
+CUST00453,Manchester,B2 6UN,Yorkshire,Urban
+CUST00454,Liverpool,LN42 0NT,North West,Coastal
+CUST00455,Newcastle,N6 5LL,South East,Rural
+CUST00456,Glasgow,SK9H 2PX,Wales,Urban
+CUST00457,Birmingham,E7F 4LH,North East,Suburban
+CUST00458,Sheffield,L9S 1DZ,Midlands,Suburban
+CUST00459,Manchester,E24 7DT,Scotland,Rural
+CUST00460,Manchester,E40 6PB,Midlands,Suburban
+CUST00461,Manchester,S27 2XS,South East,Suburban
+CUST00462,Birmingham,E9 7AU,South West,Suburban
+CUST00463,Leeds,N69 8UU,South East,Urban
+CUST00464,Bristol,SM71 5NR,Midlands,Suburban
+CUST00465,Bristol,RM3 8BR,London,Suburban
+CUST00466,Manchester,LU1 3FB,South West,Rural
+CUST00467,Glasgow,M7J 0BP,Scotland,Urban
+CUST00468,Liverpool,NE7X 9JD,Midlands,Urban
+CUST00469,Sheffield,B3T 0GB,South East,Urban
+CUST00470,Bristol,E1B 9ZJ,Yorkshire,Urban
+CUST00471,Bristol,G5 0YG,Yorkshire,Coastal
+CUST00472,Birmingham,DA58 7JY,London,Urban
+CUST00473,Glasgow,B71 0GD,South East,Urban
+CUST00474,Sheffield,M87 3GZ,North East,Urban
+CUST00475,London,E4F 0XJ,South West,Rural
+CUST00476,Sheffield,L7U 4BH,Scotland,Coastal
+CUST00477,London,B05 3SL,London,Suburban
+CUST00478,Southampton,G2U 7WE,Yorkshire,Rural
+CUST00479,Southampton,N31 3EJ,South West,Urban
+CUST00480,Southampton,BL62 9TG,Yorkshire,Coastal
+CUST00481,Sheffield,HU4H 2BY,North East,Suburban
+CUST00482,Glasgow,KT25 4ZG,London,Rural
+CUST00483,Bristol,S8 3YU,Scotland,Coastal
+CUST00484,Sheffield,L56 9FY,North East,Suburban
+CUST00485,Newcastle,TD8A 8RU,Midlands,Coastal
+CUST00486,Southampton,S3 5NJ,South East,Suburban
+CUST00487,Manchester,W99 7TF,South West,Suburban
+CUST00488,London,AB1P 8BN,North West,Rural
+CUST00489,Glasgow,BT9N 8QB,South East,Coastal
+CUST00490,Manchester,DD8 8HF,Midlands,Urban
+CUST00491,Birmingham,SY9Y 3PQ,Midlands,Rural
+CUST00492,Glasgow,MK81 8XN,South West,Rural
+CUST00493,Sheffield,CA16 4DE,Yorkshire,Rural
+CUST00494,Birmingham,B4G 7QS,Wales,Rural
+CUST00495,Manchester,N69 5UY,South West,Rural
+CUST00496,London,M24 7QN,London,Suburban
+CUST00497,Leeds,G8E 2FG,Scotland,Suburban
+CUST00498,Leeds,L80 5FQ,South East,Coastal
+CUST00499,Leeds,S7 7PF,North West,Suburban
+CUST00500,Newcastle,LN4 9TP,South East,Suburban
