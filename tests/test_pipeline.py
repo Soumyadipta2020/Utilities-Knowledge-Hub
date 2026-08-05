@@ -9,9 +9,9 @@ from pathlib import Path
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
 
-sys.path.insert(0, str(Path(__file__).parent))
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from app.config import KB_FILE_PATH, METRICS_FILE_PATH, ACCESS_FILE_PATH, OPERATIONS_FILE_PATH, DATA_DIR
+from app.config import DATA_DIR
 from app.services.graph_service import KnowledgeGraphService
 from app.services.data_service import DataService
 from app.services.pipeline_service import KnowledgeHarnessingPipeline
@@ -20,8 +20,8 @@ from app.main import app
 
 def test_pipeline_engine():
     print("--- 1. Testing KnowledgeHarnessingPipeline Engine ---")
-    kg = KnowledgeGraphService(KB_FILE_PATH)
-    ds = DataService(METRICS_FILE_PATH, ACCESS_FILE_PATH, OPERATIONS_FILE_PATH)
+    kg = KnowledgeGraphService(DATA_DIR)
+    ds = DataService(DATA_DIR)
     pipeline = KnowledgeHarnessingPipeline(DATA_DIR, kg, ds)
 
     for stage_id in range(1, 13):
@@ -67,14 +67,14 @@ def test_flask_endpoints():
     fdata = full_res.get_json()
     assert fdata["success"] is True
     assert len(fdata["stages"]) == 12
-    # Test /api/datasource/preview/Information_Harnessing_Source.xlsx
-    ds_res = client.get("/api/datasource/preview/Information_Harnessing_Source.xlsx")
+    # Test /api/datasource/preview/customer_master.csv
+    ds_res = client.get("/api/datasource/preview/customer_master.csv")
     assert ds_res.status_code == 200
     ds_data = ds_res.get_json()
     assert ds_data["success"] is True
     assert ds_data["total_rows"] > 0
     assert len(ds_data["columns"]) > 0
-    print(f"[PASS] GET /api/datasource/preview/Information_Harnessing_Source.xlsx -> OK ({ds_data['total_rows']} rows, columns: {ds_data['columns']})")
+    print(f"[PASS] GET /api/datasource/preview/customer_master.csv -> OK ({ds_data['total_rows']} rows, columns: {ds_data['columns']})")
 
 
 if __name__ == "__main__":

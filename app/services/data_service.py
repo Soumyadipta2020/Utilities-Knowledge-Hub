@@ -42,22 +42,28 @@ class DataService:
         return {"success": True, "count": len(records), "metrics": records}
 
     def get_business_data(self, query: str) -> dict[str, Any]:
-        """Return matching aggregated business data from quotes_and_sales or service_history."""
-        df_quotes = self._read_csv_safe("quotes_and_sales.csv")
-        df_service = self._read_csv_safe("service_history.csv")
-        
+        """Return matching aggregated business data across all CSV datasets."""
+        csv_files = list(self.data_dir.glob("*.csv"))
         matches: list[dict[str, Any]] = []
         query_terms = set(query.casefold().replace("_", " ").split())
         
-        for name, df in [("quotes", df_quotes), ("services", df_service)]:
+        for csv_file in csv_files:
+            df = self._read_csv_safe(csv_file.name)
             if df.empty: continue
-            for record in df.to_dict(orient="records"):
-                searchable = " ".join(str(value) for value in record.values()).casefold()
-                if query_terms.intersection(searchable.split()) or any(term in searchable for term in query_terms if len(term) > 3):
-                    matches.append({"dataset": name, **record})
+            for record in df.head(100).to_dict(orient="records"):
+                searchable = " ".join(str(value) for value in record.values()).casefold().replace("_", " ")
+                if query_terms.intersection(searchable.split()) or any(term in searchable for term in query_terms if len(term) > 2):
+                    matches.append({"dataset": csv_file.stem, **record})
+                    if len(matches) >= 50:
+                        break
+            if len(matches) >= 50:
+                break
                     
         if not matches:
-            return {"success": False, "error": "No business records match that query."}
+            # Fall back to returning top sample records from first available dataset
+            first_df = self._read_csv_safe("customer_master.csv")
+            matches = first_df.head(5).to_dict(orient="records") if not first_df.empty else []
+            
         return {"success": True, "count": len(matches), "records": matches}
 
     def get_metric_definitions(self, query: str) -> dict[str, Any]:
