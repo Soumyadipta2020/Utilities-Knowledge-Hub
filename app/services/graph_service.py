@@ -5,6 +5,7 @@ Loads entity-relationship data from Excel and provides graph traversal capabilit
 
 from typing import Dict, List, Any, Optional, Tuple
 import json
+import re
 import networkx as nx
 import pandas as pd
 from pathlib import Path
@@ -171,13 +172,271 @@ class KnowledgeGraphService:
             })
         return catalog
 
+    def get_relation_entity_catalog(self) -> List[Dict[str, Any]]:
+        """Return every graph object, its tier/category, and optional CSV columns."""
+        dataset_columns = {
+            dataset["node_id"]: dataset["columns"]
+            for dataset in self.get_dataset_catalog()
+        }
+        tree_metadata = self.get_decision_tree_metadata()
+        catalog = []
+        for node_id, attrs in self.graph.nodes(data=True):
+            metadata = tree_metadata.get(str(node_id), {})
+            catalog.append({
+                "id": str(node_id),
+                "label": str(node_id),
+                "category": attrs.get("category", "Entity"),
+                "tree_level": metadata.get("tree_level", 3),
+                "columns": dataset_columns.get(str(node_id), []),
+            })
+        return sorted(
+            catalog,
+            key=lambda entity: (
+                entity["tree_level"],
+                entity["category"].casefold(),
+                entity["label"].casefold(),
+            ),
+        )
+
+    @staticmethod
+    def _safe_context_value(value: Any) -> Any:
+        """Convert dataframe and graph values into compact JSON-safe prompt context."""
+        if value is None:
+            return None
+        try:
+            if pd.isna(value):
+                return None
+        except (TypeError, ValueError):
+            pass
+        if isinstance(value, (str, int, float, bool)):
+            safe_value = value
+        else:
+            safe_value = str(value)
+        if isinstance(safe_value, str):
+            return safe_value[:160]
+        return safe_value
+
+    def get_relation_object_context(
+        self,
+        node_id: str,
+        sample_rows: int = 4,
+        max_columns: int = 30,
+    ) -> Dict[str, Any]:
+        """Build bounded metadata, graph, schema, and data context for one object."""
+        if node_id not in self.graph:
+            raise ValueError(f"Object '{node_id}' does not exist in the Knowledge Graph.")
+
+        attrs = dict(self.graph.nodes[node_id])
+        tree_metadata = self.get_decision_tree_metadata().get(node_id, {})
+        context: Dict[str, Any] = {
+            "id": node_id,
+            "category": str(attrs.get("category", "Entity")),
+            "entity_type": str(attrs.get("entity_type", "Entity")),
+            "tree_level": tree_metadata.get("tree_level", 3),
+            "metadata": {
+                str(key): self._safe_context_value(value)
+                for key, value in attrs.items()
+                if key not in {"category", "entity_type"}
+            },
+            "columns": [],
+            "column_profiles": [],
+            "sample_records": [],
+            "neighboring_relationships": [],
+        }
+
+        neighbor_rows = []
+        for _, target, edge in self.graph.out_edges(node_id, data=True):
+            neighbor_rows.append({
+                "direction": "outgoing",
+                "other_object": str(target),
+                "relationship": str(edge.get("relationship", "connected_to"))[:160],
+                "details": str(edge.get("details", ""))[:240],
+            })
+        for source, _, edge in self.graph.in_edges(node_id, data=True):
+            neighbor_rows.append({
+                "direction": "incoming",
+                "other_object": str(source),
+                "relationship": str(edge.get("relationship", "connected_to"))[:160],
+                "details": str(edge.get("details", ""))[:240],
+            })
+        context["neighboring_relationships"] = neighbor_rows[:16]
+
+        if not node_id.startswith("Dataset: "):
+            return context
+
+        filename, _, all_columns = self._normalize_dataset(node_id)
+        context["columns"] = all_columns
+        csv_path = self.data_dir / filename
+        try:
+            sample_df = pd.read_csv(csv_path, nrows=max(sample_rows, 24))
+        except Exception as error:
+            context["metadata"]["sample_error"] = str(error)[:200]
+            return context
+
+        prompt_columns = list(sample_df.columns)[:max_columns]
+        sample_subset = sample_df[prompt_columns].head(sample_rows)
+        context["sample_records"] = [
+            {
+                str(column): self._safe_context_value(value)
+                for column, value in record.items()
+            }
+            for record in sample_subset.to_dict(orient="records")
+        ]
+
+        profiles = []
+        for column in prompt_columns:
+            series = sample_df[column].dropna()
+            unique_values = []
+            seen_values = set()
+            for raw_value in series.tolist():
+                safe_value = self._safe_context_value(raw_value)
+                marker = str(safe_value).casefold()
+                if marker in seen_values:
+                    continue
+                seen_values.add(marker)
+                unique_values.append(safe_value)
+                if len(unique_values) == 6:
+                    break
+            profiles.append({
+                "name": str(column),
+                "dtype": str(sample_df[column].dtype),
+                "non_null_in_sample": int(series.shape[0]),
+                "unique_in_sample": int(series.nunique(dropna=True)),
+                "sample_values": unique_values,
+            })
+        context["column_profiles"] = profiles
+        return context
+
+    @staticmethod
+    def _normalized_column_name(column: str) -> str:
+        return re.sub(r"[^a-z0-9]", "", str(column).casefold())
+
+    def get_relation_join_candidates(
+        self,
+        source_context: Dict[str, Any],
+        target_context: Dict[str, Any],
+    ) -> List[Dict[str, Any]]:
+        """Rank grounded join-column candidates using names and sampled values."""
+        source_profiles = {
+            item["name"]: item
+            for item in source_context.get("column_profiles", [])
+        }
+        target_profiles = {
+            item["name"]: item
+            for item in target_context.get("column_profiles", [])
+        }
+        candidates = []
+        generic_tokens = {"id", "key", "code", "number", "no", "name", "date", "type", "status"}
+
+        for source_column in source_context.get("columns", []):
+            for target_column in target_context.get("columns", []):
+                source_normalized = self._normalized_column_name(source_column)
+                target_normalized = self._normalized_column_name(target_column)
+                score = 0.0
+                reasons = []
+
+                if str(source_column).casefold() == str(target_column).casefold():
+                    score = 1.0
+                    reasons.append("exact column-name match")
+                elif source_normalized and source_normalized == target_normalized:
+                    score = 0.96
+                    reasons.append("normalized column-name match")
+                else:
+                    source_tokens = {
+                        token for token in re.split(r"[^a-z0-9]+", str(source_column).casefold())
+                        if token and token not in generic_tokens
+                    }
+                    target_tokens = {
+                        token for token in re.split(r"[^a-z0-9]+", str(target_column).casefold())
+                        if token and token not in generic_tokens
+                    }
+                    meaningful_overlap = source_tokens & target_tokens
+                    if meaningful_overlap:
+                        score = 0.82
+                        reasons.append(f"shared name token: {', '.join(sorted(meaningful_overlap))}")
+
+                source_values = {
+                    str(value).strip().casefold()
+                    for value in source_profiles.get(source_column, {}).get("sample_values", [])
+                    if value is not None and str(value).strip()
+                }
+                target_values = {
+                    str(value).strip().casefold()
+                    for value in target_profiles.get(target_column, {}).get("sample_values", [])
+                    if value is not None and str(value).strip()
+                }
+                shared_values = source_values & target_values
+                if len(shared_values) >= 2:
+                    overlap_ratio = len(shared_values) / max(1, min(len(source_values), len(target_values)))
+                    if overlap_ratio >= 0.5:
+                        score = max(score, min(0.94, 0.68 + (overlap_ratio * 0.26)))
+                        reasons.append(f"{len(shared_values)} overlapping sampled values")
+
+                if score >= 0.68:
+                    candidates.append({
+                        "source_column": str(source_column),
+                        "target_column": str(target_column),
+                        "score": round(score, 2),
+                        "reason": "; ".join(reasons),
+                    })
+
+        return sorted(
+            candidates,
+            key=lambda item: (-item["score"], item["source_column"].casefold(), item["target_column"].casefold()),
+        )[:12]
+
+    def get_relation_suggestion_context(self, source: str, target: str) -> Dict[str, Any]:
+        """Return both bounded object contexts and locally grounded join candidates."""
+        if source == target:
+            raise ValueError("Source and target objects must be different.")
+        source_context = self.get_relation_object_context(source)
+        target_context = self.get_relation_object_context(target)
+        return {
+            "source": source_context,
+            "target": target_context,
+            "join_candidates": self.get_relation_join_candidates(source_context, target_context),
+        }
+
+    def _normalize_custom_relation_record(self, relation: Dict[str, Any]) -> Dict[str, str]:
+        """Convert current or legacy dataset-only records to the generic schema."""
+        if "source" in relation and "target" in relation:
+            return {
+                "source": str(relation.get("source") or "").strip(),
+                "target": str(relation.get("target") or "").strip(),
+                "relationship": str(relation.get("relationship") or "related_to").strip(),
+                "source_column": str(relation.get("source_column") or "").strip(),
+                "target_column": str(relation.get("target_column") or "").strip(),
+            }
+
+        upstream = str(relation.get("upstream_dataset") or "").strip()
+        downstream = str(relation.get("downstream_dataset") or "").strip()
+        if upstream and not upstream.startswith("Dataset: "):
+            upstream = f"Dataset: {Path(upstream).name}"
+        if downstream and not downstream.startswith("Dataset: "):
+            downstream = f"Dataset: {Path(downstream).name}"
+        return {
+            "source": upstream,
+            "target": downstream,
+            "relationship": "maps",
+            "source_column": str(relation.get("upstream_column") or "").strip(),
+            "target_column": str(relation.get("downstream_column") or "").strip(),
+        }
+
     def get_custom_relations(self) -> List[Dict[str, str]]:
-        """Load persisted manual dataset relationships from disk."""
+        """Load persisted manual relationships using the generic entity schema."""
         if not self.custom_relations_path.exists():
             return []
         try:
             data = json.loads(self.custom_relations_path.read_text(encoding="utf-8"))
-            return data if isinstance(data, list) else []
+            if not isinstance(data, list):
+                return []
+            return [
+                normalized
+                for item in data
+                if isinstance(item, dict)
+                for normalized in [self._normalize_custom_relation_record(item)]
+                if normalized["source"] and normalized["target"]
+            ]
         except (OSError, json.JSONDecodeError) as error:
             print(f"Could not load custom relations: {error}")
             return []
@@ -204,111 +463,143 @@ class KnowledgeGraphService:
         columns = list(pd.read_csv(csv_path, nrows=0).columns)
         return normalized, f"Dataset: {normalized}", columns
 
+    def _get_entity_columns(self, node_id: str) -> List[str]:
+        """Return columns for dataset nodes; other graph objects have no columns."""
+        if not node_id.startswith("Dataset: "):
+            return []
+        _, _, columns = self._normalize_dataset(node_id)
+        return columns
+
+    @staticmethod
+    def _format_custom_relationship(relation: Dict[str, str]) -> str:
+        """Build the edge label shown by the graph visualizer."""
+        relationship = relation["relationship"]
+        source_column = relation.get("source_column", "")
+        target_column = relation.get("target_column", "")
+        if source_column or target_column:
+            source_label = source_column or "object"
+            target_label = target_column or "object"
+            return f"{relationship}: {source_label} → {target_label}"
+        return relationship
+
+    def _validate_custom_relation(self, relation: Dict[str, str]) -> None:
+        """Validate entity existence, direction, relationship label, and columns."""
+        source = relation["source"]
+        target = relation["target"]
+        if source not in self.graph:
+            raise ValueError(f"Source object '{source}' does not exist in the Knowledge Graph.")
+        if target not in self.graph:
+            raise ValueError(f"Target object '{target}' does not exist in the Knowledge Graph.")
+        if source == target:
+            raise ValueError("Source and target objects must be different.")
+        if not relation["relationship"]:
+            raise ValueError("A relationship label is required.")
+        if len(relation["relationship"]) > 80:
+            raise ValueError("Relationship label must be 80 characters or fewer.")
+
+        source_column = relation.get("source_column", "")
+        target_column = relation.get("target_column", "")
+        source_columns = self._get_entity_columns(source)
+        target_columns = self._get_entity_columns(target)
+        if source_column and source_column not in source_columns:
+            raise ValueError(f"Column '{source_column}' does not exist on '{source}'.")
+        if target_column and target_column not in target_columns:
+            raise ValueError(f"Column '{target_column}' does not exist on '{target}'.")
+
     def _apply_custom_relation(self, relation: Dict[str, str]) -> None:
-        """Apply one validated persisted relation to both graph representations."""
-        upstream_file, upstream_node, upstream_columns = self._normalize_dataset(relation.get("upstream_dataset", ""))
-        downstream_file, downstream_node, downstream_columns = self._normalize_dataset(relation.get("downstream_dataset", ""))
-        upstream_column = relation.get("upstream_column", "")
-        downstream_column = relation.get("downstream_column", "")
-
-        if upstream_column not in upstream_columns:
-            raise ValueError(f"Column '{upstream_column}' does not exist in '{upstream_file}'.")
-        if downstream_column not in downstream_columns:
-            raise ValueError(f"Column '{downstream_column}' does not exist in '{downstream_file}'.")
-
-        mapping = {
-            "upstream_column": upstream_column,
-            "downstream_column": downstream_column,
-        }
-        existing_edge = self.graph.get_edge_data(upstream_node, downstream_node) or {}
-        mappings = list(existing_edge.get("column_mappings", [])) if existing_edge.get("is_custom") else []
-        is_new_mapping = mapping not in mappings
+        """Apply one generic manual relationship to both graph representations."""
+        relation = self._normalize_custom_relation_record(relation)
+        self._validate_custom_relation(relation)
+        source = relation["source"]
+        target = relation["target"]
+        existing_edge = self.graph.get_edge_data(source, target) or {}
+        manual_relationships = list(existing_edge.get("manual_relationships", [])) if existing_edge.get("is_custom") else []
+        is_new_mapping = relation not in manual_relationships
         if is_new_mapping:
-            mappings.append(mapping)
+            manual_relationships.append(relation)
 
-        mapping_labels = [
-            f"{item['upstream_column']} → {item['downstream_column']}"
-            for item in mappings
+        relationship_labels = [
+            self._format_custom_relationship(item)
+            for item in manual_relationships
         ]
-        relationship = f"maps: {' | '.join(mapping_labels)}"
-        details = (
-            f"Manual column mappings from {upstream_file} to {downstream_file}: "
-            f"{', '.join(mapping_labels)}"
-        )
+        relationship = " | ".join(relationship_labels)
+        details = f"Manual relationships: {', '.join(relationship_labels)}"
         self.graph.add_edge(
-            upstream_node,
-            downstream_node,
+            source,
+            target,
             relationship=relationship,
             details=details,
             is_custom=True,
-            upstream_column=upstream_column,
-            downstream_column=downstream_column,
-            column_mappings=mappings,
+            source_column=relation.get("source_column", ""),
+            target_column=relation.get("target_column", ""),
+            upstream_column=relation.get("source_column", ""),
+            downstream_column=relation.get("target_column", ""),
+            manual_relationships=manual_relationships,
+            column_mappings=[
+                {
+                    "upstream_column": item.get("source_column", ""),
+                    "downstream_column": item.get("target_column", ""),
+                }
+                for item in manual_relationships
+                if item.get("source_column") or item.get("target_column")
+            ],
         )
         if is_new_mapping:
-            self.langchain_graph.add_triple(KnowledgeTriple(upstream_node, relationship, downstream_node))
+            relationship_label = self._format_custom_relationship(relation)
+            self.langchain_graph.add_triple(KnowledgeTriple(source, relationship_label, target))
             if self.df is None:
                 self.df = pd.DataFrame(columns=["source", "relationship", "target", "details"])
             self.df.loc[len(self.df)] = {
-                "source": upstream_node,
-                "relationship": relationship,
-                "target": downstream_node,
-                "details": details,
+                "source": source,
+                "relationship": relationship_label,
+                "target": target,
+                "details": f"Manually defined relationship: {relationship_label}",
             }
 
     def add_custom_relation(
         self,
-        upstream_dataset: str,
-        upstream_column: str,
-        downstream_dataset: str,
-        downstream_column: str,
+        source: str,
+        target: str,
+        relationship: str,
+        source_column: str = "",
+        target_column: str = "",
     ) -> Dict[str, str]:
-        """Validate, persist, and apply a directional table-column relationship."""
-        upstream_file, upstream_node, upstream_columns = self._normalize_dataset(upstream_dataset)
-        downstream_file, downstream_node, downstream_columns = self._normalize_dataset(downstream_dataset)
-
-        if upstream_node == downstream_node:
-            raise ValueError("Upstream and downstream datasets must be different.")
-        if upstream_column not in upstream_columns:
-            raise ValueError(f"Column '{upstream_column}' does not exist in '{upstream_file}'.")
-        if downstream_column not in downstream_columns:
-            raise ValueError(f"Column '{downstream_column}' does not exist in '{downstream_file}'.")
-
-        relation = {
-            "upstream_dataset": upstream_file,
-            "upstream_column": upstream_column,
-            "downstream_dataset": downstream_file,
-            "downstream_column": downstream_column,
-        }
+        """Validate, persist, and apply a directional relationship between graph objects."""
+        relation = self._normalize_custom_relation_record({
+            "source": source,
+            "target": target,
+            "relationship": relationship,
+            "source_column": source_column,
+            "target_column": target_column,
+        })
+        self._validate_custom_relation(relation)
         relations = self.get_custom_relations()
         if relation not in relations:
             relations.append(relation)
-            self._save_custom_relations(relations)
+        self._save_custom_relations(relations)
 
         self._apply_custom_relation(relation)
         return {
             **relation,
-            "source": upstream_node,
-            "target": downstream_node,
-            "relationship": f"maps: {upstream_column} → {downstream_column}",
+            "display_relationship": self._format_custom_relationship(relation),
         }
 
     def delete_custom_relation(
         self,
-        upstream_dataset: str,
-        upstream_column: str,
-        downstream_dataset: str,
-        downstream_column: str,
+        source: str,
+        target: str,
+        relationship: str,
+        source_column: str = "",
+        target_column: str = "",
     ) -> Optional[Dict[str, str]]:
-        """Delete one exact manual mapping and rebuild the live graph."""
-        upstream_file, _, _ = self._normalize_dataset(upstream_dataset)
-        downstream_file, _, _ = self._normalize_dataset(downstream_dataset)
-        relation = {
-            "upstream_dataset": upstream_file,
-            "upstream_column": upstream_column,
-            "downstream_dataset": downstream_file,
-            "downstream_column": downstream_column,
-        }
+        """Delete one exact generic manual relationship and rebuild the live graph."""
+        relation = self._normalize_custom_relation_record({
+            "source": source,
+            "target": target,
+            "relationship": relationship,
+            "source_column": source_column,
+            "target_column": target_column,
+        })
 
         relations = self.get_custom_relations()
         if relation not in relations:

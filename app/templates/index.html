@@ -1186,6 +1186,11 @@
     text-transform: uppercase;
     letter-spacing: 0.04em;
 }
+.relation-side-card label span {
+    color: #64748b;
+    font-weight: 500;
+    text-transform: none;
+}
 .relation-side-card select {
     width: 100%;
     background: #1a1a1a;
@@ -1196,6 +1201,12 @@
     outline: none;
 }
 .relation-side-card select:focus { border-color: rgba(217, 102, 43, 0.7); }
+.relation-column-field {
+    display: none;
+    flex-direction: column;
+    gap: 8px;
+}
+.relation-column-field.active { display: flex; }
 .relation-direction-arrow {
     display: flex;
     flex-direction: column;
@@ -1211,6 +1222,108 @@
     font-weight: 800;
     letter-spacing: 0.08em;
 }
+.relationship-definition-field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 9px;
+}
+.relationship-definition-field label {
+    color: #e2e8f0;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+.relationship-definition-field input {
+    width: 100%;
+    padding: 10px 12px;
+    color: #f8fafc;
+    background: #1a1a1a;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    outline: none;
+}
+.relationship-definition-field input:focus { border-color: rgba(34, 197, 94, 0.65); }
+.relationship-definition-field > span { color: #64748b; font-size: 9px; }
+.ai-relation-suggestion {
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: linear-gradient(135deg, rgba(79, 70, 229, 0.1), rgba(14, 165, 233, 0.055));
+    border: 1px solid rgba(129, 140, 248, 0.28);
+    border-radius: 9px;
+}
+.ai-relation-suggestion-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+.ai-relation-suggestion-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #e0e7ff;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.035em;
+    text-transform: uppercase;
+}
+.ai-relation-suggestion-title i { color: #a5b4fc; }
+.ai-suggestion-refresh,
+.ai-suggestion-apply {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    color: #c7d2fe;
+    background: rgba(99, 102, 241, 0.12);
+    border: 1px solid rgba(129, 140, 248, 0.28);
+    border-radius: 6px;
+    padding: 7px 10px;
+    cursor: pointer;
+    font-size: 10px;
+    font-weight: 700;
+}
+.ai-suggestion-refresh:hover,
+.ai-suggestion-apply:hover { background: rgba(99, 102, 241, 0.24); }
+.ai-suggestion-refresh:disabled { opacity: 0.55; cursor: wait; }
+.ai-suggestion-status {
+    margin-top: 10px;
+    color: #94a3b8;
+    font-size: 10px;
+    line-height: 1.45;
+}
+.ai-suggestion-result { display: none; margin-top: 11px; }
+.ai-suggestion-result.active { display: block; }
+.ai-suggestion-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-bottom: 8px;
+}
+.ai-suggestion-chip {
+    padding: 3px 7px;
+    color: #c7d2fe;
+    background: rgba(99, 102, 241, 0.12);
+    border: 1px solid rgba(129, 140, 248, 0.2);
+    border-radius: 999px;
+    font-size: 9px;
+    font-weight: 700;
+}
+.ai-suggestion-result p {
+    margin: 5px 0;
+    color: #cbd5e1;
+    font-size: 10px;
+    line-height: 1.5;
+}
+.ai-suggestion-result .ai-suggestion-reason { color: #94a3b8; }
+.ai-suggestion-result .ai-suggestion-warning { color: #fbbf24; }
+.ai-suggestion-apply { margin-top: 8px; }
 .relation-form-status {
     min-height: 18px;
     margin-top: 14px;
@@ -2285,17 +2398,17 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
             </div>
         </div> <!-- End tab-storage -->
 
-        <!-- Manual Dataset Relations Floating Window -->
+        <!-- Manual Knowledge Graph Relations Floating Window -->
         <div id="relationModal" class="modal-overlay" onclick="closeRelationModalFromBackdrop(event)">
             <div class="relations-tab-panel relations-floating-panel" role="dialog" aria-modal="true" aria-labelledby="relationsDialogTitle">
                 <div class="relations-tab-header">
                     <div>
-                        <h3 id="relationsDialogTitle">Manual Dataset Relationships</h3>
-                        <p>Select an upstream table and column, then map it to a downstream table and column. The saved edge points from upstream to downstream in the Knowledge Graph.</p>
+                        <h3 id="relationsDialogTitle">Manual Knowledge Graph Relationships</h3>
+                        <p>Connect any source object to any target object across or within graph tiers. AI reviews bounded metadata and data samples, drafts the relationship and join columns, and leaves every field editable before confirmation.</p>
                     </div>
                     <div class="relations-tab-actions">
                         <span class="manual-relation-badge"><i class="fa-solid fa-arrow-right-long"></i> Directional mapping</span>
-                        <button class="relations-tab-close" type="button" onclick="closeRelationModal()" aria-label="Close Manual Dataset Relationships">
+                        <button class="relations-tab-close" type="button" onclick="closeRelationModal()" aria-label="Close Manual Knowledge Graph Relationships">
                             <i class="fa-solid fa-xmark"></i>
                         </button>
                     </div>
@@ -2303,39 +2416,95 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
 
                 <div class="manual-relation-grid">
                     <div class="relation-side-card upstream-card">
-                        <div class="relation-side-title"><span>1</span> Upstream / From</div>
-                        <label for="upstreamDataset">Dataset</label>
-                        <select id="upstreamDataset" onchange="updateRelationColumns('upstream')">
-                            <option value="">Loading datasets...</option>
+                        <div class="relation-side-title"><span>1</span> Source / From</div>
+                        <label for="sourceCategory">Tier / object type</label>
+                        <select id="sourceCategory" onchange="handleRelationCategoryChange('source')">
+                            <option value="">Loading object types...</option>
                         </select>
-                        <label for="upstreamColumn">From column</label>
-                        <select id="upstreamColumn">
-                            <option value="">Select an upstream dataset first</option>
+                        <label for="sourceEntity">Source object</label>
+                        <select id="sourceEntity" onchange="handleRelationEntityChange('source')">
+                            <option value="">Select an object type first</option>
                         </select>
+                        <div id="sourceColumnField" class="relation-column-field">
+                            <label for="sourceColumn">Source column <span>(optional)</span></label>
+                            <select id="sourceColumn" onchange="markRelationSuggestionEdited()">
+                                <option value="">Object-level relationship</option>
+                            </select>
+                        </div>
                     </div>
 
-                    <div class="relation-direction-arrow" aria-label="Relationship points from upstream to downstream">
-                        <span>UPSTREAM</span>
+                    <div class="relation-direction-arrow" aria-label="Relationship points from source to target">
+                        <span>SOURCE</span>
                         <i class="fa-solid fa-arrow-right-long"></i>
-                        <span>DOWNSTREAM</span>
+                        <span>TARGET</span>
                     </div>
 
                     <div class="relation-side-card downstream-card">
-                        <div class="relation-side-title"><span>2</span> Downstream / To</div>
-                        <label for="downstreamDataset">Dataset</label>
-                        <select id="downstreamDataset" onchange="updateRelationColumns('downstream')">
-                            <option value="">Loading datasets...</option>
+                        <div class="relation-side-title"><span>2</span> Target / To</div>
+                        <label for="targetCategory">Tier / object type</label>
+                        <select id="targetCategory" onchange="handleRelationCategoryChange('target')">
+                            <option value="">Loading object types...</option>
                         </select>
-                        <label for="downstreamColumn">To column</label>
-                        <select id="downstreamColumn">
-                            <option value="">Select a downstream dataset first</option>
+                        <label for="targetEntity">Target object</label>
+                        <select id="targetEntity" onchange="handleRelationEntityChange('target')">
+                            <option value="">Select an object type first</option>
                         </select>
+                        <div id="targetColumnField" class="relation-column-field">
+                            <label for="targetColumn">Target column <span>(optional)</span></label>
+                            <select id="targetColumn" onchange="markRelationSuggestionEdited()">
+                                <option value="">Object-level relationship</option>
+                            </select>
+                        </div>
                     </div>
+                </div>
+
+                <div class="ai-relation-suggestion" aria-live="polite">
+                    <div class="ai-relation-suggestion-header">
+                        <div class="ai-relation-suggestion-title">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                            AI relationship draft
+                        </div>
+                        <button id="refreshRelationSuggestionBtn" class="ai-suggestion-refresh" type="button" onclick="requestRelationSuggestion()">
+                            <i class="fa-solid fa-rotate"></i> Regenerate
+                        </button>
+                    </div>
+                    <div id="relationSuggestionStatus" class="ai-suggestion-status">Select two different objects to generate a grounded relationship suggestion.</div>
+                    <div id="relationSuggestionResult" class="ai-suggestion-result">
+                        <div class="ai-suggestion-meta">
+                            <span id="relationSuggestionProvider" class="ai-suggestion-chip"></span>
+                            <span id="relationSuggestionConfidence" class="ai-suggestion-chip"></span>
+                        </div>
+                        <p id="relationSuggestionDescription"></p>
+                        <p id="relationSuggestionReason" class="ai-suggestion-reason"></p>
+                        <p id="relationSuggestionWarning" class="ai-suggestion-warning"></p>
+                        <button class="ai-suggestion-apply" type="button" onclick="applyLatestRelationSuggestion()">
+                            <i class="fa-solid fa-check"></i> Apply suggestion to editable fields
+                        </button>
+                    </div>
+                </div>
+
+                <div class="relationship-definition-field">
+                    <label for="relationshipType">Relationship / edge label</label>
+                    <input id="relationshipType" type="text" list="relationshipTypePresets" maxlength="80" value="related_to" placeholder="Examples: contains, depends_on, feeds, governed_by" autocomplete="off" oninput="markRelationSuggestionEdited()">
+                    <datalist id="relationshipTypePresets">
+                        <option value="related_to"></option>
+                        <option value="contains"></option>
+                        <option value="depends_on"></option>
+                        <option value="feeds"></option>
+                        <option value="derived_from"></option>
+                        <option value="maps"></option>
+                        <option value="joins_to"></option>
+                        <option value="links_via"></option>
+                        <option value="calculates"></option>
+                        <option value="governed_by"></option>
+                        <option value="owned_by"></option>
+                    </datalist>
+                    <span>The AI draft is editable. Review its label and columns before confirming.</span>
                 </div>
 
                 <div id="relationFormStatus" class="relation-form-status" role="status"></div>
                 <button class="save-relation-btn" id="saveRelationBtn" onclick="saveRelation()">
-                    <i class="fa-solid fa-link"></i> Add Relationship to Knowledge Graph
+                    <i class="fa-solid fa-check"></i> Confirm &amp; Add Relationship
                 </button>
 
                 <div class="saved-relations-list">
@@ -2355,7 +2524,7 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
             <div class="manual-confirm-dialog" role="alertdialog" aria-modal="true" aria-labelledby="deleteRelationConfirmTitle" aria-describedby="deleteRelationConfirmDescription">
                 <div class="manual-confirm-icon"><i class="fa-solid fa-trash-can"></i></div>
                 <h4 id="deleteRelationConfirmTitle">Delete manual relationship?</h4>
-                <p id="deleteRelationConfirmDescription">This mapping will be removed from the saved relationships and the Interactive Knowledge Graph.</p>
+                <p id="deleteRelationConfirmDescription">This relationship will be removed from the saved relationships and the Interactive Knowledge Graph.</p>
                 <div id="deleteRelationMappingLabel" class="manual-confirm-mapping"></div>
                 <div class="manual-confirm-actions">
                     <button id="cancelDeleteRelationBtn" class="manual-confirm-cancel" type="button" onclick="closeDeleteRelationConfirm()">Cancel</button>
@@ -3741,18 +3910,25 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
 
 <script>
     // Manual Dataset Relations Logic
-    let relationDatasetCatalog = [];
+    let relationEntityCatalog = [];
     let pendingRelationDeletion = null;
     let pendingRelationDeleteButton = null;
     let relationDeleteInProgress = false;
+    let relationSuggestionTimer = null;
+    let relationSuggestionAbortController = null;
+    let relationSuggestionRequestId = 0;
+    let relationFieldEditVersion = 0;
+    let latestRelationSuggestion = null;
 
     async function openRelationModal() {
         document.getElementById('relationModal').classList.add('active');
-        await Promise.all([fetchDatasets(), fetchSavedRelations()]);
+        await fetchRelationConfiguration();
     }
 
     function closeRelationModal() {
         closeDeleteRelationConfirm();
+        clearTimeout(relationSuggestionTimer);
+        if (relationSuggestionAbortController) relationSuggestionAbortController.abort();
         document.getElementById('relationModal').classList.remove('active');
     }
 
@@ -3796,40 +3972,224 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
         });
     }
 
-    async function fetchDatasets() {
+    async function fetchRelationConfiguration() {
         const status = document.getElementById('relationFormStatus');
         try {
-            const response = await fetch('/api/datasets');
+            const response = await fetch('/api/graph/relation');
             const data = await response.json();
-            if (!response.ok || !data.success) throw new Error(data.error || 'Unable to load datasets.');
+            if (!response.ok || !data.success) throw new Error(data.error || 'Unable to load graph objects.');
 
-            relationDatasetCatalog = data.dataset_details || [];
-            const upstreamSelect = document.getElementById('upstreamDataset');
-            const downstreamSelect = document.getElementById('downstreamDataset');
-            setSelectOptions(upstreamSelect, relationDatasetCatalog, 'filename', 'name', 'Select upstream dataset');
-            setSelectOptions(downstreamSelect, relationDatasetCatalog, 'filename', 'name', 'Select downstream dataset');
+            relationEntityCatalog = data.entities || [];
+            const categoryMap = new Map();
+            relationEntityCatalog.forEach(entity => {
+                const currentTier = categoryMap.get(entity.category);
+                if (currentTier === undefined || entity.tree_level < currentTier) {
+                    categoryMap.set(entity.category, entity.tree_level);
+                }
+            });
+            const categories = Array.from(categoryMap, ([value, tier]) => ({
+                value,
+                label: `Tier ${tier} · ${value}`,
+                tier,
+            })).sort((a, b) => a.tier - b.tier || a.label.localeCompare(b.label));
 
-            if (relationDatasetCatalog.length > 0) upstreamSelect.value = relationDatasetCatalog[0].filename;
-            if (relationDatasetCatalog.length > 1) downstreamSelect.value = relationDatasetCatalog[1].filename;
-            updateRelationColumns('upstream');
-            updateRelationColumns('downstream');
+            const sourceCategory = document.getElementById('sourceCategory');
+            const targetCategory = document.getElementById('targetCategory');
+            setSelectOptions(sourceCategory, categories, 'value', 'label', 'Select source object type');
+            setSelectOptions(targetCategory, categories, 'value', 'label', 'Select target object type');
+
+            if (categories.length > 0) sourceCategory.value = categories[0].value;
+            const datasetCategory = categories.find(category => category.value === 'Dataset');
+            if (datasetCategory) targetCategory.value = datasetCategory.value;
+            else if (categories.length > 1) targetCategory.value = categories[1].value;
+
+            updateRelationEntities('source');
+            updateRelationEntities('target');
+            renderSavedRelations(data.relations || []);
             status.textContent = '';
+            scheduleRelationSuggestion();
         } catch (error) {
             status.style.color = '#fca5a5';
-            status.textContent = `Could not load dataset schemas: ${error.message}`;
+            status.textContent = `Could not load graph objects: ${error.message}`;
         }
     }
 
+    function updateRelationEntities(side) {
+        const categorySelect = document.getElementById(`${side}Category`);
+        const entitySelect = document.getElementById(`${side}Entity`);
+        const entities = relationEntityCatalog
+            .filter(entity => entity.category === categorySelect.value)
+            .map(entity => ({
+                value: entity.id,
+                label: entity.label,
+            }));
+        setSelectOptions(entitySelect, entities, 'value', 'label', `Select ${side} object`);
+        if (entities.length > 0) entitySelect.value = entities[0].value;
+        updateRelationColumns(side);
+    }
+
     function updateRelationColumns(side) {
-        const datasetSelect = document.getElementById(`${side}Dataset`);
+        const entitySelect = document.getElementById(`${side}Entity`);
         const columnSelect = document.getElementById(`${side}Column`);
-        const selectedDataset = relationDatasetCatalog.find(dataset => dataset.filename === datasetSelect.value);
-        const columns = selectedDataset ? selectedDataset.columns.map(column => ({ value: column, label: column })) : [];
-        setSelectOptions(columnSelect, columns, 'value', 'label', `Select ${side} column`);
-        if (columns.length > 0) columnSelect.value = columns[0].value;
+        const columnField = document.getElementById(`${side}ColumnField`);
+        const selectedEntity = relationEntityCatalog.find(entity => entity.id === entitySelect.value);
+        const columns = selectedEntity ? selectedEntity.columns.map(column => ({ value: column, label: column })) : [];
+        setSelectOptions(columnSelect, columns, 'value', 'label', 'Object-level relationship (no column)');
+        columnField.classList.toggle('active', columns.length > 0);
         const status = document.getElementById('relationFormStatus');
         status.style.color = '#fca5a5';
         status.textContent = '';
+    }
+
+    function handleRelationCategoryChange(side) {
+        updateRelationEntities(side);
+        scheduleRelationSuggestion();
+    }
+
+    function handleRelationEntityChange(side) {
+        updateRelationColumns(side);
+        scheduleRelationSuggestion();
+    }
+
+    function markRelationSuggestionEdited() {
+        relationFieldEditVersion += 1;
+    }
+
+    function setRelationSuggestionStatus(message, color = '#94a3b8') {
+        const status = document.getElementById('relationSuggestionStatus');
+        status.style.color = color;
+        status.textContent = message;
+    }
+
+    function scheduleRelationSuggestion() {
+        clearTimeout(relationSuggestionTimer);
+        relationSuggestionRequestId += 1;
+        if (relationSuggestionAbortController) relationSuggestionAbortController.abort();
+        relationSuggestionAbortController = null;
+        latestRelationSuggestion = null;
+        document.getElementById('relationSuggestionResult').classList.remove('active');
+
+        const source = document.getElementById('sourceEntity').value;
+        const target = document.getElementById('targetEntity').value;
+        if (!source || !target) {
+            setRelationSuggestionStatus('Select a source and target object to generate a grounded suggestion.');
+            return;
+        }
+        if (source === target) {
+            setRelationSuggestionStatus('Choose two different objects before requesting a suggestion.', '#fca5a5');
+            return;
+        }
+
+        setRelationSuggestionStatus('Waiting for both selections to settle...');
+        relationSuggestionTimer = setTimeout(() => requestRelationSuggestion(), 450);
+    }
+
+    function selectSuggestedColumn(side, column) {
+        const select = document.getElementById(`${side}Column`);
+        const hasOption = Array.from(select.options).some(option => option.value === column);
+        select.value = column && hasOption ? column : '';
+    }
+
+    function applyRelationSuggestion(suggestion, announce = true) {
+        if (!suggestion) return;
+        document.getElementById('relationshipType').value = suggestion.relationship || 'related_to';
+        selectSuggestedColumn('source', suggestion.source_column || '');
+        selectSuggestedColumn('target', suggestion.target_column || '');
+        relationFieldEditVersion += 1;
+        if (announce) {
+            setRelationSuggestionStatus(
+                'Suggestion applied. Review or edit the highlighted relationship fields, then confirm.',
+                '#4ade80'
+            );
+        }
+    }
+
+    function applyLatestRelationSuggestion() {
+        applyRelationSuggestion(latestRelationSuggestion, true);
+    }
+
+    function renderRelationSuggestion(suggestion, contextSummary) {
+        const result = document.getElementById('relationSuggestionResult');
+        const confidence = Math.round((Number(suggestion.confidence) || 0) * 100);
+        document.getElementById('relationSuggestionProvider').textContent =
+            suggestion.used_ai ? 'AI generated' : 'Metadata fallback';
+        document.getElementById('relationSuggestionConfidence').textContent =
+            `${confidence}% confidence`;
+        document.getElementById('relationSuggestionDescription').textContent =
+            suggestion.join_description || 'Object-level directional relationship.';
+        document.getElementById('relationSuggestionReason').textContent =
+            suggestion.reasoning ? `Evidence: ${suggestion.reasoning}` : '';
+        document.getElementById('relationSuggestionWarning').textContent = suggestion.warning || '';
+        result.classList.add('active');
+
+        const sourceRows = contextSummary?.source?.sample_record_count || 0;
+        const targetRows = contextSummary?.target?.sample_record_count || 0;
+        const candidates = contextSummary?.join_candidates_considered || 0;
+        return `${sourceRows + targetRows} sampled rows and ${candidates} grounded join candidate${candidates === 1 ? '' : 's'} considered.`;
+    }
+
+    async function requestRelationSuggestion() {
+        clearTimeout(relationSuggestionTimer);
+        const source = document.getElementById('sourceEntity').value;
+        const target = document.getElementById('targetEntity').value;
+        if (!source || !target || source === target) {
+            setRelationSuggestionStatus(
+                source === target
+                    ? 'Choose two different objects before requesting a suggestion.'
+                    : 'Select both a source and target object before requesting a suggestion.',
+                '#fca5a5'
+            );
+            return;
+        }
+
+        if (relationSuggestionAbortController) relationSuggestionAbortController.abort();
+        relationSuggestionAbortController = new AbortController();
+        const requestId = ++relationSuggestionRequestId;
+        const editVersionAtRequest = relationFieldEditVersion;
+        const refreshButton = document.getElementById('refreshRelationSuggestionBtn');
+        refreshButton.disabled = true;
+        refreshButton.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Analyzing';
+        setRelationSuggestionStatus('AI is reviewing metadata, graph context, schemas, and bounded data samples...', '#c7d2fe');
+
+        try {
+            const response = await fetch('/api/graph/relation/suggest', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ source, target }),
+                signal: relationSuggestionAbortController.signal,
+            });
+            const data = await response.json();
+            if (!response.ok || !data.success) throw new Error(data.error || 'Unable to generate a relationship suggestion.');
+            if (requestId !== relationSuggestionRequestId) return;
+            if (source !== document.getElementById('sourceEntity').value ||
+                target !== document.getElementById('targetEntity').value) return;
+
+            latestRelationSuggestion = data.suggestion;
+            const contextMessage = renderRelationSuggestion(data.suggestion, data.context_summary || {});
+            if (editVersionAtRequest === relationFieldEditVersion) {
+                applyRelationSuggestion(data.suggestion, false);
+                setRelationSuggestionStatus(
+                    `Suggestion applied automatically. ${contextMessage} Review or edit it before confirming.`,
+                    '#4ade80'
+                );
+            } else {
+                setRelationSuggestionStatus(
+                    `Suggestion ready. ${contextMessage} Your edits were preserved; use Apply suggestion if wanted.`,
+                    '#fbbf24'
+                );
+            }
+        } catch (error) {
+            if (error.name !== 'AbortError' && requestId === relationSuggestionRequestId) {
+                latestRelationSuggestion = null;
+                document.getElementById('relationSuggestionResult').classList.remove('active');
+                setRelationSuggestionStatus(error.message, '#fca5a5');
+            }
+        } finally {
+            if (requestId === relationSuggestionRequestId) {
+                refreshButton.disabled = false;
+                refreshButton.innerHTML = '<i class="fa-solid fa-rotate"></i> Regenerate';
+            }
+        }
     }
 
     async function fetchSavedRelations() {
@@ -3868,26 +4228,29 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
             const content = document.createElement('div');
             content.className = 'relation-item-content';
 
-            const upstream = document.createElement('strong');
-            upstream.textContent = relation.upstream_dataset;
-            const upstreamColumn = document.createElement('code');
-            upstreamColumn.textContent = relation.upstream_column;
+            const source = document.createElement('strong');
+            source.textContent = relation.source;
+            const sourceColumn = document.createElement('code');
+            sourceColumn.textContent = relation.source_column;
             const arrow = document.createElement('span');
             arrow.className = 'relation-item-arrow';
-            arrow.textContent = '→';
-            const downstream = document.createElement('strong');
-            downstream.textContent = relation.downstream_dataset;
-            const downstreamColumn = document.createElement('code');
-            downstreamColumn.textContent = relation.downstream_column;
+            arrow.textContent = `— ${relation.relationship} →`;
+            const target = document.createElement('strong');
+            target.textContent = relation.target;
+            const targetColumn = document.createElement('code');
+            targetColumn.textContent = relation.target_column;
             const deleteButton = document.createElement('button');
             deleteButton.type = 'button';
             deleteButton.className = 'delete-relation-btn';
             deleteButton.title = 'Delete this manual relationship';
-            deleteButton.setAttribute('aria-label', `Delete relationship from ${relation.upstream_dataset} to ${relation.downstream_dataset}`);
+            deleteButton.setAttribute('aria-label', `Delete relationship from ${relation.source} to ${relation.target}`);
             deleteButton.innerHTML = '<i class="fa-solid fa-trash-can"></i>';
             deleteButton.addEventListener('click', () => deleteRelation(relation, deleteButton));
 
-            content.append(upstream, ' / ', upstreamColumn, arrow, downstream, ' / ', downstreamColumn);
+            content.append(source);
+            if (relation.source_column) content.append(' / ', sourceColumn);
+            content.append(arrow, target);
+            if (relation.target_column) content.append(' / ', targetColumn);
             item.append(content, deleteButton);
             list.appendChild(item);
         });
@@ -3897,7 +4260,7 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
         pendingRelationDeletion = relation;
         pendingRelationDeleteButton = deleteButton;
         document.getElementById('deleteRelationMappingLabel').textContent =
-            `${relation.upstream_dataset}.${relation.upstream_column} → ${relation.downstream_dataset}.${relation.downstream_column}`;
+            `${relation.source}${relation.source_column ? '.' + relation.source_column : ''} —[ ${relation.relationship} ]→ ${relation.target}${relation.target_column ? '.' + relation.target_column : ''}`;
         document.getElementById('deleteRelationConfirmModal').classList.add('active');
         document.getElementById('confirmDeleteRelationBtn').focus();
     }
@@ -3954,18 +4317,19 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
         const saveButton = document.getElementById('saveRelationBtn');
         status.style.color = '#fca5a5';
         const payload = {
-            upstream_dataset: document.getElementById('upstreamDataset').value,
-            upstream_column: document.getElementById('upstreamColumn').value,
-            downstream_dataset: document.getElementById('downstreamDataset').value,
-            downstream_column: document.getElementById('downstreamColumn').value,
+            source: document.getElementById('sourceEntity').value,
+            source_column: document.getElementById('sourceColumn').value,
+            target: document.getElementById('targetEntity').value,
+            target_column: document.getElementById('targetColumn').value,
+            relationship: document.getElementById('relationshipType').value.trim(),
         };
 
-        if (!Object.values(payload).every(Boolean)) {
-            status.textContent = 'Select both datasets and both columns before saving.';
+        if (!payload.source || !payload.target || !payload.relationship) {
+            status.textContent = 'Select source and target objects and enter a relationship label.';
             return;
         }
-        if (payload.upstream_dataset === payload.downstream_dataset) {
-            status.textContent = 'Upstream and downstream datasets must be different.';
+        if (payload.source === payload.target) {
+            status.textContent = 'Source and target objects must be different.';
             return;
         }
 
@@ -3989,7 +4353,7 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
             status.textContent = error.message;
         } finally {
             saveButton.disabled = false;
-            saveButton.innerHTML = '<i class="fa-solid fa-link"></i> Add Relationship to Knowledge Graph';
+            saveButton.innerHTML = '<i class="fa-solid fa-check"></i> Confirm &amp; Add Relationship';
         }
     }
 

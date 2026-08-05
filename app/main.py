@@ -26,7 +26,11 @@ from app.services.graph_service import KnowledgeGraphService
 from app.services.data_service import DataService
 from app.services.pipeline_service import KnowledgeHarnessingPipeline
 from app.agent.tools import register_services
-from app.agent.agent_builder import build_agent_executor, process_chat_message
+from app.agent.agent_builder import (
+    build_agent_executor,
+    process_chat_message,
+    suggest_graph_relationship,
+)
 
 # Initialize Flask App
 app = Flask(__name__, template_folder=str(TEMPLATES_DIR))
@@ -381,7 +385,10 @@ def get_graph_data_api():
                 "is_custom": bool(attrs.get("is_custom", False)),
                 "upstream_column": attrs.get("upstream_column", ""),
                 "downstream_column": attrs.get("downstream_column", ""),
+                "source_column": attrs.get("source_column", ""),
+                "target_column": attrs.get("target_column", ""),
                 "column_mappings": attrs.get("column_mappings", []),
+                "manual_relationships": attrs.get("manual_relationships", []),
             })
 
         return jsonify({
@@ -447,36 +454,91 @@ def preview_datasource_api(filename: str):
         return jsonify({"success": False, "error": str(e)}), 500
 
 
+@app.route("/api/graph/relation/suggest", methods=["POST"])
+def suggest_graph_relation_api():
+    """Draft an editable relationship using bounded metadata and data samples."""
+    try:
+        data = request.get_json() or {}
+        source = str(data.get("source") or "").strip()
+        target = str(data.get("target") or "").strip()
+        if not source or not target:
+            return jsonify({
+                "success": False,
+                "error": "Select both a source and target object before requesting a suggestion.",
+            }), 400
+
+        context = graph_service.get_relation_suggestion_context(source, target)
+        suggestion = suggest_graph_relationship(context, executor=agent_executor)
+
+        def summarize_object(object_context):
+            return {
+                "id": object_context["id"],
+                "category": object_context["category"],
+                "column_count": len(object_context.get("columns", [])),
+                "sample_record_count": len(object_context.get("sample_records", [])),
+                "neighbor_count": len(object_context.get("neighboring_relationships", [])),
+            }
+
+        return jsonify({
+            "success": True,
+            "suggestion": suggestion,
+            "context_summary": {
+                "source": summarize_object(context["source"]),
+                "target": summarize_object(context["target"]),
+                "join_candidates_considered": len(context.get("join_candidates", [])),
+            },
+        })
+    except ValueError as error:
+        return jsonify({"success": False, "error": str(error)}), 400
+    except Exception as error:
+        print(f"[Relationship Suggestion Error]: {error}")
+        return jsonify({"success": False, "error": str(error)}), 500
+
+
 @app.route("/api/graph/relation", methods=["POST", "GET", "DELETE"])
 def add_graph_relation_api():
     """
-    List or save directional manual relationships between dataset columns.
+    List, save, or delete directional relationships between any graph objects.
+    Dataset endpoints may optionally include source/target columns.
     """
     try:
         if request.method == "GET":
             return jsonify({
                 "success": True,
                 "relations": graph_service.get_custom_relations(),
+                "entities": graph_service.get_relation_entity_catalog(),
             })
 
         data = request.get_json() or {}
-        upstream_dataset = str(data.get("upstream_dataset") or "").strip()
-        upstream_column = str(data.get("upstream_column") or "").strip()
-        downstream_dataset = str(data.get("downstream_dataset") or "").strip()
-        downstream_column = str(data.get("downstream_column") or "").strip()
+        source = str(data.get("source") or "").strip()
+        target = str(data.get("target") or "").strip()
+        relationship = str(data.get("relationship") or "").strip()
+        source_column = str(data.get("source_column") or "").strip()
+        target_column = str(data.get("target_column") or "").strip()
 
-        if not all([upstream_dataset, upstream_column, downstream_dataset, downstream_column]):
+        # Backwards-compatible parsing for the earlier dataset-only editor.
+        if not source and data.get("upstream_dataset"):
+            source = f"Dataset: {Path(str(data['upstream_dataset'])).name}"
+            source_column = str(data.get("upstream_column") or "").strip()
+        if not target and data.get("downstream_dataset"):
+            target = f"Dataset: {Path(str(data['downstream_dataset'])).name}"
+            target_column = str(data.get("downstream_column") or "").strip()
+        if not relationship and source and target:
+            relationship = "maps" if source_column or target_column else "related_to"
+
+        if not all([source, target, relationship]):
             return jsonify({
                 "success": False,
-                "error": "Upstream/downstream datasets and columns are all required.",
+                "error": "Source object, target object, and relationship label are required.",
             }), 400
 
         if request.method == "DELETE":
             deleted_relation = graph_service.delete_custom_relation(
-                upstream_dataset=upstream_dataset,
-                upstream_column=upstream_column,
-                downstream_dataset=downstream_dataset,
-                downstream_column=downstream_column,
+                source=source,
+                target=target,
+                relationship=relationship,
+                source_column=source_column,
+                target_column=target_column,
             )
             if deleted_relation is None:
                 return jsonify({
@@ -492,10 +554,11 @@ def add_graph_relation_api():
             })
 
         relation = graph_service.add_custom_relation(
-            upstream_dataset=upstream_dataset,
-            upstream_column=upstream_column,
-            downstream_dataset=downstream_dataset,
-            downstream_column=downstream_column,
+            source=source,
+            target=target,
+            relationship=relationship,
+            source_column=source_column,
+            target_column=target_column,
         )
 
         return jsonify({

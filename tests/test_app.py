@@ -16,7 +16,7 @@ from app.config import DATA_DIR
 from app.services.graph_service import KnowledgeGraphService
 from app.services.data_service import DataService
 from app.agent.tools import register_services
-from app.agent.agent_builder import process_chat_message
+from app.agent.agent_builder import process_chat_message, suggest_graph_relationship
 
 
 def run_tests():
@@ -45,6 +45,29 @@ def run_tests():
     business_res = ds.get_business_data("service")
     assert business_res["success"] is True
     print("[PASS] Business CSV datasets queried successfully.")
+
+    # Test grounded relationship suggestion context and local fallback.
+    catalog = kg.get_relation_entity_catalog()
+    datasets = [entity for entity in catalog if entity["category"] == "Dataset"]
+    join_pair = next(
+        (
+            (source, target)
+            for source in datasets
+            for target in datasets
+            if source["id"] != target["id"]
+            and set(source["columns"]) & set(target["columns"])
+        ),
+        None,
+    )
+    assert join_pair is not None
+    source, target = join_pair
+    suggestion_context = kg.get_relation_suggestion_context(source["id"], target["id"])
+    suggestion = suggest_graph_relationship(suggestion_context, executor=None)
+    assert suggestion["source_column"] in source["columns"]
+    assert suggestion["target_column"] in target["columns"]
+    assert suggestion_context["source"]["sample_records"]
+    assert suggestion_context["target"]["sample_records"]
+    print("[PASS] Grounded relationship context and editable join-column suggestion verified.")
 
     print("\n--- 2. Testing Agentic Workflows ---")
     

@@ -1,8 +1,16 @@
 [
   {
-    "upstream_dataset": "appointment_schedule.csv",
-    "upstream_column": "job_id",
-    "downstream_dataset": "boiler_master.csv",
-    "downstream_column": "customer_id"
+    "source": "Dataset: appointment_schedule.csv",
+    "target": "Dataset: boiler_master.csv",
+    "relationship": "maps",
+    "source_column": "job_id",
+    "target_column": "customer_id"
+  },
+  {
+    "source": "Dataset: appointment_schedule.csv",
+    "target": "Metric: Workload Hours",
+    "relationship": "calculates",
+    "source_column": "",
+    "target_column": ""
   }
 ]

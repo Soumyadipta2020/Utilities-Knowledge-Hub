@@ -3,7 +3,9 @@ Agent Builder Module for Utilities Knowledge Hub Chatbot.
 Constructs LangChain agent executor with system prompt and tools, plus deterministic fallback agent execution.
 """
 
+import json
 import os
+import re
 from typing import Any, Callable, Sequence
 
 try:
@@ -149,6 +151,159 @@ def build_agent_executor(
     except Exception as e:
         print(f"[AgentBuilder] Warning: Could not initialize OpenRouter ChatAgent ({e}). Using rule-based engine.")
         return None
+
+
+def _local_relation_suggestion(context: dict[str, Any]) -> dict[str, Any]:
+    """Create a grounded draft when the external model is unavailable."""
+    source = context["source"]
+    target = context["target"]
+    candidates = context.get("join_candidates", [])
+    source_category = source.get("category", "Entity")
+    target_category = target.get("category", "Entity")
+
+    pair_relationships = {
+        ("Domain Cluster", "Dataset"): "contains",
+        ("Dataset", "Business Metric"): "calculates",
+        ("Business Metric", "Dataset"): "derived_from",
+        ("Dataset", "Key Info Link"): "links_via",
+        ("Key Info Link", "Dataset"): "used_by",
+    }
+    relationship = pair_relationships.get((source_category, target_category), "related_to")
+    if source_category == "Dataset" and target_category == "Dataset":
+        relationship = "joins_to" if candidates else "feeds"
+
+    source_column = ""
+    target_column = ""
+    evidence = "Object metadata and existing graph neighbors suggest this direction."
+    confidence = 0.56
+    if candidates:
+        best = candidates[0]
+        source_column = best["source_column"]
+        target_column = best["target_column"]
+        evidence = best["reason"]
+        confidence = max(confidence, float(best["score"]))
+
+    if source_column and target_column:
+        join_description = (
+            f"Join {source['id']}.{source_column} to "
+            f"{target['id']}.{target_column}."
+        )
+    else:
+        join_description = (
+            "Create an object-level directed relationship; no grounded column pair "
+            "is available for both selected objects."
+        )
+
+    return {
+        "relationship": relationship,
+        "source_column": source_column,
+        "target_column": target_column,
+        "join_description": join_description,
+        "reasoning": evidence,
+        "confidence": round(min(confidence, 1.0), 2),
+        "used_ai": False,
+        "provider": "Local metadata analysis",
+        "warning": "AI model is not configured; this draft uses grounded local metadata analysis.",
+    }
+
+
+def _extract_suggestion_json(content: Any) -> dict[str, Any]:
+    """Extract the first JSON object from an OpenAI-compatible response."""
+    if isinstance(content, list):
+        content = "".join(
+            str(item.get("text", "")) if isinstance(item, dict) else str(item)
+            for item in content
+        )
+    if not isinstance(content, str):
+        raise ValueError("The AI response did not contain text.")
+
+    cleaned = content.strip()
+    cleaned = re.sub(r"^```(?:json)?\s*", "", cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r"\s*```$", "", cleaned)
+    try:
+        parsed = json.loads(cleaned)
+    except json.JSONDecodeError:
+        start = cleaned.find("{")
+        end = cleaned.rfind("}")
+        if start < 0 or end <= start:
+            raise ValueError("The AI response did not contain a JSON object.")
+        parsed = json.loads(cleaned[start:end + 1])
+    if not isinstance(parsed, dict):
+        raise ValueError("The AI response must be a JSON object.")
+    return parsed
+
+
+def suggest_graph_relationship(
+    context: dict[str, Any],
+    executor: Any = None,
+) -> dict[str, Any]:
+    """Draft and validate a directional graph relationship from bounded context."""
+    fallback = _local_relation_suggestion(context)
+    if executor is None:
+        return fallback
+
+    compact_context = json.dumps(context, ensure_ascii=False, default=str)
+    system_text = (
+        "You are a data lineage and knowledge-graph relationship analyst. "
+        "Suggest one grounded directed relationship from the supplied SOURCE to TARGET. "
+        "Use only columns, sample values, metadata, and graph neighbors present in the context. "
+        "Never invent a column. A column join is optional and is valid only when both objects expose columns. "
+        "The relationship label must describe SOURCE -> TARGET and use concise snake_case. "
+        "Return JSON only with keys: relationship, source_column, target_column, "
+        "join_description, reasoning, confidence. Confidence must be from 0 to 1."
+    )
+    user_text = (
+        "Analyze these selected graph objects and draft the most defensible relationship. "
+        "The locally ranked join candidates are supporting evidence, not a requirement.\n\n"
+        f"CONTEXT:\n{compact_context}"
+    )
+
+    try:
+        if HAS_LANGCHAIN and SystemMessage is not None and HumanMessage is not None:
+            response = executor.invoke([
+                SystemMessage(content=system_text),
+                HumanMessage(content=user_text),
+            ])
+        else:
+            response = executor.invoke(f"{system_text}\n\n{user_text}")
+        parsed = _extract_suggestion_json(getattr(response, "content", response))
+
+        raw_relationship = str(parsed.get("relationship") or fallback["relationship"]).strip().casefold()
+        relationship = re.sub(r"[^a-z0-9]+", "_", raw_relationship).strip("_")[:80]
+        if not relationship:
+            relationship = fallback["relationship"]
+
+        source_columns = set(context["source"].get("columns", []))
+        target_columns = set(context["target"].get("columns", []))
+        source_column = str(parsed.get("source_column") or "").strip()
+        target_column = str(parsed.get("target_column") or "").strip()
+        if source_column not in source_columns or target_column not in target_columns:
+            source_column = fallback["source_column"]
+            target_column = fallback["target_column"]
+
+        try:
+            confidence = float(parsed.get("confidence", fallback["confidence"]))
+        except (TypeError, ValueError):
+            confidence = fallback["confidence"]
+
+        return {
+            "relationship": relationship,
+            "source_column": source_column,
+            "target_column": target_column,
+            "join_description": str(parsed.get("join_description") or fallback["join_description"]).strip()[:500],
+            "reasoning": str(parsed.get("reasoning") or fallback["reasoning"]).strip()[:700],
+            "confidence": round(max(0.0, min(confidence, 1.0)), 2),
+            "used_ai": True,
+            "provider": "Configured AI model",
+            "warning": "",
+        }
+    except Exception as error:
+        print(f"[Relationship Suggestion] AI response failed; using local metadata analysis: {error}")
+        fallback["warning"] = (
+            "AI suggestion was unavailable, so a grounded local metadata draft was used: "
+            f"{str(error)[:180]}"
+        )
+        return fallback
 
 
 def _extract_recent_context(chat_history: Sequence[dict[str, str]] | None) -> dict[str, str]:
