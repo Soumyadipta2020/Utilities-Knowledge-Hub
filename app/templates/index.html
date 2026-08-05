@@ -1053,6 +1053,27 @@
     flex-direction: column;
     gap: 16px;
 }
+.btn-snippet-view {
+    background: rgba(34, 197, 94, 0.15);
+    border: 1px solid rgba(34, 197, 94, 0.4);
+    color: #4ade80;
+    font-size: 10.5px;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.2s ease;
+}
+.btn-snippet-view:hover {
+    background: rgba(34, 197, 94, 0.3);
+    border-color: #22c55e;
+    box-shadow: 0 0 10px rgba(34, 197, 94, 0.35);
+    transform: translateY(-1px);
+}
+
 .relation-header {
     display: flex; justify-content: space-between; align-items: center;
     border-bottom: 1px solid rgba(255,255,255,0.05);
@@ -1797,10 +1818,12 @@
 
     <!-- Main Chat View -->
     <main class="chat-container">
-        <header class="chat-header" style="border-bottom: none; padding-bottom: 4px;">
-            <div class="header-title">
-                <h2>Agentic Knowledge Hub</h2>
-                <p>Dataset Discovery • Business Lineage • SME Attribution • Automated Access Request Escalation</p>
+        <header class="chat-header" style="padding: 0 24px; border-bottom: 1px solid rgba(255,255,255,0.06); display: flex; justify-content: space-between; align-items: center; background: rgba(12, 12, 12, 0.95); backdrop-filter: blur(16px); flex-shrink: 0;">
+            <div class="nav-tabs" style="padding: 0; background: transparent; border-bottom: none; margin: 0;">
+                <div class="nav-tab active" onclick="switchMainTab(this, 'tab-conversation')">Conversation</div>
+                <div class="nav-tab" onclick="switchMainTab(this, 'tab-harnessing')">Domain Intelligence Sub-System Metrics</div>
+                <div class="nav-tab" onclick="switchMainTab(this, 'tab-storage')">Storage & Governance</div>
+                <div class="nav-tab" onclick="switchMainTab(this, 'tab-trust')">Trust Center</div>
             </div>
             <div class="status-indicator">
                 <span class="status-dot"></span>
@@ -1808,12 +1831,6 @@
             </div>
         </header>
 
-        <div class="nav-tabs">
-            <div class="nav-tab active" onclick="switchMainTab(this, 'tab-conversation')">Conversation</div>
-            <div class="nav-tab" onclick="switchMainTab(this, 'tab-harnessing')">Domain Intelligence Sub-System Metrics</div>
-            <div class="nav-tab" onclick="switchMainTab(this, 'tab-storage')">Storage & Governance</div>
-            <div class="nav-tab" onclick="switchMainTab(this, 'tab-trust')">Trust Center</div>
-        </div>
 
         <div id="tab-conversation" class="tab-content active">
         <!-- Message Window -->
@@ -1835,33 +1852,35 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
         <div class="chat-input-area">
             <!-- 1-Click Executive Demo Scenario Cards Bar -->
             <div id="scenarioCardsBar" style="padding-bottom: 12px; display: flex; gap: 10px; flex-shrink: 0; overflow-x: auto; transition: all 0.3s ease;">
-                <div onclick="runDemoScenario('Check telemetry metrics for grid_pressure_psi and boiler_flame_current_ua')" style="flex: 1; min-width: 190px; background: rgba(217, 102, 43, 0.1); border: 1px solid rgba(217, 102, 43, 0.3); border-radius: 8px; padding: 8px 12px; cursor: pointer; transition: all 0.2s ease;" onmouseover="this.style.borderColor='var(--accent-orange)'; this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='rgba(217, 102, 43, 0.3)'; this.style.transform='none'">
+                <div onclick="runDemoScenario('Check telemetry metrics for boiler_telemetry_logs and fault_codes datasets')" style="flex: 1; min-width: 190px; background: rgba(217, 102, 43, 0.1); border: 1px solid rgba(217, 102, 43, 0.3); border-radius: 8px; padding: 8px 12px; cursor: pointer; transition: all 0.2s ease;" onmouseover="this.style.borderColor='var(--accent-orange)'; this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='rgba(217, 102, 43, 0.3)'; this.style.transform='none'">
                     <div style="font-size: 10.5px; font-weight: 700; color: var(--accent-orange); display: flex; align-items: center; justify-content: space-between;">
                         <span>🛠️ SCENARIO 1</span>
-                        <span style="font-size: 8.5px; background: var(--accent-orange); color: #fff; padding: 2px 5px; border-radius: 4px; font-weight: 700;">Telemetry</span>
+                        <span style="font-size: 8.5px; background: var(--accent-orange); color: #fff; padding: 2px 5px; border-radius: 4px; font-weight: 700;">Azure & Databricks</span>
                     </div>
-                    <div style="font-size: 11.5px; font-weight: 600; color: #fff; margin-top: 3px;">Substation Fault Diagnostics</div>
-                    <div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">Inspect live pressure & flame telemetry</div>
+                    <div style="font-size: 11.5px; font-weight: 600; color: #fff; margin-top: 3px;">Boiler Telemetry Diagnostics</div>
+                    <div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">boiler_telemetry_logs & fault_codes</div>
                 </div>
 
-                <div onclick="runDemoScenario('Who is the SME owner for the Knowledge Graph and Substation manuals?')" style="flex: 1; min-width: 190px; background: rgba(192, 132, 252, 0.1); border: 1px solid rgba(192, 132, 252, 0.3); border-radius: 8px; padding: 8px 12px; cursor: pointer; transition: all 0.2s ease;" onmouseover="this.style.borderColor='#c084fc'; this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='rgba(192, 132, 252, 0.3)'; this.style.transform='none'">
+                <div onclick="runDemoScenario('Who is the SME data owner and data lineage for customer_master and inventory_and_van_stock datasets?')" style="flex: 1; min-width: 190px; background: rgba(192, 132, 252, 0.1); border: 1px solid rgba(192, 132, 252, 0.3); border-radius: 8px; padding: 8px 12px; cursor: pointer; transition: all 0.2s ease;" onmouseover="this.style.borderColor='#c084fc'; this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='rgba(192, 132, 252, 0.3)'; this.style.transform='none'">
                     <div style="font-size: 10.5px; font-weight: 700; color: #c084fc; display: flex; align-items: center; justify-content: space-between;">
                         <span>👤 SCENARIO 2</span>
-                        <span style="font-size: 8.5px; background: #c084fc; color: #000; padding: 2px 5px; border-radius: 4px; font-weight: 700;">Lineage</span>
+                        <span style="font-size: 8.5px; background: #c084fc; color: #000; padding: 2px 5px; border-radius: 4px; font-weight: 700;">Salesforce & SAP</span>
                     </div>
-                    <div style="font-size: 11.5px; font-weight: 600; color: #fff; margin-top: 3px;">SME & Lineage Attribution</div>
-                    <div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">Find Sarah Jenkins / David Ross</div>
+                    <div style="font-size: 11.5px; font-weight: 600; color: #fff; margin-top: 3px;">SME & Customer Lineage</div>
+                    <div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">customer_master & van_stock</div>
                 </div>
 
-                <div onclick="runDemoScenario('I need access to the Restricted Operational Telemetry dataset for Project Apollo.')" style="flex: 1; min-width: 190px; background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.3); border-radius: 8px; padding: 8px 12px; cursor: pointer; transition: all 0.2s ease;" onmouseover="this.style.borderColor='#22c55e'; this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='rgba(34, 197, 94, 0.3)'; this.style.transform='none'">
+                <div onclick="runDemoScenario('Please raise an IT access request ticket for engineer_availability_and_shifts and repair_history datasets')" style="flex: 1; min-width: 190px; background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.3); border-radius: 8px; padding: 8px 12px; cursor: pointer; transition: all 0.2s ease;" onmouseover="this.style.borderColor='#22c55e'; this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='rgba(34, 197, 94, 0.3)'; this.style.transform='none'">
                     <div style="font-size: 10.5px; font-weight: 700; color: #22c55e; display: flex; align-items: center; justify-content: space-between;">
                         <span>🔐 SCENARIO 3</span>
-                        <span style="font-size: 8.5px; background: #22c55e; color: #000; padding: 2px 5px; border-radius: 4px; font-weight: 700;">Automation</span>
+                        <span style="font-size: 8.5px; background: #22c55e; color: #000; padding: 2px 5px; border-radius: 4px; font-weight: 700;">Workday & SQL</span>
                     </div>
                     <div style="font-size: 11.5px; font-weight: 600; color: #fff; margin-top: 3px;">Automated Access Request</div>
-                    <div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">Entitlement check & ticket issue</div>
+                    <div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">engineer_shifts & repair_history</div>
                 </div>
             </div>
+
+
 
             <form class="input-form" onsubmit="handleSend(event)">
                 <input type="text" id="userInput" class="input-field" placeholder="Discover datasets, ask about data lineage, or request dataset access for your project..." required autocomplete="off" oninput="toggleScenarioCards()">
@@ -2744,7 +2763,12 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
 
                 <div class="manual-relation-grid">
                     <div class="relation-side-card upstream-card">
-                        <div class="relation-side-title"><span>1</span> Source / From</div>
+                        <div class="relation-side-title" style="display: flex; justify-content: space-between; align-items: center;">
+                            <div><span>1</span> Source / From</div>
+                            <button id="sourceViewSnippetBtn" type="button" class="btn-snippet-view" style="display: none;" onclick="openDatasetSnippetModal('source')">
+                                <i class="fa-solid fa-eye"></i> View Snippet
+                            </button>
+                        </div>
                         <label for="sourceCategory">Tier / object type</label>
                         <select id="sourceCategory" onchange="handleRelationCategoryChange('source')">
                             <option value="">Loading object types...</option>
@@ -2768,7 +2792,12 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
                     </div>
 
                     <div class="relation-side-card downstream-card">
-                        <div class="relation-side-title"><span>2</span> Target / To</div>
+                        <div class="relation-side-title" style="display: flex; justify-content: space-between; align-items: center;">
+                            <div><span>2</span> Target / To</div>
+                            <button id="targetViewSnippetBtn" type="button" class="btn-snippet-view" style="display: none;" onclick="openDatasetSnippetModal('target')">
+                                <i class="fa-solid fa-eye"></i> View Snippet
+                            </button>
+                        </div>
                         <label for="targetCategory">Tier / object type</label>
                         <select id="targetCategory" onchange="handleRelationCategoryChange('target')">
                             <option value="">Loading object types...</option>
@@ -2785,6 +2814,7 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
                         </div>
                     </div>
                 </div>
+
 
                 <div class="ai-relation-suggestion" aria-live="polite">
                     <div class="ai-relation-suggestion-header">
@@ -2847,7 +2877,28 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
             </div>
         </div>
 
+        <!-- Dataset Snippet Preview Modal Overlay -->
+        <div id="datasetSnippetModal" class="modal-overlay" onclick="closeDatasetSnippetModalFromBackdrop(event)" style="z-index: 10005;">
+            <div class="relation-modal" style="width: 840px; max-width: 95vw; max-height: 80vh; display: flex; flex-direction: column; background: #111; border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; padding: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.8);">
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 12px; margin-bottom: 14px;">
+                    <div>
+                        <h3 id="snippetModalTitle" style="font-size: 16px; font-weight: 600; color: #fff; margin: 0; display: flex; align-items: center; gap: 8px;">
+                            <i class="fa-solid fa-table-cells" style="color: var(--accent-orange);"></i> Dataset Snippet Preview
+                        </h3>
+                        <p id="snippetModalSubtitle" style="font-size: 11px; color: var(--text-muted); margin: 4px 0 0 0;">First 5 sample rows retrieved from enterprise storage provider</p>
+                    </div>
+                    <button type="button" onclick="closeDatasetSnippetModal()" style="background: transparent; border: none; color: var(--text-muted); font-size: 18px; cursor: pointer; padding: 4px 8px;">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                <div id="snippetModalBody" style="flex: 1; overflow: auto; background: rgba(15, 15, 15, 0.9); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; padding: 12px;">
+                    <div style="text-align: center; color: var(--text-muted); padding: 30px;">Loading dataset snippet...</div>
+                </div>
+            </div>
+        </div>
+
         <!-- In-app confirmation for deleting a manual relationship -->
+
         <div id="deleteRelationConfirmModal" class="manual-confirm-overlay" onclick="closeDeleteRelationConfirmFromBackdrop(event)">
             <div class="manual-confirm-dialog" role="alertdialog" aria-modal="true" aria-labelledby="deleteRelationConfirmTitle" aria-describedby="deleteRelationConfirmDescription">
                 <div class="manual-confirm-icon"><i class="fa-solid fa-trash-can"></i></div>
@@ -4370,7 +4421,9 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
 
     document.addEventListener('keydown', event => {
         if (event.key !== 'Escape') return;
-        if (document.getElementById('deleteRelationConfirmModal').classList.contains('active')) {
+        if (document.getElementById('datasetSnippetModal') && document.getElementById('datasetSnippetModal').classList.contains('active')) {
+            closeDatasetSnippetModal();
+        } else if (document.getElementById('deleteRelationConfirmModal').classList.contains('active')) {
             closeDeleteRelationConfirm();
         } else if (document.getElementById('relationModal').classList.contains('active')) {
             closeRelationModal();
@@ -4390,6 +4443,87 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
             option.textContent = item[labelKey];
             select.appendChild(option);
         });
+    }
+
+    function updateSnippetButtonVisibility(side) {
+        const categorySelect = document.getElementById(`${side}Category`);
+        const entitySelect = document.getElementById(`${side}Entity`);
+        const btn = document.getElementById(`${side}ViewSnippetBtn`);
+        if (!btn) return;
+
+        const isDataset = categorySelect && (categorySelect.value === 'Dataset' || categorySelect.value === '1');
+        const hasEntity = entitySelect && !!entitySelect.value;
+        if (isDataset && hasEntity) {
+            btn.style.display = 'inline-flex';
+        } else {
+            btn.style.display = 'none';
+        }
+    }
+
+    async function openDatasetSnippetModal(side) {
+        const entitySelect = document.getElementById(`${side}Entity`);
+        let rawDatasetName = entitySelect ? entitySelect.value : '';
+        if (!rawDatasetName) return;
+
+        const datasetName = rawDatasetName.replace(/^Dataset:\s*/i, '').trim();
+        const modal = document.getElementById('datasetSnippetModal');
+        const title = document.getElementById('snippetModalTitle');
+        const subtitle = document.getElementById('snippetModalSubtitle');
+        const body = document.getElementById('snippetModalBody');
+
+        title.innerHTML = `<i class="fa-solid fa-table-cells" style="color: var(--accent-orange);"></i> Dataset Snippet Preview — <span style="color: var(--accent-orange);">${datasetName}</span>`;
+        subtitle.textContent = `Live preview of sample records from enterprise storage`;
+        body.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 40px;"><i class="fa-solid fa-spinner fa-spin" style="font-size: 24px; color: var(--accent-orange); margin-bottom: 10px;"></i><br/>Fetching dataset snippet...</div>`;
+        modal.classList.add('active');
+
+        try {
+            const res = await fetch(`/api/dataset/sample/${encodeURIComponent(datasetName)}`);
+            const data = await res.json();
+            if (!res.ok || !data.success) throw new Error(data.error || 'Failed to fetch dataset snippet.');
+
+            const columns = data.columns || [];
+            const rows = data.rows || [];
+
+            if (rows.length === 0) {
+                body.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 30px;">Dataset <strong>${datasetName}</strong> is currently empty.</div>`;
+                return;
+            }
+
+            let tableHtml = `
+                <div style="margin-bottom: 10px; font-size: 11px; color: #4ade80; font-weight: 600; display: flex; justify-content: space-between; align-items: center;">
+                    <span><i class="fa-solid fa-check-circle"></i> Loaded ${data.total_preview_rows || rows.length} Sample Records (${columns.length} Fields)</span>
+                    <span style="background: rgba(255,255,255,0.06); padding: 3px 8px; border-radius: 4px; color: var(--text-muted); font-size: 10px;">Source: ${data.filename || datasetName}</span>
+                </div>
+                <div style="overflow-x: auto; border: 1px solid rgba(255,255,255,0.08); border-radius: 6px;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 11.5px; text-align: left;">
+                        <thead>
+                            <tr style="background: rgba(30, 30, 30, 0.95); border-bottom: 1px solid rgba(255,255,255,0.12);">
+                                ${columns.map(col => `<th style="padding: 10px 12px; font-weight: 600; color: var(--accent-orange); text-transform: uppercase; font-size: 10.5px; letter-spacing: 0.05em; border-right: 1px solid rgba(255,255,255,0.04);">${col}</th>`).join('')}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${rows.map((row, idx) => `
+                                <tr style="background: ${idx % 2 === 0 ? 'rgba(20, 20, 20, 0.6)' : 'rgba(12, 12, 12, 0.8)'}; border-bottom: 1px solid rgba(255,255,255,0.04); transition: background 0.15s ease;" onmouseover="this.style.background='rgba(217, 102, 43, 0.12)'" onmouseout="this.style.background='${idx % 2 === 0 ? 'rgba(20, 20, 20, 0.6)' : 'rgba(12, 12, 12, 0.8)'}'">
+                                    ${columns.map(col => `<td style="padding: 8px 12px; color: #e2e8f0; border-right: 1px solid rgba(255,255,255,0.03); white-space: nowrap;">${row[col] !== undefined && row[col] !== null ? row[col] : '-'}</td>`).join('')}
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            body.innerHTML = tableHtml;
+        } catch (err) {
+            body.innerHTML = `<div style="text-align: center; color: #fca5a5; padding: 30px;"><i class="fa-solid fa-triangle-exclamation" style="font-size: 24px; margin-bottom: 8px;"></i><br/>Could not load snippet: ${err.message}</div>`;
+        }
+    }
+
+    function closeDatasetSnippetModal() {
+        const modal = document.getElementById('datasetSnippetModal');
+        if (modal) modal.classList.remove('active');
+    }
+
+    function closeDatasetSnippetModalFromBackdrop(event) {
+        if (event.target === event.currentTarget) closeDatasetSnippetModal();
     }
 
     async function fetchRelationConfiguration() {
@@ -4446,6 +4580,7 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
         setSelectOptions(entitySelect, entities, 'value', 'label', `Select ${side} object`);
         if (entities.length > 0) entitySelect.value = entities[0].value;
         updateRelationColumns(side);
+        updateSnippetButtonVisibility(side);
     }
 
     function updateRelationColumns(side) {
@@ -4459,17 +4594,21 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
         const status = document.getElementById('relationFormStatus');
         status.style.color = '#fca5a5';
         status.textContent = '';
+        updateSnippetButtonVisibility(side);
     }
 
     function handleRelationCategoryChange(side) {
         updateRelationEntities(side);
+        updateSnippetButtonVisibility(side);
         scheduleRelationSuggestion();
     }
 
     function handleRelationEntityChange(side) {
         updateRelationColumns(side);
+        updateSnippetButtonVisibility(side);
         scheduleRelationSuggestion();
     }
+
 
     function markRelationSuggestionEdited() {
         relationFieldEditVersion += 1;

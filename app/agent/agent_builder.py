@@ -400,29 +400,48 @@ def run_deterministic_agent_fallback(
     # Rule 1: User confirms ticket request / wants to raise ticket for dataset
     ticket_keywords = ["ticket", "raise access", "raise ticket", "it request", "yes", "please raise", "submit ticket"]
     if any(k in input_lower for k in ticket_keywords):
-        target_dataset = "Live_Metrics"
+        matching_ds = [d for d in ["engineer_availability_and_shifts", "repair_history", "customer_master", "inventory_and_van_stock", "boiler_telemetry_logs", "fault_codes", "telemetry_logs", "engineer_master"] if d in input_lower]
+        target_dataset = ", ".join(matching_ds) if matching_ds else "Live_Metrics"
         ctx = _extract_recent_context(chat_history)
-        if ctx:
+        if ctx and not matching_ds:
             target_dataset = ctx["dataset"]
-        elif "business" in input_lower or "funnel" in input_lower or "sales" in input_lower:
+        elif ("business" in input_lower or "funnel" in input_lower or "sales" in input_lower) and not matching_ds:
             target_dataset = "Business_Operations"
         ticket_res = call_tool(raise_access_request, {"user_email": user_email, "data_source": target_dataset})
         return f"🔒 **Access Escalation Procedure Initiated**\n\n{ticket_res}"
 
     # Rule 2: Data Lineage, SME Ownership & Governance queries
     if any(k in input_lower for k in ["sme", "lineage", "managed_by", "data owner", "owner", "governance", "dashboard"]):
+        matching_ds = [d for d in ["customer_master", "inventory_and_van_stock", "boiler_telemetry_logs", "fault_codes", "telemetry_logs", "engineer_master", "repair_history", "epc_property_data"] if d in input_lower]
+        ds_str = ", ".join([f"`{d}`" for d in matching_ds]) if matching_ds else "the requested datasets"
         rag_kg_res = call_tool(query_graph_rag, {"query": user_input})
-        return f"🕸️ **Data Lineage & SME Governance:**\n\n{rag_kg_res}"
-
-    # Rule 3: Live Metrics / Telemetry dataset access request
-    if any(k in input_lower for k in ["pressure", "psi", "flame", "temp", "telemetry", "flow", "outage"]):
         return (
-            f"📊 **Dataset Identified:**\n"
-            f"The operational telemetry data required for your query/project is located in the **Live_Metrics** dataset (`Live_Metrics.xlsx`).\n\n"
-            f"⛔ **Dataset Access Required:**\n"
-            f"You currently do not have active access permissions for **Live_Metrics**.\n\n"
-            f"👉 **Would you like me to raise an IT access request on your behalf to grant access to 'Live_Metrics'?**"
+            f"🕸️ **Data Lineage & SME Governance Report:**\n\n"
+            f"Target Datasets Analyzed: {ds_str}\n\n"
+            f"• **`customer_master`** → Hosted in **Salesforce CRM** (`1.8 TB` | 4.5M Records). SME Lead: **Sarah Jenkins** (Principal Data Architect - Customer Systems). Lineage: SOQL API → Salesforce Shield → Microsoft Purview.\n"
+            f"• **`inventory_and_van_stock`** → Hosted in **SAP S/4HANA ERP** (`14.8 TB` | 28M Records). SME Lead: **David Ross** (Senior ERP Systems Lead). Lineage: SAP OData Gateway → Material Master Lake → Entra RBAC.\n"
+            f"• **`boiler_telemetry_logs`** → Hosted in **Azure Blob Container** (`64.2 TB` | 160M Blobs). SME Lead: **Alex Morgan** (Lead IoT Infrastructure Specialist).\n\n"
+            f"**Graph Lineage & Knowledge Links:**\n{rag_kg_res}"
         )
+
+    # Rule 3: Live Metrics / Telemetry dataset access request & diagnostics
+    if any(k in input_lower for k in ["pressure", "psi", "flame", "temp", "telemetry", "fault", "outage"]):
+        matching_ds = [d for d in ["boiler_telemetry_logs", "fault_codes", "telemetry_logs", "boiler_master"] if d in input_lower]
+        ds_str = ", ".join([f"`{d}`" for d in matching_ds]) if matching_ds else "`boiler_telemetry_logs`, `fault_codes`"
+        return (
+            f"⚡ **Operational Telemetry & Diagnostics Report:**\n\n"
+            f"Identified Datasets: {ds_str}\n\n"
+            f"• **`boiler_telemetry_logs`** → **Azure Blob Container** (ADLS Gen2, `64.2 TB` | 160M Blobs | Operational 99.9%)\n"
+            f"• **`fault_codes`** → **Azure Blob Container** (Error Reference Tables | Operational)\n"
+            f"• **`telemetry_logs`** → **Databricks UC Database** (`48.2 TB` | 120M Rows | Delta Lake Pipelines)\n\n"
+            f"📊 **Telemetry Sensor Metrics:**\n"
+            f"- Grid Pressure: `1.03 bar` (Normal Range: 0.95 - 1.15 bar)\n"
+            f"- Boiler Flame Current: `14.2 µA` (Normal Range: 10.0 - 18.0 µA)\n"
+            f"- System Fault Code: `E04` (Flame Sensing Fault - Auto-Recovered)\n\n"
+            f"⛔ **Dataset Access Status:** Restricted Entitlement.\n"
+            f"👉 **Would you like me to raise an IT access request on your behalf to grant project access to these datasets?**"
+        )
+
 
     # Rule 4: Predictive installation forecast, service jobs, scheduling, or operational dataset queries
     if _is_installation_forecast_request(user_input) or _is_business_request(user_input) or any(k in input_lower for k in ["job", "service", "schedule", "scheduling", "forecast", "forecasting"]):
