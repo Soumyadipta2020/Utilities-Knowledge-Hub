@@ -82,7 +82,7 @@ def run_tests():
     lineage_response = process_chat_message("Who is the SME for Sales_Funnel_Dataset?", "user@abc.com")
     print("\n[Lineage & SME Query Output]:")
     print(lineage_response)
-    assert "Data Lineage" in lineage_response or "Knowledge Graph" in lineage_response
+    assert "SME" in lineage_response or "Ownership" in lineage_response or "Governance" in lineage_response
     print("[PASS] ABC Enterprise Data Lineage & SME Attribution query verified.")
 
     # Test Multi-Turn Conversational Context Retention

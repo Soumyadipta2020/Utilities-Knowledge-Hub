@@ -130,22 +130,44 @@ def _history_fallback(user_input: str, chat_history: Sequence[dict[str, str]] | 
 
 
 
+def _is_explicit_access_check(message: str) -> bool:
+    """Identify if the user is explicitly asking to check access permissions or dataset entitlements."""
+    normalized = message.lower()
+    access_terms = (
+        "check access", "check my access", "do i have access", "check if i have access",
+        "do i have permission", "check permission", "check my permission", "can i access",
+        "what access do i have", "my access permissions", "am i allowed to access",
+        "check dataset access", "do i have dataset access", "has access"
+    )
+    return any(term in normalized for term in access_terms)
+
+
+def _extract_record_ids(user_input: str, chat_history: Sequence[dict[str, str]] | None = None) -> list[str]:
+    """Extract entity/record IDs (e.g., CUST00007, ENG014, JOB000001) from user input or recent chat history."""
+    found = re.findall(r"\b[A-Z]{3,8}[-\_]?\d{1,10}\b", user_input, flags=re.IGNORECASE)
+    if found:
+        return [f.upper() for f in found]
+    if chat_history:
+        for turn in reversed(list(chat_history)):
+            content = turn.get("content", "")
+            hist_found = re.findall(r"\b[A-Z]{3,8}[-\_]?\d{1,10}\b", content, flags=re.IGNORECASE)
+            if hist_found:
+                return [f.upper() for f in hist_found]
+    return []
+
+
 SYSTEM_PROMPT = """You are an AI Agentic Chatbot for the Enterprise Knowledge Hub.
-You assist teams kickstarting new projects with dataset discovery, data lineage, SME attribution, and automated IT access requests.
+You assist teams kickstarting new projects with dataset discovery, data lineage, SME attribution, operational insights, and knowledge lookup.
 
 CURRENT SESSION CONTEXT:
 - User Email: {user_email}
 
-CRITICAL RULES FOR DATA RETRIEVAL & AI ANSWER GENERATION:
-1. When responding to user questions about equipment troubleshooting, error codes, appliance models, or maintenance procedures:
-   - Use RAG tools (`search_knowledge_base_rag` or `query_graph_rag`) to retrieve documentation snippets and remedy facts.
-   - Synthesize the retrieved RAG context into a clear, accurate AI answer.
-2. CRITICAL RULES FOR DATASETS & ACCESS REQUESTS:
-   - Users do not have default access to raw enterprise operational datasets (`customer_master`, `boiler_telemetry_logs`, `engineer_availability_and_shifts`, `inventory_and_van_stock`, `repair_history`).
-   - When a user asks to access or view operational dataset records, inform them that access to the dataset is required for their project and ask if they would like you to raise an IT access request.
-3. IF the user requests or confirms raising an access ticket:
-   - Execute `raise_access_request(user_email='{user_email}', data_source='...')`.
-   - Return the generated ticket number and approval details to the user.
+CRITICAL RULES FOR DATA RETRIEVAL & ANSWER GENERATION:
+1. Always answer the user's questions directly and accurately using retrieved RAG context, CSV records, and knowledge graph facts.
+2. DO NOT inform the user that access is required or tell them they do not have access, UNLESS the user explicitly asks to check whether they have access or not.
+3. IF the user explicitly asks to check their access or requests to raise an access ticket (e.g., 'check access', 'do I have access', 'raise an access request'):
+   - Perform the access check or execute `raise_access_request(user_email='{user_email}', data_source='...')`.
+   - Return the access status or generated ticket details to the user.
 """
 
 
@@ -418,7 +440,7 @@ def run_deterministic_agent_fallback(
 ) -> str:
     """
     Fallback agent execution engine.
-    Implements deterministic routing for data lineage, public knowledge RAG, and IT access ticket escalation.
+    Implements deterministic routing for data lineage, public knowledge RAG, entity search, and IT access ticket escalation.
     """
     input_lower = user_input.lower()
 
@@ -428,15 +450,55 @@ def run_deterministic_agent_fallback(
             return tool_fn.invoke(args_dict)
         return tool_fn(**args_dict)
 
-    # Rule 0.4: Specific Entity Record Search & Customer Lookup (e.g. CUST00001, CUST00003, boiler type for customer)
+    # 1. Explicit request to raise an IT access ticket
+    ticket_keywords = [
+        "ticket", "raise access", "raise ticket", "it request", "please raise",
+        "submit ticket", "raise a request", "raise request", "request for me", "raise for me"
+    ]
+    if any(k in input_lower for k in ticket_keywords):
+        matching_ds = [d for d in ALL_KNOWN_DATASETS if d in input_lower]
+        if not matching_ds:
+            recent_ds = _extract_all_recent_datasets(chat_history)
+            if recent_ds:
+                matching_ds = recent_ds
+            else:
+                ctx = _extract_recent_context(chat_history)
+                matching_ds = [ctx.get("dataset", "customer_master")]
+
+        target_dataset = ", ".join(matching_ds)
+        ticket_res = call_tool(raise_access_request, {"user_email": user_email, "data_source": target_dataset})
+        return f"🔒 **Access Escalation Procedure Initiated**\n\n{ticket_res}"
+
+    # 2. Explicit access check question (ONLY check access if the user explicitly asks to check whether they have access)
+    if _is_explicit_access_check(user_input):
+        matching_ds = [d for d in ALL_KNOWN_DATASETS if d in input_lower]
+        if not matching_ds:
+            recent_ds = _extract_all_recent_datasets(chat_history)
+            if recent_ds:
+                matching_ds = recent_ds
+            else:
+                ctx = _extract_recent_context(chat_history)
+                matching_ds = [ctx.get("dataset", "customer_master")]
+        ds_str = ", ".join([f"`{d}`" for d in matching_ds])
+        return (
+            f"🔑 **Dataset Access & Entitlement Check (`{ds_str}`):**\n\n"
+            f"You are checking permissions for dataset(s): {ds_str}.\n"
+            f"• Current Entitlement Status: **Restricted Project Dataset**.\n"
+            f"• Your User Email: `{user_email}`\n\n"
+            f"👉 **Would you like me to raise an IT access request on your behalf to grant access to {ds_str}?**"
+        )
+
+    # 3. Specific Entity Record Search, Customer Lookup, Boiler & Service History Queries
     from app.agent.tools import _DATA_SERVICE
-    id_tokens = re.findall(r"\b[A-Z]{3,8}[-\_]?\d{1,10}\b", user_input, flags=re.IGNORECASE)
-    is_record_query = (len(id_tokens) > 0) or any(k in input_lower for k in ["boiler type", "which type", "type of boiler", "cust000", "eng00", "cust-"])
+    record_ids = _extract_record_ids(user_input, chat_history)
+    is_record_or_service_query = (len(record_ids) > 0) or any(k in input_lower for k in [
+        "boiler type", "which type", "type of boiler", "cust000", "eng00", "cust-",
+        "service", "serviced", "repair", "repaired", "visit", "appointment", "job"
+    ])
 
-    if is_record_query and _DATA_SERVICE:
-
-
-        search_res = _DATA_SERVICE.search_records(user_input)
+    if is_record_or_service_query and _DATA_SERVICE:
+        search_query = " ".join(record_ids) if record_ids else user_input
+        search_res = _DATA_SERVICE.search_records(search_query)
         if search_res.get("success") and search_res.get("results"):
             results = search_res["results"]
             by_dataset: dict[str, list[dict[str, Any]]] = {}
@@ -453,22 +515,46 @@ def run_deterministic_agent_fallback(
                     owner_str = f" *(SME Owner: {o['owner_name']} - {o['storage_provider']})*"
 
                 fields_list = []
-                for rec in recs[:2]:
+                for rec in recs[:3]:
                     formatted_fields = ", ".join([f"**{k}**: `{v}`" for k, v in rec.items()])
                     fields_list.append(f"  • {formatted_fields}")
 
                 card_blocks.append(f"📁 **Dataset: `{ds}`**{owner_str}:\n" + "\n".join(fields_list))
 
-            cust_id_display = ", ".join(set(id_tokens)) if id_tokens else "Requested Record"
+            cust_id_display = ", ".join(set(record_ids)) if record_ids else "Requested Record"
+
+            # Check if this query is asking about services, repairs, or visits
+            if any(k in input_lower for k in ["service", "serviced", "repair", "visit"]):
+                summary_lines = []
+                if "service_history" in by_dataset:
+                    for s in by_dataset["service_history"]:
+                        summary_lines.append(f"• **Service Date:** `{s.get('service_date', 'N/A')}` | **Type:** `{s.get('service_type', 'N/A')}` | **Parts Serviced:** `{s.get('parts_serviced', 'N/A')}`")
+                if "repair_history" in by_dataset:
+                    for r in by_dataset["repair_history"]:
+                        summary_lines.append(f"• **Repair Date:** `{r.get('repair_date', 'N/A')}` | **Type:** `{r.get('repair_type', 'N/A')}` | **Fault Code:** `{r.get('fault_code', 'N/A')}` | **Reason:** `{r.get('fault_reason', 'N/A')}`")
+                if "visit_outcome" in by_dataset:
+                    for v in by_dataset["visit_outcome"]:
+                        summary_lines.append(f"• **Visit Date:** `{v.get('visit_date', 'N/A')}` | **Status:** `{v.get('visit_status', 'N/A')}` | **Feedback:** `{v.get('customer_feedback', 'N/A')}`")
+                if "installation_history" in by_dataset:
+                    for i in by_dataset["installation_history"]:
+                        summary_lines.append(f"• **Installation Completed:** `{i.get('installation_date', 'N/A')}`")
+
+                if summary_lines:
+                    return (
+                        f"🛠️ **Service & Repair Records for `{cust_id_display}`:**\n\n"
+                        f"Here are the recorded service, repair, and visit details for customer/boiler `{cust_id_display}`:\n\n" +
+                        "\n".join(summary_lines) + "\n\n" +
+                        f"📋 **All Connected Dataset Records:**\n\n" +
+                        "\n\n".join(card_blocks)
+                    )
+
             return (
                 f"📊 **Enterprise Data Record Search Results (`{cust_id_display}`):**\n\n"
                 f"The following matching record(s) were retrieved across connected enterprise data storage platforms:\n\n" +
-                "\n\n".join(card_blocks) + "\n\n"
-                f"💡 *Tip: If you require raw database export permissions for your project, type 'raise a request' to initiate an automated IT access ticket.*"
+                "\n\n".join(card_blocks)
             )
 
-    # Rule 0.5: Explicit request for storage sources / storage systems
-
+    # 4. Data Storage Topology & Connected Sources
     storage_keywords = [
         "databricks", "onelake", "salesforce", "workday", "sap", "data lake",
         "azure container", "sql server", "aws s3", "data storage", "storage sources", "storage topology"
@@ -498,8 +584,7 @@ def run_deterministic_agent_fallback(
             "💡 *Tip: Navigate to the **Storage & Governance** tab in the top navigation bar to view interactive capacity meters, real-time health telemetry, and lineage security policies.*"
         )
 
-
-    # Rule 0.6: Data Lineage, SME Ownership & Governance queries (Highest priority for SME inquiries)
+    # 5. Data Lineage, SME Ownership & Governance queries
     if any(k in input_lower for k in ["sme", "lineage", "managed_by", "who is", "who owns", "data owner", "owner", "ownership", "governance", "contact", "steward"]):
         from pathlib import Path
         datasets_list = []
@@ -537,37 +622,13 @@ def run_deterministic_agent_fallback(
             f"🕸️ **Master Dataset Ownership & SME Governance Report:**\n\n"
             f"*Source Ownership Master File:* `data/dataset_ownership.json` | `data/dataset_ownership.csv`\n\n"
             f"Target Datasets Analyzed: {ds_str}\n\n" +
-            "\n\n".join(owner_lines) + f"\n\n"
-            f"⛔ **Dataset Access Required:** You currently do not have active access permissions for {ds_str}.\n\n"
-            f"👉 **Would you like me to raise an IT access request on your behalf to grant access to {ds_str}?**"
+            "\n\n".join(owner_lines)
         )
 
-
-
-    # Rule 1: User confirms ticket request / wants to raise ticket for dataset
-    ticket_keywords = [
-        "ticket", "raise access", "raise ticket", "it request", "yes", "please raise",
-        "submit ticket", "raise a request", "raise request", "grant access", "request for me", "raise for me"
-    ]
-    if any(k in input_lower for k in ticket_keywords):
-        matching_ds = [d for d in ALL_KNOWN_DATASETS if d in input_lower]
-        if not matching_ds:
-            recent_ds = _extract_all_recent_datasets(chat_history)
-            if recent_ds:
-                matching_ds = recent_ds
-            else:
-                ctx = _extract_recent_context(chat_history)
-                matching_ds = [ctx.get("dataset", "customer_master")]
-
-        target_dataset = ", ".join(matching_ds)
-        ticket_res = call_tool(raise_access_request, {"user_email": user_email, "data_source": target_dataset})
-        return f"🔒 **Access Escalation Procedure Initiated**\n\n{ticket_res}"
-
-
-    # Rule 0: Follow-up question asking where to get data / dataset access for previous turn topic
+    # 6. Follow-up dataset location / source questions
     followup_data_keywords = [
         "where", "how can i get", "get the data", "get data", "find the data",
-        "access the data", "access it", "where to get", "where is it", "source"
+        "access the data", "where to get", "where is it", "source"
     ]
     if any(k in input_lower for k in followup_data_keywords):
         if any(k in input_lower for k in ["customer", "contact", "account"]):
@@ -597,15 +658,12 @@ def run_deterministic_agent_fallback(
             topic = ctx.get("topic", "enterprise operational records")
 
         return (
-            f"📊 **Dataset Identified:**\n"
+            f"📊 **Dataset Location Info:**\n"
             f"The {topic} required for your query is located in the **{ds}** dataset (hosted in **{provider}**).\n\n"
-            f"⛔ **Dataset Access Required:**\n"
-            f"You currently do not have active access permissions for **{ds}**.\n\n"
-            f"👉 **Would you like me to raise an IT access request on your behalf to grant access to '{ds}'?**"
+            f"💡 *Tip: Ask 'Check my access' if you wish to verify dataset permissions.*"
         )
 
-    # Rule 3: Live Metrics / Telemetry dataset access request & diagnostics
-
+    # 7. Operational Telemetry & Diagnostics
     if any(k in input_lower for k in ["pressure", "psi", "flame", "temp", "telemetry", "fault", "outage"]):
         matching_ds = [d for d in ["boiler_telemetry_logs", "fault_codes", "telemetry_logs", "boiler_master"] if d in input_lower]
         ds_str = ", ".join([f"`{d}`" for d in matching_ds]) if matching_ds else "`boiler_telemetry_logs`, `fault_codes`"
@@ -618,13 +676,10 @@ def run_deterministic_agent_fallback(
             f"📊 **Telemetry Sensor Metrics:**\n"
             f"- Grid Pressure: `1.03 bar` (Normal Range: 0.95 - 1.15 bar)\n"
             f"- Boiler Flame Current: `14.2 µA` (Normal Range: 10.0 - 18.0 µA)\n"
-            f"- System Fault Code: `E04` (Flame Sensing Fault - Auto-Recovered)\n\n"
-            f"⛔ **Dataset Access Status:** Restricted Entitlement.\n"
-            f"👉 **Would you like me to raise an IT access request on your behalf to grant project access to these datasets?**"
+            f"- System Fault Code: `E04` (Flame Sensing Fault - Auto-Recovered)"
         )
 
-
-    # Rule 4: Predictive installation forecast, service jobs, scheduling, or operational dataset queries
+    # 8. Installation forecast, business operations, service jobs
     if _is_installation_forecast_request(user_input) or _is_business_request(user_input) or any(k in input_lower for k in ["job", "service", "schedule", "scheduling", "forecast", "forecasting"]):
         if _is_definition_request(user_input):
             def_res = call_tool(query_metric_definitions, {"query": user_input})
@@ -632,49 +687,43 @@ def run_deterministic_agent_fallback(
                 return f"📖 **Metric Definition (RAG Knowledge Base):**\n\n{def_res}"
             rag_kg_res = call_tool(query_graph_rag, {"query": user_input})
             return f"📖 **Knowledge Base Definition:**\n\n{rag_kg_res}"
-        return (
-            f"📊 **Dataset Identified:**\n"
-            f"The service job activity and appointment schedule required for your request is located in the **appointment_schedule** dataset (hosted in **Microsoft SQL Server**).\n\n"
-            f"⛔ **Dataset Access Required:**\n"
-            f"You currently do not have active access permissions for **appointment_schedule**.\n\n"
-            f"👉 **Would you like me to raise an IT access request on your behalf to grant access to 'appointment_schedule'?**"
-        )
+        if _is_installation_forecast_request(user_input) or "forecast" in input_lower:
+            forecast_res = call_tool(forecast_boiler_installations, {})
+            return f"📊 **Boiler Installation Pipeline Forecast:**\n\n{forecast_res}"
+        biz_res = call_tool(query_business_operations, {"query": user_input})
+        return f"📊 **Business & Service Operations Report:**\n\n{biz_res}"
 
-
-    # Rule 5: Standalone metric / term definitions
+    # 9. Metric / term definitions
     if _is_definition_request(user_input):
         def_res = call_tool(query_metric_definitions, {"query": user_input})
         if "No metric definition" not in def_res:
             return f"📖 **Metric Definition (RAG Knowledge Base):**\n\n{def_res}"
         rag_kg_res = call_tool(query_graph_rag, {"query": user_input})
         return f"📖 **Knowledge Base Definition:**\n\n{rag_kg_res}"
-        
-    # Rule 5.5: Data Sample / Glimpse requests
+
+    # 10. Data Sample / Glimpse requests
     if any(k in input_lower for k in ["glimpse", "sample", "show me the data", "preview", "some rows"]):
-        # Extract potential dataset name by removing common words
         clean_name = input_lower.replace("show me a glimpse of", "").replace("can i see a sample of", "").replace("what is", "").replace("the", "").replace("dataset", "").strip()
         sample_res = call_tool(query_dataset_sample, {"dataset_name": clean_name})
         if "Could not retrieve sample" not in sample_res:
             return sample_res
 
-    # Rule 6: Greetings & Capability questions
+    # 11. Greetings & Capability questions
     if _is_greeting(user_input) or _is_capability_question(user_input):
         return _capability_response()
 
-    # Rule 7: Knowledge Graph & RAG Troubleshooting Queries
+    # 12. Knowledge Graph & RAG Troubleshooting Queries
     rag_kg_res = call_tool(query_graph_rag, {"query": user_input})
     if rag_kg_res.startswith("No Graph-RAG information found"):
         return (
             "I couldn't find specific matching documentation in the enterprise knowledge base. "
-            "I can assist with boiler diagnostic models, fault codes, data lineage, SME attribution, and automated IT dataset access requests.\n\n"
+            "I can assist with boiler diagnostic models, fault codes, data lineage, SME attribution, and operational data questions.\n\n"
             "For example, ask: 'Who is the SME for customer_master?' or 'Why is my Worcester Bosch 4000 showing EA Error?'"
         )
 
-
     return (
         f"🤖 **AI Knowledge Retrieval (Graph-RAG):**\n\n"
-        f"{rag_kg_res}\n\n"
-        f"If you need dataset access for a new project, please let me know!"
+        f"{rag_kg_res}"
     )
 
 
@@ -693,8 +742,8 @@ def process_chat_message(
         messages: list[Any] = [
             SystemMessage(content=(
                 "You are a helpful utilities-company assistant. Answer naturally and directly, "
-                "using only the verified evidence supplied by the application. Never invent data, "
-                "and assist users to raise IT access requests when dataset access is required."
+                "using only the verified evidence supplied by the application. Never invent data. "
+                "Do NOT state that access is denied or required unless the user explicitly asks to check access."
             ))
         ]
         for turn in (chat_history or [])[-6:]:
