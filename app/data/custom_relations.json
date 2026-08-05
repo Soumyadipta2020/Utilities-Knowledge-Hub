@@ -1,0 +1,8 @@
+[
+  {
+    "upstream_dataset": "appointment_schedule.csv",
+    "upstream_column": "job_id",
+    "downstream_dataset": "boiler_master.csv",
+    "downstream_column": "customer_id"
+  }
+]

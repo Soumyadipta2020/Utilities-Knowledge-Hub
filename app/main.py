@@ -377,7 +377,11 @@ def get_graph_data_api():
                 "source": str(src),
                 "target": str(tgt),
                 "relation": relation,
-                "details": details
+                "details": details,
+                "is_custom": bool(attrs.get("is_custom", False)),
+                "upstream_column": attrs.get("upstream_column", ""),
+                "downstream_column": attrs.get("downstream_column", ""),
+                "column_mappings": attrs.get("column_mappings", []),
             })
 
         return jsonify({
@@ -394,28 +398,15 @@ def get_graph_data_api():
 @app.route("/api/datasets", methods=["GET"])
 def get_datasets_api():
     """
-    API endpoint to retrieve all available datasets.
-    Includes datasets defined in the Knowledge Graph and CSV files in data_dir.
+    Return the CSV dataset catalog and column schemas used by the manual
+    relationship editor.
     """
     try:
-        datasets = set()
-        
-        # 1. Get Datasets from graph categories
-        for node_id, attrs in graph_service.graph.nodes(data=True):
-            fallback_cat, _ = classify_node_category(node_id)
-            cat = attrs.get("category", fallback_cat)
-            if cat == "Dataset":
-                datasets.add(str(node_id))
-                
-        # 2. Get Datasets from CSV files
-        if DATA_DIR.exists():
-            for csv_file in DATA_DIR.glob("*.csv"):
-                datasets.add(csv_file.stem)
-
-
+        dataset_details = graph_service.get_dataset_catalog()
         return jsonify({
             "success": True,
-            "datasets": sorted(list(datasets))
+            "datasets": [dataset["name"] for dataset in dataset_details],
+            "dataset_details": dataset_details,
         })
     except Exception as e:
         print(f"[Datasets API Error]: {e}")
@@ -456,26 +447,66 @@ def preview_datasource_api(filename: str):
         return jsonify({"success": False, "error": str(e)}), 500
 
 
-@app.route("/api/graph/relation", methods=["POST"])
+@app.route("/api/graph/relation", methods=["POST", "GET", "DELETE"])
 def add_graph_relation_api():
     """
-    API endpoint to save a new relation between two datasets.
+    List or save directional manual relationships between dataset columns.
     """
     try:
+        if request.method == "GET":
+            return jsonify({
+                "success": True,
+                "relations": graph_service.get_custom_relations(),
+            })
+
         data = request.get_json() or {}
-        source = data.get("source")
-        target = data.get("target")
-        details = data.get("details", "")
+        upstream_dataset = str(data.get("upstream_dataset") or "").strip()
+        upstream_column = str(data.get("upstream_column") or "").strip()
+        downstream_dataset = str(data.get("downstream_dataset") or "").strip()
+        downstream_column = str(data.get("downstream_column") or "").strip()
 
-        if not source or not target:
-            return jsonify({"success": False, "error": "Source and target datasets are required."}), 400
+        if not all([upstream_dataset, upstream_column, downstream_dataset, downstream_column]):
+            return jsonify({
+                "success": False,
+                "error": "Upstream/downstream datasets and columns are all required.",
+            }), 400
 
-        graph_service.add_custom_relation(source, target, details)
+        if request.method == "DELETE":
+            deleted_relation = graph_service.delete_custom_relation(
+                upstream_dataset=upstream_dataset,
+                upstream_column=upstream_column,
+                downstream_dataset=downstream_dataset,
+                downstream_column=downstream_column,
+            )
+            if deleted_relation is None:
+                return jsonify({
+                    "success": False,
+                    "error": "Manual relationship was not found.",
+                }), 404
+            return jsonify({
+                "success": True,
+                "message": "Manual relationship deleted from the Knowledge Graph.",
+                "relation": deleted_relation,
+                "total_nodes": len(graph_service.graph.nodes),
+                "total_edges": len(graph_service.graph.edges),
+            })
+
+        relation = graph_service.add_custom_relation(
+            upstream_dataset=upstream_dataset,
+            upstream_column=upstream_column,
+            downstream_dataset=downstream_dataset,
+            downstream_column=downstream_column,
+        )
 
         return jsonify({
             "success": True,
-            "message": "Relation saved to Knowledge Graph."
+            "message": "Manual relationship saved to the Knowledge Graph.",
+            "relation": relation,
+            "total_nodes": len(graph_service.graph.nodes),
+            "total_edges": len(graph_service.graph.edges),
         })
+    except ValueError as e:
+        return jsonify({"success": False, "error": str(e)}), 400
     except Exception as e:
         print(f"[Add Relation Error]: {e}")
         return jsonify({"success": False, "error": str(e)}), 500

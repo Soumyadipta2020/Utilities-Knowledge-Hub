@@ -4,6 +4,7 @@ Loads entity-relationship data from Excel and provides graph traversal capabilit
 """
 
 from typing import Dict, List, Any, Optional, Tuple
+import json
 import networkx as nx
 import pandas as pd
 from pathlib import Path
@@ -19,6 +20,7 @@ class KnowledgeGraphService:
 
     def __init__(self, data_dir: Path):
         self.data_dir = data_dir
+        self.custom_relations_path = data_dir / "custom_relations.json"
         self.graph = nx.DiGraph()
         self.langchain_graph = NetworkxEntityGraph()
         self.df = None
@@ -145,20 +147,177 @@ class KnowledgeGraphService:
         except Exception as e:
             print(f"Error loading graph from CSVs: {e}")
 
-    def add_custom_relation(self, source: str, target: str, details: str) -> None:
-        """Add a custom relationship between two nodes (e.g. from UI) to the graph."""
-        relationship = "related_to"
-        
-        # Add to NetworkX
-        if not self.graph.has_node(source):
-            self.graph.add_node(source, entity_type="source", category="Dataset")
-        if not self.graph.has_node(target):
-            self.graph.add_node(target, entity_type="target", category="Dataset")
-            
-        self.graph.add_edge(source, target, relationship=relationship, details=details)
-        
-        # Add to LangChain graph
-        self.langchain_graph.add_triple(KnowledgeTriple(source, relationship, target))
+        # Manual relationships are re-applied after every graph rebuild so they
+        # remain visible after pipeline execution and application restarts.
+        for relation in self.get_custom_relations():
+            try:
+                self._apply_custom_relation(relation)
+            except ValueError as error:
+                print(f"Skipping invalid custom relation: {error}")
+
+    def get_dataset_catalog(self) -> List[Dict[str, Any]]:
+        """Return CSV dataset names and columns for the manual relation editor."""
+        catalog = []
+        for csv_file in sorted(self.data_dir.glob("*.csv"), key=lambda path: path.name.casefold()):
+            try:
+                columns = list(pd.read_csv(csv_file, nrows=0).columns)
+            except Exception:
+                columns = []
+            catalog.append({
+                "name": csv_file.stem,
+                "filename": csv_file.name,
+                "node_id": f"Dataset: {csv_file.name}",
+                "columns": columns,
+            })
+        return catalog
+
+    def get_custom_relations(self) -> List[Dict[str, str]]:
+        """Load persisted manual dataset relationships from disk."""
+        if not self.custom_relations_path.exists():
+            return []
+        try:
+            data = json.loads(self.custom_relations_path.read_text(encoding="utf-8"))
+            return data if isinstance(data, list) else []
+        except (OSError, json.JSONDecodeError) as error:
+            print(f"Could not load custom relations: {error}")
+            return []
+
+    def _save_custom_relations(self, relations: List[Dict[str, str]]) -> None:
+        """Atomically persist the complete manual relationship collection."""
+        temp_path = self.custom_relations_path.with_suffix(".json.tmp")
+        temp_path.write_text(json.dumps(relations, indent=2), encoding="utf-8")
+        temp_path.replace(self.custom_relations_path)
+
+    def _normalize_dataset(self, dataset_name: str) -> Tuple[str, str, List[str]]:
+        """Resolve a UI dataset value to its canonical CSV filename and graph node."""
+        normalized = str(dataset_name or "").strip()
+        if normalized.startswith("Dataset: "):
+            normalized = normalized.replace("Dataset: ", "", 1)
+        normalized = Path(normalized).name
+        if not normalized.lower().endswith(".csv"):
+            normalized += ".csv"
+
+        csv_path = self.data_dir / normalized
+        if not csv_path.exists():
+            raise ValueError(f"Dataset '{normalized}' does not exist.")
+
+        columns = list(pd.read_csv(csv_path, nrows=0).columns)
+        return normalized, f"Dataset: {normalized}", columns
+
+    def _apply_custom_relation(self, relation: Dict[str, str]) -> None:
+        """Apply one validated persisted relation to both graph representations."""
+        upstream_file, upstream_node, upstream_columns = self._normalize_dataset(relation.get("upstream_dataset", ""))
+        downstream_file, downstream_node, downstream_columns = self._normalize_dataset(relation.get("downstream_dataset", ""))
+        upstream_column = relation.get("upstream_column", "")
+        downstream_column = relation.get("downstream_column", "")
+
+        if upstream_column not in upstream_columns:
+            raise ValueError(f"Column '{upstream_column}' does not exist in '{upstream_file}'.")
+        if downstream_column not in downstream_columns:
+            raise ValueError(f"Column '{downstream_column}' does not exist in '{downstream_file}'.")
+
+        mapping = {
+            "upstream_column": upstream_column,
+            "downstream_column": downstream_column,
+        }
+        existing_edge = self.graph.get_edge_data(upstream_node, downstream_node) or {}
+        mappings = list(existing_edge.get("column_mappings", [])) if existing_edge.get("is_custom") else []
+        is_new_mapping = mapping not in mappings
+        if is_new_mapping:
+            mappings.append(mapping)
+
+        mapping_labels = [
+            f"{item['upstream_column']} → {item['downstream_column']}"
+            for item in mappings
+        ]
+        relationship = f"maps: {' | '.join(mapping_labels)}"
+        details = (
+            f"Manual column mappings from {upstream_file} to {downstream_file}: "
+            f"{', '.join(mapping_labels)}"
+        )
+        self.graph.add_edge(
+            upstream_node,
+            downstream_node,
+            relationship=relationship,
+            details=details,
+            is_custom=True,
+            upstream_column=upstream_column,
+            downstream_column=downstream_column,
+            column_mappings=mappings,
+        )
+        if is_new_mapping:
+            self.langchain_graph.add_triple(KnowledgeTriple(upstream_node, relationship, downstream_node))
+            if self.df is None:
+                self.df = pd.DataFrame(columns=["source", "relationship", "target", "details"])
+            self.df.loc[len(self.df)] = {
+                "source": upstream_node,
+                "relationship": relationship,
+                "target": downstream_node,
+                "details": details,
+            }
+
+    def add_custom_relation(
+        self,
+        upstream_dataset: str,
+        upstream_column: str,
+        downstream_dataset: str,
+        downstream_column: str,
+    ) -> Dict[str, str]:
+        """Validate, persist, and apply a directional table-column relationship."""
+        upstream_file, upstream_node, upstream_columns = self._normalize_dataset(upstream_dataset)
+        downstream_file, downstream_node, downstream_columns = self._normalize_dataset(downstream_dataset)
+
+        if upstream_node == downstream_node:
+            raise ValueError("Upstream and downstream datasets must be different.")
+        if upstream_column not in upstream_columns:
+            raise ValueError(f"Column '{upstream_column}' does not exist in '{upstream_file}'.")
+        if downstream_column not in downstream_columns:
+            raise ValueError(f"Column '{downstream_column}' does not exist in '{downstream_file}'.")
+
+        relation = {
+            "upstream_dataset": upstream_file,
+            "upstream_column": upstream_column,
+            "downstream_dataset": downstream_file,
+            "downstream_column": downstream_column,
+        }
+        relations = self.get_custom_relations()
+        if relation not in relations:
+            relations.append(relation)
+            self._save_custom_relations(relations)
+
+        self._apply_custom_relation(relation)
+        return {
+            **relation,
+            "source": upstream_node,
+            "target": downstream_node,
+            "relationship": f"maps: {upstream_column} → {downstream_column}",
+        }
+
+    def delete_custom_relation(
+        self,
+        upstream_dataset: str,
+        upstream_column: str,
+        downstream_dataset: str,
+        downstream_column: str,
+    ) -> Optional[Dict[str, str]]:
+        """Delete one exact manual mapping and rebuild the live graph."""
+        upstream_file, _, _ = self._normalize_dataset(upstream_dataset)
+        downstream_file, _, _ = self._normalize_dataset(downstream_dataset)
+        relation = {
+            "upstream_dataset": upstream_file,
+            "upstream_column": upstream_column,
+            "downstream_dataset": downstream_file,
+            "downstream_column": downstream_column,
+        }
+
+        relations = self.get_custom_relations()
+        if relation not in relations:
+            return None
+
+        relations.remove(relation)
+        self._save_custom_relations(relations)
+        self.load_graph()
+        return relation
 
     def find_matching_nodes(self, query: str) -> List[str]:
         """Case-insensitive search for node names matching a query string."""
