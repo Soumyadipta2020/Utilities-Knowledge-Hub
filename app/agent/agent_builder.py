@@ -87,14 +87,47 @@ def _is_installation_forecast_request(message: str) -> bool:
 
 
 def _history_fallback(user_input: str, chat_history: Sequence[dict[str, str]] | None) -> str | None:
-    """Keep a follow-up coherent if the external model is temporarily unavailable."""
-    follow_up_phrases = ("what happens after", "and then", "tell me more", "what about that", "what next")
-    if not chat_history or not any(phrase in user_input.casefold() for phrase in follow_up_phrases):
+    """Keep follow-ups and summary requests coherent when processing history."""
+    if not chat_history:
         return None
+
+    input_lower = user_input.casefold()
+    summary_phrases = ("summary", "summarize", "quick summary", "explain this", "recap", "tl;dr", "tldr", "overview", "short summary")
+    follow_up_phrases = ("what happens after", "and then", "tell me more", "what about that", "what next")
+
+    is_summary = any(phrase in input_lower for phrase in summary_phrases)
+    is_follow_up = any(phrase in input_lower for phrase in follow_up_phrases)
+
+    if not (is_summary or is_follow_up):
+        return None
+
+    last_assistant_turn = None
     for turn in reversed(chat_history):
         if turn.get("role") == "assistant" and turn.get("content", "").strip():
-            return f"Based on our previous answer:\n\n{turn['content']}"
-    return None
+            last_assistant_turn = turn.get("content", "").strip()
+            break
+
+    if not last_assistant_turn:
+        return None
+
+    if is_summary:
+        lines = [line.strip() for line in last_assistant_turn.split("\n") if line.strip()]
+        highlights = []
+        for l in lines:
+            if any(k in l for k in ["SME", "Owner", "Dataset", "Ticket", "Telemetry", "Hosted", "Access"]) and len(highlights) < 4:
+                highlights.append(f"• {l.lstrip('•*- ')}")
+
+        if not highlights:
+            highlights = [f"• {l.lstrip('•*- ')}" for l in lines[:3]]
+
+        return (
+            "📝 **Executive Summary (Previous Discussion):**\n\n" +
+            "\n".join(highlights) + "\n\n"
+            "💡 *Need further details or IT dataset access? Type 'raise a request' or ask any follow-up question.*"
+        )
+
+    return f"Based on our previous conversation turn:\n\n{last_assistant_turn}"
+
 
 
 SYSTEM_PROMPT = """You are an AI Agentic Chatbot for the Enterprise Knowledge Hub.
@@ -108,12 +141,13 @@ CRITICAL RULES FOR DATA RETRIEVAL & AI ANSWER GENERATION:
    - Use RAG tools (`search_knowledge_base_rag` or `query_graph_rag`) to retrieve documentation snippets and remedy facts.
    - Synthesize the retrieved RAG context into a clear, accurate AI answer.
 2. CRITICAL RULES FOR DATASETS & ACCESS REQUESTS:
-   - Users do not have default access to raw operational datasets (`Live_Metrics`, `Business_Operations`, `System_Logs`).
+   - Users do not have default access to raw enterprise operational datasets (`customer_master`, `boiler_telemetry_logs`, `engineer_availability_and_shifts`, `inventory_and_van_stock`, `repair_history`).
    - When a user asks to access or view operational dataset records, inform them that access to the dataset is required for their project and ask if they would like you to raise an IT access request.
 3. IF the user requests or confirms raising an access ticket:
    - Execute `raise_access_request(user_email='{user_email}', data_source='...')`.
    - Return the generated ticket number and approval details to the user.
 """
+
 
 
 def build_agent_executor(
@@ -306,6 +340,31 @@ def suggest_graph_relationship(
         return fallback
 
 
+ALL_KNOWN_DATASETS = [
+    "customer_master", "inventory_and_van_stock", "boiler_telemetry_logs",
+    "fault_codes", "telemetry_logs", "engineer_master", "repair_history",
+    "epc_property_data", "appointment_schedule", "engineer_availability_and_shifts",
+    "quotes_and_sales", "contact_center_interaction", "customer_holdings",
+    "engineer_skill", "parts_replaced", "product_and_warranty_info", "weather",
+    "service_history", "installation_history", "visit_outcome", "knowledge_base",
+    "business_rules", "boiler_master", "regional_demand_forecast", "regional_capacity_forecast"
+]
+
+def _extract_all_recent_datasets(chat_history: Sequence[dict[str, str]] | None) -> list[str]:
+    """Scan user messages in recent chat turns to extract mentioned dataset IDs."""
+    if not chat_history:
+        return []
+    found = []
+    for turn in reversed(list(chat_history)):
+        if turn.get("role") == "user":
+            text = turn.get("content", "").lower()
+            for ds in ALL_KNOWN_DATASETS:
+                if ds in text and ds not in found:
+                    found.append(ds)
+    return found
+
+
+
 def _extract_recent_context(chat_history: Sequence[dict[str, str]] | None) -> dict[str, str]:
     """Inspect previous turns in chat_history to extract active dataset/topic context."""
     if not chat_history:
@@ -315,19 +374,41 @@ def _extract_recent_context(chat_history: Sequence[dict[str, str]] | None) -> di
     for turn in reversed(list(chat_history)):
         combined_text += " " + turn.get("content", "").lower()
 
-    if any(k in combined_text for k in ["sales", "conversion", "lead", "appointment", "quote", "business_operations", "sales_funnel", "installation"]):
+    if any(k in combined_text for k in ["customer", "contact", "account", "quote", "sales", "holding", "customer_master"]):
         return {
-            "dataset": "Business_Operations",
-            "dataset_file": "Business_Operations.xlsx",
-            "topic": "sales conversion and commercial operational metrics"
+            "dataset": "customer_master",
+            "provider": "Salesforce CRM",
+            "topic": "customer account details and commercial relationship records"
         }
-    if any(k in combined_text for k in ["pressure", "psi", "flame", "temp", "telemetry", "live_metrics", "sensor"]):
+    if any(k in combined_text for k in ["engineer", "shift", "availability", "workforce", "skill", "pay", "engineer_availability"]):
         return {
-            "dataset": "Live_Metrics",
-            "dataset_file": "Live_Metrics.xlsx",
-            "topic": "live telemetry and grid pressure metrics"
+            "dataset": "engineer_availability_and_shifts",
+            "provider": "Workday HCM & Finance",
+            "topic": "engineer shift schedules and workforce availability metrics"
         }
-    return {}
+    if any(k in combined_text for k in ["pressure", "psi", "flame", "temp", "telemetry", "sensor", "boiler", "fault"]):
+        return {
+            "dataset": "boiler_telemetry_logs",
+            "provider": "Azure Blob Container",
+            "topic": "boiler telemetry readings and IoT status codes"
+        }
+    if any(k in combined_text for k in ["inventory", "van", "stock", "parts", "replaced"]):
+        return {
+            "dataset": "inventory_and_van_stock",
+            "provider": "SAP S/4HANA ERP",
+            "topic": "van inventory stock and replaced appliance parts"
+        }
+    if any(k in combined_text for k in ["repair", "appointment", "visit", "schedule"]):
+        return {
+            "dataset": "appointment_schedule",
+            "provider": "Microsoft SQL Server",
+            "topic": "engineer appointment schedules and repair visit outcomes"
+        }
+    return {
+        "dataset": "customer_master",
+        "provider": "Salesforce CRM",
+        "topic": "enterprise operational records"
+    }
 
 
 def run_deterministic_agent_fallback(
@@ -347,7 +428,47 @@ def run_deterministic_agent_fallback(
             return tool_fn.invoke(args_dict)
         return tool_fn(**args_dict)
 
+    # Rule 0.4: Specific Entity Record Search & Customer Lookup (e.g. CUST00001, CUST00003, boiler type for customer)
+    from app.agent.tools import _DATA_SERVICE
+    id_tokens = re.findall(r"\b[A-Z]{3,8}[-\_]?\d{1,10}\b", user_input, flags=re.IGNORECASE)
+    is_record_query = (len(id_tokens) > 0) or any(k in input_lower for k in ["boiler type", "which type", "type of boiler", "cust000", "eng00", "cust-"])
+
+    if is_record_query and _DATA_SERVICE:
+
+
+        search_res = _DATA_SERVICE.search_records(user_input)
+        if search_res.get("success") and search_res.get("results"):
+            results = search_res["results"]
+            by_dataset: dict[str, list[dict[str, Any]]] = {}
+            for r in results:
+                ds = r.pop("_dataset")
+                by_dataset.setdefault(ds, []).append(r)
+
+            card_blocks = []
+            for ds, recs in by_dataset.items():
+                owner_info = _DATA_SERVICE.get_dataset_ownership(ds)
+                owner_str = ""
+                if owner_info.get("success") and "ownership" in owner_info:
+                    o = owner_info["ownership"]
+                    owner_str = f" *(SME Owner: {o['owner_name']} - {o['storage_provider']})*"
+
+                fields_list = []
+                for rec in recs[:2]:
+                    formatted_fields = ", ".join([f"**{k}**: `{v}`" for k, v in rec.items()])
+                    fields_list.append(f"  • {formatted_fields}")
+
+                card_blocks.append(f"📁 **Dataset: `{ds}`**{owner_str}:\n" + "\n".join(fields_list))
+
+            cust_id_display = ", ".join(set(id_tokens)) if id_tokens else "Requested Record"
+            return (
+                f"📊 **Enterprise Data Record Search Results (`{cust_id_display}`):**\n\n"
+                f"The following matching record(s) were retrieved across connected enterprise data storage platforms:\n\n" +
+                "\n\n".join(card_blocks) + "\n\n"
+                f"💡 *Tip: If you require raw database export permissions for your project, type 'raise a request' to initiate an automated IT access ticket.*"
+            )
+
     # Rule 0.5: Explicit request for storage sources / storage systems
+
     storage_keywords = [
         "databricks", "onelake", "salesforce", "workday", "sap", "data lake",
         "azure container", "sql server", "aws s3", "data storage", "storage sources", "storage topology"
@@ -378,53 +499,113 @@ def run_deterministic_agent_fallback(
         )
 
 
-    # Rule 0: Follow-up question asking where to get data / dataset access for previous turn topic
-    followup_data_keywords = [
-        "where", "how can i get", "get the data", "get data", "find the data",
-        "access the data", "access it", "where to get", "where is it", "source", "dataset"
-    ]
-    if any(k in input_lower for k in followup_data_keywords):
-        ctx = _extract_recent_context(chat_history)
-        if ctx:
-            ds = ctx["dataset"]
-            file_name = ctx["dataset_file"]
-            topic = ctx["topic"]
-            return (
-                f"📊 **Dataset Identified:**\n"
-                f"The {topic} discussed in our previous turn is located in the **{ds}** dataset (`{file_name}`).\n\n"
-                f"⛔ **Dataset Access Required:**\n"
-                f"You currently do not have active access permissions for **{ds}**.\n\n"
-                f"👉 **Would you like me to raise an IT access request on your behalf to grant access to '{ds}'?**"
-            )
+    # Rule 0.6: Data Lineage, SME Ownership & Governance queries (Highest priority for SME inquiries)
+    if any(k in input_lower for k in ["sme", "lineage", "managed_by", "who is", "who owns", "data owner", "owner", "ownership", "governance", "contact", "steward"]):
+        from pathlib import Path
+        datasets_list = []
+        json_path = Path("data/dataset_ownership.json")
+        if json_path.exists():
+            try:
+                with open(json_path, "r", encoding="utf-8") as f:
+                    datasets_list = json.load(f).get("datasets", [])
+            except Exception:
+                pass
+
+        matching_ds = [d for d in ALL_KNOWN_DATASETS if d in input_lower]
+        if not matching_ds:
+            matching_ds = ["customer_master", "inventory_and_van_stock"]
+
+        owner_lines = []
+        for ds in matching_ds:
+            match = next((item for item in datasets_list if item.get("dataset_id") == ds), None)
+            if match:
+                owner_lines.append(
+                    f"• **`{match['dataset_id']}`** ({match['dataset_name']}) → Hosted in **{match['storage_provider']}** (`{match['storage_type']}`).\n"
+                    f"  👤 **SME Data Owner:** **{match['owner_name']}** ({match['owner_role']})\n"
+                    f"  📧 **Contact Email:** `{match['owner_email']}` | **Department:** *{match['department']}*\n"
+                    f"  🛡️ **Governance Tier:** `{match['governance_classification']}` | **Data Steward:** {match['data_steward']}"
+                )
+
+        if not owner_lines:
+            owner_lines = [
+                "• **`customer_master`** → Hosted in **Salesforce CRM**. SME Owner: **Sarah Jenkins** (Principal Data Architect - Customer Systems, `sarah.jenkins@utilities.co.uk`).",
+                "• **`inventory_and_van_stock`** → Hosted in **SAP S/4HANA ERP**. SME Owner: **David Ross** (Senior ERP Operations Lead, `david.ross@utilities.co.uk`)."
+            ]
+
+        ds_str = ", ".join([f"`{d}`" for d in matching_ds])
+        return (
+            f"🕸️ **Master Dataset Ownership & SME Governance Report:**\n\n"
+            f"*Source Ownership Master File:* `data/dataset_ownership.json` | `data/dataset_ownership.csv`\n\n"
+            f"Target Datasets Analyzed: {ds_str}\n\n" +
+            "\n\n".join(owner_lines) + f"\n\n"
+            f"⛔ **Dataset Access Required:** You currently do not have active access permissions for {ds_str}.\n\n"
+            f"👉 **Would you like me to raise an IT access request on your behalf to grant access to {ds_str}?**"
+        )
+
+
 
     # Rule 1: User confirms ticket request / wants to raise ticket for dataset
-    ticket_keywords = ["ticket", "raise access", "raise ticket", "it request", "yes", "please raise", "submit ticket"]
+    ticket_keywords = [
+        "ticket", "raise access", "raise ticket", "it request", "yes", "please raise",
+        "submit ticket", "raise a request", "raise request", "grant access", "request for me", "raise for me"
+    ]
     if any(k in input_lower for k in ticket_keywords):
-        matching_ds = [d for d in ["engineer_availability_and_shifts", "repair_history", "customer_master", "inventory_and_van_stock", "boiler_telemetry_logs", "fault_codes", "telemetry_logs", "engineer_master"] if d in input_lower]
-        target_dataset = ", ".join(matching_ds) if matching_ds else "Live_Metrics"
-        ctx = _extract_recent_context(chat_history)
-        if ctx and not matching_ds:
-            target_dataset = ctx["dataset"]
-        elif ("business" in input_lower or "funnel" in input_lower or "sales" in input_lower) and not matching_ds:
-            target_dataset = "Business_Operations"
+        matching_ds = [d for d in ALL_KNOWN_DATASETS if d in input_lower]
+        if not matching_ds:
+            recent_ds = _extract_all_recent_datasets(chat_history)
+            if recent_ds:
+                matching_ds = recent_ds
+            else:
+                ctx = _extract_recent_context(chat_history)
+                matching_ds = [ctx.get("dataset", "customer_master")]
+
+        target_dataset = ", ".join(matching_ds)
         ticket_res = call_tool(raise_access_request, {"user_email": user_email, "data_source": target_dataset})
         return f"🔒 **Access Escalation Procedure Initiated**\n\n{ticket_res}"
 
-    # Rule 2: Data Lineage, SME Ownership & Governance queries
-    if any(k in input_lower for k in ["sme", "lineage", "managed_by", "data owner", "owner", "governance", "dashboard"]):
-        matching_ds = [d for d in ["customer_master", "inventory_and_van_stock", "boiler_telemetry_logs", "fault_codes", "telemetry_logs", "engineer_master", "repair_history", "epc_property_data"] if d in input_lower]
-        ds_str = ", ".join([f"`{d}`" for d in matching_ds]) if matching_ds else "the requested datasets"
-        rag_kg_res = call_tool(query_graph_rag, {"query": user_input})
+
+    # Rule 0: Follow-up question asking where to get data / dataset access for previous turn topic
+    followup_data_keywords = [
+        "where", "how can i get", "get the data", "get data", "find the data",
+        "access the data", "access it", "where to get", "where is it", "source"
+    ]
+    if any(k in input_lower for k in followup_data_keywords):
+        if any(k in input_lower for k in ["customer", "contact", "account"]):
+            ds = "customer_master"
+            provider = "Salesforce CRM"
+            topic = "customer account details and commercial contacts"
+        elif any(k in input_lower for k in ["engineer", "shift", "availability", "workforce"]):
+            ds = "engineer_availability_and_shifts"
+            provider = "Workday HCM & Finance"
+            topic = "engineer shift schedules and workforce availability"
+        elif any(k in input_lower for k in ["inventory", "stock", "parts", "van"]):
+            ds = "inventory_and_van_stock"
+            provider = "SAP S/4HANA ERP"
+            topic = "van inventory stock and appliance parts"
+        elif any(k in input_lower for k in ["pressure", "flame", "telemetry", "sensor", "boiler"]):
+            ds = "boiler_telemetry_logs"
+            provider = "Azure Blob Container"
+            topic = "boiler telemetry readings and IoT sensor logs"
+        elif any(k in input_lower for k in ["appointment", "repair", "visit"]):
+            ds = "appointment_schedule"
+            provider = "Microsoft SQL Server"
+            topic = "engineer appointment schedules and repair outcomes"
+        else:
+            ctx = _extract_recent_context(chat_history)
+            ds = ctx.get("dataset", "customer_master")
+            provider = ctx.get("provider", "Salesforce CRM")
+            topic = ctx.get("topic", "enterprise operational records")
+
         return (
-            f"🕸️ **Data Lineage & SME Governance Report:**\n\n"
-            f"Target Datasets Analyzed: {ds_str}\n\n"
-            f"• **`customer_master`** → Hosted in **Salesforce CRM** (`1.8 TB` | 4.5M Records). SME Lead: **Sarah Jenkins** (Principal Data Architect - Customer Systems). Lineage: SOQL API → Salesforce Shield → Microsoft Purview.\n"
-            f"• **`inventory_and_van_stock`** → Hosted in **SAP S/4HANA ERP** (`14.8 TB` | 28M Records). SME Lead: **David Ross** (Senior ERP Systems Lead). Lineage: SAP OData Gateway → Material Master Lake → Entra RBAC.\n"
-            f"• **`boiler_telemetry_logs`** → Hosted in **Azure Blob Container** (`64.2 TB` | 160M Blobs). SME Lead: **Alex Morgan** (Lead IoT Infrastructure Specialist).\n\n"
-            f"**Graph Lineage & Knowledge Links:**\n{rag_kg_res}"
+            f"📊 **Dataset Identified:**\n"
+            f"The {topic} required for your query is located in the **{ds}** dataset (hosted in **{provider}**).\n\n"
+            f"⛔ **Dataset Access Required:**\n"
+            f"You currently do not have active access permissions for **{ds}**.\n\n"
+            f"👉 **Would you like me to raise an IT access request on your behalf to grant access to '{ds}'?**"
         )
 
     # Rule 3: Live Metrics / Telemetry dataset access request & diagnostics
+
     if any(k in input_lower for k in ["pressure", "psi", "flame", "temp", "telemetry", "fault", "outage"]):
         matching_ds = [d for d in ["boiler_telemetry_logs", "fault_codes", "telemetry_logs", "boiler_master"] if d in input_lower]
         ds_str = ", ".join([f"`{d}`" for d in matching_ds]) if matching_ds else "`boiler_telemetry_logs`, `fault_codes`"
@@ -453,11 +634,12 @@ def run_deterministic_agent_fallback(
             return f"📖 **Knowledge Base Definition:**\n\n{rag_kg_res}"
         return (
             f"📊 **Dataset Identified:**\n"
-            f"The service job activity and commercial operational data required for your query/project is located in the **Business_Operations** dataset (`Business_Operations.xlsx`).\n\n"
+            f"The service job activity and appointment schedule required for your request is located in the **appointment_schedule** dataset (hosted in **Microsoft SQL Server**).\n\n"
             f"⛔ **Dataset Access Required:**\n"
-            f"You currently do not have active access permissions for **Business_Operations**.\n\n"
-            f"👉 **Would you like me to raise an IT access request on your behalf to grant access to 'Business_Operations'?**"
+            f"You currently do not have active access permissions for **appointment_schedule**.\n\n"
+            f"👉 **Would you like me to raise an IT access request on your behalf to grant access to 'appointment_schedule'?**"
         )
+
 
     # Rule 5: Standalone metric / term definitions
     if _is_definition_request(user_input):
@@ -483,10 +665,11 @@ def run_deterministic_agent_fallback(
     rag_kg_res = call_tool(query_graph_rag, {"query": user_input})
     if rag_kg_res.startswith("No Graph-RAG information found"):
         return (
-            "I couldn't find that in the enterprise knowledge base. I can help with boiler "
-            "models, fault codes, repair components, data lineage, SMEs, and dataset access requests.\n\n"
-            "For example, ask: 'Who is the SME for Sales_Funnel_Dataset?' or 'Why is my Worcester Bosch 4000 showing EA Error?'"
+            "I couldn't find specific matching documentation in the enterprise knowledge base. "
+            "I can assist with boiler diagnostic models, fault codes, data lineage, SME attribution, and automated IT dataset access requests.\n\n"
+            "For example, ask: 'Who is the SME for customer_master?' or 'Why is my Worcester Bosch 4000 showing EA Error?'"
         )
+
 
     return (
         f"🤖 **AI Knowledge Retrieval (Graph-RAG):**\n\n"

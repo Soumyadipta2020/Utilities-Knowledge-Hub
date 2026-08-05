@@ -557,6 +557,21 @@ def get_dataset_snippet_api(dataset_name: str):
         return jsonify({"success": False, "error": str(e)}), 500
 
 
+@app.route("/api/dataset/ownership", methods=["GET"])
+@app.route("/api/dataset/ownership/<path:dataset_name>", methods=["GET"])
+def get_dataset_ownership_api(dataset_name: str | None = None):
+    """
+    API endpoint to retrieve dataset ownership master file records.
+    Returns all dataset owners if dataset_name is omitted, or specific owner metadata.
+    """
+    try:
+        res = data_service.get_dataset_ownership(dataset_name)
+        return jsonify(res)
+    except Exception as e:
+        print(f"[Dataset Ownership API Error]: {e}")
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
 STORAGE_PROVIDERS_DATA = [
     {
         "id": "databricks_uc",

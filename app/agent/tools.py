@@ -135,8 +135,7 @@ def search_knowledge_base_rag(query: str) -> str:
 @tool
 def query_graph_rag(query: str) -> str:
     """
-    Combined Graph-RAG Search powered by LangChain NetworkxEntityGraph.
-    Performs RAG context retrieval AND Knowledge Graph path traversal together.
+    Hybrid RAG and Knowledge Graph Traversal search engine.
     Use this tool for complex queries requiring document context snippets, relationship graph traversal, and LangChain knowledge triples.
     """
     if _GRAPH_SERVICE is None:
@@ -150,25 +149,32 @@ def query_graph_rag(query: str) -> str:
     output_parts = []
     if docs:
         doc_str = "\n".join([f"  • {d['content']}" for d in docs])
-        output_parts.append(f"📄 RAG Document Snippets:\n{doc_str}")
+        output_parts.append(f"📄 Knowledge Documentation Context:\n{doc_str}")
 
     if traversals:
-        graph_strs = []
+        clean_paths = []
         for t in traversals:
             paths = t.get("formatted_paths", [])
-            if paths:
-                graph_strs.append(f"Entity '{t['matched_entity']}':\n  " + "\n  ".join(paths))
-        if graph_strs:
-            output_parts.append("🕸️ Knowledge Graph Traversal Paths:\n" + "\n\n".join(graph_strs))
+            for p in paths:
+                clean_p = p.replace("[", "").replace("]", "").replace(".csv", "")
+                if "-->" in clean_p or "via:" in clean_p:
+                    clean_paths.append(f"  • {clean_p}")
+        if clean_paths:
+            output_parts.append("🕸️ Knowledge Graph Lineage Connections:\n" + "\n".join(clean_paths[:5]))
 
     if langchain_facts:
-        lc_str = "\n".join([f"  • {fact}" for fact in langchain_facts])
-        output_parts.append(f"🧬 LangChain NetworkxEntityGraph Knowledge Triples:\n{lc_str}")
+        clean_triples = []
+        for fact in langchain_facts:
+            clean_f = fact.replace("[", "").replace("]", "").replace(".csv", "")
+            clean_triples.append(f"  • {clean_f}")
+        if clean_triples:
+            output_parts.append("🧬 Graph Entity Relationships:\n" + "\n".join(clean_triples[:5]))
 
     if not output_parts:
         return f"No Graph-RAG information found for '{query}'."
 
     return "\n\n".join(output_parts)
+
 
 
 @tool
