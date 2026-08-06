@@ -22,7 +22,7 @@ SECRET_KEY = os.getenv("SECRET_KEY", "utilities-knowledge-hub-secret-key-2026")
 
 # OpenRouter / LLM Settings
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", os.getenv("OPENAI_API_KEY", ""))
-OPENROUTER_MODEL_NAME = os.getenv("OPENROUTER_MODEL_NAME", os.getenv("LLM_MODEL", "openai/gpt-4o-mini"))
+OPENROUTER_MODEL_NAME = os.getenv("OPENROUTER_MODEL_NAME", os.getenv("LLM_MODEL", "google/gemma-4-26b-a4b-it:free"))
 OPENROUTER_BASE_URL = os.getenv("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1")
 
 # Legacy aliases for backwards compatibility

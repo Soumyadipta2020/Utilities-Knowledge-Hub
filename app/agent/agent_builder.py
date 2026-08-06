@@ -569,6 +569,8 @@ def run_deterministic_agent_fallback(
             return tool_fn.invoke(args_dict)
         return tool_fn(**args_dict)
 
+
+
     # 1. Explicit request to raise an IT access ticket
     ticket_keywords = [
         "ticket", "raise access", "raise ticket", "it request", "please raise",
@@ -806,17 +808,44 @@ def process_chat_message(
 ) -> str:
     """Process a chat message with automated IT access request assistance."""
     verified_evidence = run_deterministic_agent_fallback(user_input, user_email, chat_history)
+    
+    # Check for empty executor first
     if executor is None:
-        return _history_fallback(user_input, chat_history) or verified_evidence
+        return "⚠️ **Debug:** `executor` is `None`! The LLM API key is missing or invalid in your environment.\n\n" + (_history_fallback(user_input, chat_history) or verified_evidence)
 
     try:
+        from langgraph.prebuilt import create_react_agent
+        from app.agent.tools import get_all_tools
+
+        agent_executor = create_react_agent(executor, tools=get_all_tools())
+
+        # Dynamically inject dataset schemas so the LLM knows exact column names for pandas queries
+        import glob
+        import pandas as pd
+        from pathlib import Path
+        schema_lines = []
+        for file in glob.glob("app/data/*.csv"):
+            name = Path(file).name
+            try:
+                cols = pd.read_csv(file, nrows=0).columns.tolist()
+                schema_lines.append(f"- {name}: {', '.join(cols)}")
+            except Exception:
+                pass
+        dataset_schemas = "\n".join(schema_lines)
+
         messages: list[Any] = [
             SystemMessage(content=(
-                "You are a helpful utilities-company assistant. Answer naturally and directly, "
-                "using only the verified evidence supplied by the application. Never invent data. "
-                "Do NOT state that access is denied or required unless the user explicitly asks to check access."
+                "You are a helpful utilities-company AI Data Agent. "
+                "You have access to tools that can query knowledge graphs, live metrics, and execute pandas scripts on CSV datasets. "
+                f"Available datasets and their exact columns:\n{dataset_schemas}\n"
+                "To answer data queries (e.g. counts, sums, groupings, averages), always use execute_pandas_query on the relevant dataset! "
+                "Write correct python pandas code using the exact column names provided. "
+                "If a dataset lacks necessary columns, try to answer based on available data or explain the limitation. "
+                "Do NOT state that access is denied or required unless the user explicitly asks to check access. "
+                f"Verified evidence from deterministic fallback:\n{verified_evidence}"
             ))
         ]
+        
         for turn in (chat_history or [])[-6:]:
             content = turn.get("content", "").strip()
             if not content:
@@ -827,12 +856,15 @@ def process_chat_message(
                 messages.append(HumanMessage(content=content[:700]))
 
         messages.append(HumanMessage(content=(
-            f"User question: {user_input}\nUser email: {user_email}\n\n"
-            f"Verified evidence:\n{verified_evidence}"
+            f"User question: {user_input}\nUser email: {user_email}"
         )))
-        response = executor.invoke(messages)
-        content = getattr(response, "content", "")
-        return content if isinstance(content, str) and content.strip() else verified_evidence
+        
+        response = agent_executor.invoke({"messages": messages})
+        content = response["messages"][-1].content
+        if isinstance(content, str) and content.strip():
+            return content
+        else:
+            return f"⚠️ **Agent Error:** I attempted to query the dataset, but my analysis engine returned an empty response.\n\nFallback Evidence:\n{verified_evidence}"
     except Exception as error:
         print(f"[AgentExecutor] API response failed; returning verified local answer: {error}")
-        return _history_fallback(user_input, chat_history) or verified_evidence
+        return f"⚠️ **Agent Error:** My reasoning engine encountered an issue: {error}\n\nFallback Evidence:\n{verified_evidence}"

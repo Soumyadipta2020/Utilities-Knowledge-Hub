@@ -220,12 +220,11 @@ def forecast_boiler_installations() -> str:
         return f"Installation forecast failed: {result.get('error')}"
     return (
         "Installation Forecast:\n"
-        f"- Active leads: {result['leads']}\n"
-        f"- Net appointments: {result['net_appointments']}\n"
-        f"- Quotes issued: {result['quotes_issued']}\n"
-        f"- Observed conversion: {result['conversion_pct']:.1f}%\n"
-        f"- Directional projected installations: {result['projected_installations']}\n"
-        f"- Note: {result['note']}"
+        f"- Active leads/quotes: {result.get('leads', 0)}\n"
+        f"- Quotes issued: {result.get('quotes_issued', 0)}\n"
+        f"- Avg Primary Quotation: {result.get('avg_primary_quotation', 0)}\n"
+        f"- Avg Final Quotation: {result.get('avg_final_quotation', 0)}\n"
+        f"- Note: {result.get('note', '')}"
     )
 
 
@@ -259,6 +258,47 @@ def query_dataset_sample(dataset_name: str) -> str:
 
 
 
+@tool
+def execute_pandas_query(dataset_name: str, code: str) -> str:
+    """
+    Execute a pandas python script on a specific dataset to answer complex data questions (e.g. counts, sums, groupings).
+    The dataset is available as a pandas DataFrame named `df`.
+    The script MUST print the final result using `print()`.
+    Example code:
+    print(df.groupby('status').size())
+    """
+    if _DATA_SERVICE is None:
+        return "Error: Data Service is not initialized."
+    
+    import pandas as pd
+    df = _DATA_SERVICE._read_csv_safe(dataset_name)
+    if df.empty:
+        if not dataset_name.endswith('.csv'):
+            df = _DATA_SERVICE._read_csv_safe(dataset_name + '.csv')
+        if df.empty:
+            return f"Error: Dataset {dataset_name} not found or empty."
+            
+    import io
+    import sys
+    
+    # Capture stdout
+    old_stdout = sys.stdout
+    redirected_output = sys.stdout = io.StringIO()
+    
+    try:
+        # Execute the code in a restricted namespace
+        local_namespace = {'df': df, 'pd': pd}
+        exec(code, {}, local_namespace)
+        output = redirected_output.getvalue()
+        if not output.strip():
+            output = "Code executed successfully, but nothing was printed."
+        return output
+    except Exception as e:
+        return f"Error executing pandas code: {str(e)}"
+    finally:
+        sys.stdout = old_stdout
+
+
 def get_all_tools():
     """Return list of tool functions for LangChain agent."""
     return [
@@ -272,4 +312,5 @@ def get_all_tools():
         forecast_boiler_installations,
         check_data_access,
         raise_access_request,
+        execute_pandas_query,
     ]
