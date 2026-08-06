@@ -1,4 +1,4 @@
-customer_id,customer_name,boiler_history,boiler_company,registration_date,have_insurance
+customer_name,boiler_history,boiler_company,customer_id,registration_date,have_insurance
 CUST00074568,Customer_0,Yes,Ideal,2024-11-13,Yes
 CUST00207376,Customer_1,Yes,Viessmann,2025-12-20,No
 CUST00119135,Customer_2,Yes,Baxi,2023-10-08,Yes

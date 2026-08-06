@@ -1,4 +1,4 @@
-customer_id,city,pincode,region,terrian
+city,pincode,region,customer_id,terrain
 CUST00074568,Bristol,PC5887,North East,Coastal
 CUST00207376,London,PC4773,London,Urban
 CUST00119135,Liverpool,PC7281,Yorkshire,Suburban

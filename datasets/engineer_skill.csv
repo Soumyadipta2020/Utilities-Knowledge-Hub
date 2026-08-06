@@ -1,4 +1,4 @@
-pay_id,direct_labour_or_contractor,training_result,profiency,multi_skill_or_single_skill,primary_skill,secondary_skill
+pay_id,direct_labour_or_contractor,training_result,proficiency,multi_skill_or_single_skill,primary_skill,secondary_skill
 ENG00001,Direct Labour,Pass,Beginner,Multi Skill,Repair,Service
 ENG00002,Contractor,Distinction,Expert,Single Skill,Repair,Service
 ENG00003,Direct Labour,Pass,Beginner,Single Skill,Installation,Repair

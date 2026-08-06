@@ -1,4 +1,4 @@
-date,region,job_type,detailed_category,number_of_jobs,jobs_hours
+date,job_type,detailed_category,number_of_jobs,jobs_hours
 2026-07-09,London,Service,Annual Service,192,359
 2026-07-10,London,Service,Boiler Breakdown,332,339
 2026-07-11,London,Service,Leak,458,361

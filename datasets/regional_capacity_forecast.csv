@@ -1,4 +1,4 @@
-date,region,eng_skill_type,gross_hours,non_productive_event,overtime,available_hours
+date,eng_skill_type,gross_hours,non_productive_event,overtime,available_hours
 2026-07-09,London,Installation,2796,298,177,895
 2026-07-10,London,Installation,2779,240,67,1974
 2026-07-11,London,Repair,2977,212,112,2568

@@ -1,4 +1,4 @@
-customer_id,lead_id,lead_date,mode_of_conversation_with_customer,appointment_date,appointment_happened,sale_date,sale_happened,installation_date,installation_happened,insurance_purchased
+customer_id,lead_date,lead_id,mode_of_conversation_with_customer,appointment_date,appointment_happened,sale_date,sale_happened,installation_date,installation_happened,insurance_purchased
 CUST00000001,LD00000001,2026-07-10,App,2026-07-12,Yes,2026-07-13,Yes,2026-07-15,Yes,No
 CUST00000002,LD00000002,2026-07-14,App,2026-07-17,Yes,2026-07-18,Yes,2026-07-25,Yes,Yes
 CUST00000003,LD00000003,2026-07-13,Email,2026-07-14,Yes,2026-07-15,Yes,2026-07-22,Yes,Yes

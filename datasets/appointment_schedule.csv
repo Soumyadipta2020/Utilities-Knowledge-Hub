@@ -1,4 +1,4 @@
-job_id,appointment_date,job_category,severity,assigned_pay_id
+appointment_date,job_id,job_category,severity,assigned_pay_id
 JOB00000001,2026-07-15,Installation,Medium,ENG03533
 JOB00000002,2026-07-25,Installation,Medium,ENG00524
 JOB00000003,2026-07-22,Installation,Medium,ENG01637
