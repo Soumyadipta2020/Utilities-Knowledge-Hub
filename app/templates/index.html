@@ -778,6 +778,37 @@
             backdrop-filter: blur(12px);
         }
 
+        .message-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 4px;
+            align-items: center;
+        }
+
+        .action-btn {
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.4);
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .action-btn:hover {
+            color: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .action-btn.active {
+            color: var(--accent-orange);
+            background: rgba(217, 102, 43, 0.1);
+        }
+
+
         .message-bubble a {
             color: #7dd3fc;
             text-decoration: none;
@@ -3089,6 +3120,49 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
             bubble.className = 'message-bubble';
             bubble.innerHTML = parseMarkdown(text);
 
+            let actionBar = null;
+            if (sender === 'agent') {
+                actionBar = document.createElement('div');
+                actionBar.className = 'message-actions';
+                
+                const copyBtn = document.createElement('button');
+                copyBtn.className = 'action-btn';
+                copyBtn.title = 'Copy';
+                copyBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>';
+                copyBtn.onclick = () => {
+                    navigator.clipboard.writeText(text).then(() => {
+                        const originalHtml = copyBtn.innerHTML;
+                        copyBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent-orange)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+                        setTimeout(() => copyBtn.innerHTML = originalHtml, 2000);
+                    });
+                };
+                
+                const upBtn = document.createElement('button');
+                upBtn.className = 'action-btn';
+                upBtn.title = 'Good response';
+                upBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg>';
+                upBtn.onclick = () => {
+                    upBtn.classList.add('active');
+                    downBtn.classList.remove('active');
+                };
+                
+                const downBtn = document.createElement('button');
+                downBtn.className = 'action-btn';
+                downBtn.title = 'Bad response';
+                downBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"></path></svg>';
+                downBtn.onclick = () => {
+                    downBtn.classList.add('active');
+                    upBtn.classList.remove('active');
+                };
+                
+                actionBar.appendChild(copyBtn);
+                actionBar.appendChild(upBtn);
+                actionBar.appendChild(downBtn);
+                
+                // Keep actionBar in memory, we will append it later
+                // bubble.appendChild(actionBar);
+            }
+
             if (showTicketCTA && sender === 'agent') {
                 const ticketBox = document.createElement('div');
                 ticketBox.className = 'ticket-cta-box';
@@ -3120,8 +3194,19 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
                 bubble.appendChild(graphBox);
             }
 
+            const contentCol = document.createElement('div');
+            contentCol.style.display = 'flex';
+            contentCol.style.flexDirection = 'column';
+            contentCol.style.gap = '2px';
+            contentCol.style.minWidth = '0';
+            contentCol.appendChild(bubble);
+
+            if (sender === 'agent') {
+                contentCol.appendChild(actionBar);
+            }
+
             row.appendChild(avatar);
-            row.appendChild(bubble);
+            row.appendChild(contentCol);
             container.appendChild(row);
             container.scrollTop = container.scrollHeight;
         }
