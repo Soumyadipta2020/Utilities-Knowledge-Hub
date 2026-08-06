@@ -259,7 +259,7 @@ def query_dataset_sample(dataset_name: str) -> str:
 
 
 @tool
-def execute_pandas_query(dataset_name: str, code: str) -> str:
+def execute_pandas_query(dataset_name: str, query: str) -> str:
     """
     Execute a pandas python script on a specific dataset to answer complex data questions (e.g. counts, sums, groupings).
     The dataset is available as a pandas DataFrame named `df`.
@@ -288,7 +288,7 @@ def execute_pandas_query(dataset_name: str, code: str) -> str:
     try:
         # Execute the code in a restricted namespace
         local_namespace = {'df': df, 'pd': pd}
-        exec(code, {}, local_namespace)
+        exec(query, {}, local_namespace)
         output = redirected_output.getvalue()
         if not output.strip():
             output = "Code executed successfully, but nothing was printed."

@@ -1,0 +1,16 @@
+fault_code,explanation_related_fault_codes,severity,repair_cost
+F44,System error occurred due to component failure,Low,144.94
+F82,System error occurred due to component failure,High,145.68
+F73,System error occurred due to component failure,Critical,448.11
+F92,System error occurred due to component failure,Critical,114.29
+F27,System error occurred due to component failure,Medium,385.25
+F78,System error occurred due to component failure,High,386.16
+F64,System error occurred due to component failure,Critical,212.9
+F27,System error occurred due to component failure,Critical,90.91
+F16,System error occurred due to component failure,Low,118.78
+F30,System error occurred due to component failure,Critical,318.38
+F59,System error occurred due to component failure,Critical,318.15
+F69,System error occurred due to component failure,High,486.99
+F11,System error occurred due to component failure,Low,356.77
+F78,System error occurred due to component failure,High,395.87
+F53,System error occurred due to component failure,Low,182.08

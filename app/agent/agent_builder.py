@@ -655,9 +655,8 @@ def run_deterministic_agent_fallback(
 
     # 5. Data Lineage, SME Ownership & Governance queries
     if any(k in input_lower for k in ["sme", "lineage", "managed_by", "who is", "who owns", "data owner", "owner", "ownership", "governance", "contact", "steward"]):
-        from pathlib import Path
-        datasets_list = []
-        json_path = Path("data/dataset_ownership.json")
+        from app.config import DATA_DIR
+        json_path = DATA_DIR / "dataset_ownership.json"
         if json_path.exists():
             try:
                 with open(json_path, "r", encoding="utf-8") as f:
@@ -707,9 +706,9 @@ def run_deterministic_agent_fallback(
         matching_in_query = [d for d in ALL_KNOWN_DATASETS if d in input_lower]
         target_datasets = matching_in_query or recent_datasets or ["customer_master", "repair_history", "boiler_master", "customer_holdings", "property_master"]
 
-        from pathlib import Path
+        from app.config import DATA_DIR
         datasets_list = []
-        json_path = Path("data/dataset_ownership.json")
+        json_path = DATA_DIR / "dataset_ownership.json"
         if json_path.exists():
             try:
                 with open(json_path, "r", encoding="utf-8") as f:
@@ -822,10 +821,10 @@ def process_chat_message(
         # Dynamically inject dataset schemas so the LLM knows exact column names for pandas queries
         import glob
         import pandas as pd
-        from pathlib import Path
+        from app.config import DATA_DIR
         schema_lines = []
-        for file in glob.glob("app/data/*.csv"):
-            name = Path(file).name
+        for file in DATA_DIR.glob("*.csv"):
+            name = file.name
             try:
                 cols = pd.read_csv(file, nrows=0).columns.tolist()
                 schema_lines.append(f"- {name}: {', '.join(cols)}")
@@ -861,6 +860,13 @@ def process_chat_message(
         
         response = agent_executor.invoke({"messages": messages})
         content = response["messages"][-1].content
+        
+        if not (isinstance(content, str) and content.strip()):
+            for m in reversed(response["messages"]):
+                if m.type == "tool":
+                    content = f"My analysis engine generated this raw output:\n\n```text\n{m.content}\n```"
+                    break
+
         if isinstance(content, str) and content.strip():
             return content
         else:

@@ -1,0 +1,2017 @@
+date,region,job_type,detailed_category,number_of_jobs,jobs_hours
+2026-07-09,London,Service,Annual Service,725,1701
+2026-07-09,London,Repair,Boiler Breakdown,187,314
+2026-07-10,London,Service,Annual Service,601,1108
+2026-07-10,London,Repair,Leak,264,432
+2026-07-11,London,Service,Annual Service,653,1238
+2026-07-11,London,Repair,Leak,281,544
+2026-07-12,London,Service,Annual Service,647,982
+2026-07-12,London,Repair,Leak,231,519
+2026-07-13,London,Service,Annual Service,702,1300
+2026-07-13,London,Repair,Boiler Breakdown,230,416
+2026-07-14,London,Service,Annual Service,707,1523
+2026-07-14,London,Repair,Leak,227,550
+2026-07-15,London,Service,Annual Service,670,1660
+2026-07-15,London,Repair,Leak,245,508
+2026-07-16,London,Service,Annual Service,607,1410
+2026-07-16,London,Repair,Leak,192,318
+2026-07-17,London,Service,Annual Service,689,1560
+2026-07-17,London,Repair,Leak,211,432
+2026-07-18,London,Service,Annual Service,570,1187
+2026-07-18,London,Repair,Boiler Breakdown,237,454
+2026-07-19,London,Service,Annual Service,599,1032
+2026-07-19,London,Repair,Boiler Breakdown,243,396
+2026-07-20,London,Service,Annual Service,568,1378
+2026-07-20,London,Repair,Boiler Breakdown,255,456
+2026-07-21,London,Service,Annual Service,558,1270
+2026-07-21,London,Repair,Leak,187,288
+2026-07-22,London,Service,Annual Service,614,1394
+2026-07-22,London,Repair,Boiler Breakdown,256,512
+2026-07-23,London,Service,Annual Service,589,1062
+2026-07-23,London,Repair,Boiler Breakdown,191,363
+2026-07-24,London,Service,Annual Service,658,1238
+2026-07-24,London,Repair,Boiler Breakdown,222,489
+2026-07-25,London,Service,Annual Service,637,1515
+2026-07-25,London,Repair,Boiler Breakdown,269,535
+2026-07-26,London,Service,Annual Service,645,1288
+2026-07-26,London,Repair,Leak,225,469
+2026-07-27,London,Service,Annual Service,645,1207
+2026-07-27,London,Repair,Leak,298,680
+2026-07-28,London,Service,Annual Service,636,1303
+2026-07-28,London,Repair,Leak,235,436
+2026-07-29,London,Service,Annual Service,641,1294
+2026-07-29,London,Repair,Boiler Breakdown,201,406
+2026-07-30,London,Service,Annual Service,682,1339
+2026-07-30,London,Repair,Boiler Breakdown,251,448
+2026-07-31,London,Service,Annual Service,567,1284
+2026-07-31,London,Repair,Leak,218,367
+2026-08-01,London,Service,Annual Service,581,978
+2026-08-01,London,Repair,Leak,215,407
+2026-08-02,London,Service,Annual Service,618,1133
+2026-08-02,London,Repair,Leak,273,640
+2026-08-03,London,Service,Annual Service,643,996
+2026-08-03,London,Repair,Boiler Breakdown,220,382
+2026-08-04,London,Service,Annual Service,685,1248
+2026-08-04,London,Repair,Leak,284,566
+2026-08-05,London,Service,Annual Service,640,1169
+2026-08-05,London,Repair,Boiler Breakdown,227,453
+2026-08-07,London,Service,Annual Service,639,1316
+2026-08-07,London,Repair,Leak,334,652
+2026-08-08,London,Service,Annual Service,668,1584
+2026-08-08,London,Repair,Leak,214,385
+2026-08-09,London,Service,Annual Service,608,1000
+2026-08-09,London,Repair,Leak,249,516
+2026-08-10,London,Service,Annual Service,664,1335
+2026-08-10,London,Repair,Leak,231,505
+2026-08-11,London,Service,Annual Service,716,1175
+2026-08-11,London,Repair,Boiler Breakdown,249,475
+2026-08-12,London,Service,Annual Service,682,1381
+2026-08-12,London,Repair,Leak,266,471
+2026-08-13,London,Service,Annual Service,641,1071
+2026-08-13,London,Repair,Leak,280,604
+2026-08-14,London,Service,Annual Service,563,1004
+2026-08-14,London,Repair,Boiler Breakdown,262,632
+2026-08-15,London,Service,Annual Service,650,1562
+2026-08-15,London,Repair,Boiler Breakdown,248,501
+2026-08-16,London,Service,Annual Service,682,1663
+2026-08-16,London,Repair,Boiler Breakdown,214,388
+2026-08-17,London,Service,Annual Service,580,1392
+2026-08-17,London,Repair,Boiler Breakdown,219,469
+2026-08-18,London,Service,Annual Service,582,1162
+2026-08-18,London,Repair,Boiler Breakdown,247,401
+2026-08-19,London,Service,Annual Service,715,1736
+2026-08-19,London,Repair,Boiler Breakdown,259,637
+2026-08-20,London,Service,Annual Service,602,1442
+2026-08-20,London,Repair,Boiler Breakdown,260,408
+2026-08-21,London,Service,Annual Service,563,957
+2026-08-21,London,Repair,Leak,260,466
+2026-08-22,London,Service,Annual Service,699,1333
+2026-08-22,London,Repair,Boiler Breakdown,278,446
+2026-08-23,London,Service,Annual Service,674,1318
+2026-08-23,London,Repair,Boiler Breakdown,162,285
+2026-08-24,London,Service,Annual Service,667,1259
+2026-08-24,London,Repair,Boiler Breakdown,253,422
+2026-08-25,London,Service,Annual Service,552,1229
+2026-08-25,London,Repair,Leak,249,535
+2026-08-26,London,Service,Annual Service,660,1338
+2026-08-26,London,Repair,Boiler Breakdown,269,613
+2026-08-27,London,Service,Annual Service,548,1015
+2026-08-27,London,Repair,Leak,254,515
+2026-08-28,London,Service,Annual Service,645,1565
+2026-08-28,London,Repair,Leak,275,569
+2026-08-29,London,Service,Annual Service,611,1400
+2026-08-29,London,Repair,Boiler Breakdown,265,548
+2026-08-30,London,Service,Annual Service,605,1055
+2026-08-30,London,Repair,Boiler Breakdown,265,654
+2026-08-31,London,Service,Annual Service,551,1039
+2026-08-31,London,Repair,Boiler Breakdown,277,652
+2026-09-01,London,Service,Annual Service,615,1533
+2026-09-01,London,Repair,Leak,231,556
+2026-09-02,London,Service,Annual Service,655,1511
+2026-09-02,London,Repair,Boiler Breakdown,259,563
+2026-09-03,London,Service,Annual Service,613,1300
+2026-09-03,London,Repair,Boiler Breakdown,249,396
+2026-09-04,London,Service,Annual Service,657,1600
+2026-09-04,London,Repair,Leak,239,479
+2026-09-05,London,Service,Annual Service,634,1194
+2026-09-05,London,Repair,Leak,244,510
+2026-09-06,London,Service,Annual Service,677,1180
+2026-09-06,London,Repair,Leak,204,320
+2026-09-07,London,Service,Annual Service,736,1701
+2026-09-07,London,Repair,Boiler Breakdown,179,279
+2026-09-08,London,Service,Annual Service,670,1491
+2026-09-08,London,Repair,Leak,251,527
+2026-09-09,London,Service,Annual Service,655,1163
+2026-09-09,London,Repair,Leak,274,447
+2026-09-10,London,Service,Annual Service,628,1496
+2026-09-10,London,Repair,Boiler Breakdown,201,433
+2026-09-11,London,Service,Annual Service,570,977
+2026-09-11,London,Repair,Boiler Breakdown,200,469
+2026-09-12,London,Service,Annual Service,674,1553
+2026-09-12,London,Repair,Leak,229,447
+2026-09-13,London,Service,Annual Service,573,1067
+2026-09-13,London,Repair,Leak,225,471
+2026-09-14,London,Service,Annual Service,583,901
+2026-09-14,London,Repair,Leak,266,444
+2026-09-15,London,Service,Annual Service,602,1483
+2026-09-15,London,Repair,Leak,228,466
+2026-09-16,London,Service,Annual Service,612,1352
+2026-09-16,London,Repair,Leak,256,462
+2026-09-17,London,Service,Annual Service,621,1021
+2026-09-17,London,Repair,Boiler Breakdown,252,381
+2026-09-18,London,Service,Annual Service,750,1581
+2026-09-18,London,Repair,Leak,275,489
+2026-09-19,London,Service,Annual Service,669,1150
+2026-09-19,London,Repair,Boiler Breakdown,196,396
+2026-09-20,London,Service,Annual Service,632,1404
+2026-09-20,London,Repair,Boiler Breakdown,226,408
+2026-09-21,London,Service,Annual Service,794,1630
+2026-09-21,London,Repair,Boiler Breakdown,257,499
+2026-09-22,London,Service,Annual Service,582,1098
+2026-09-22,London,Repair,Boiler Breakdown,261,579
+2026-09-23,London,Service,Annual Service,698,1617
+2026-09-23,London,Repair,Boiler Breakdown,246,557
+2026-09-24,London,Service,Annual Service,683,1177
+2026-09-24,London,Repair,Leak,225,385
+2026-09-25,London,Service,Annual Service,520,1144
+2026-09-25,London,Repair,Boiler Breakdown,214,347
+2026-09-26,London,Service,Annual Service,641,1238
+2026-09-26,London,Repair,Leak,254,444
+2026-09-27,London,Service,Annual Service,647,1608
+2026-09-27,London,Repair,Boiler Breakdown,230,446
+2026-09-28,London,Service,Annual Service,537,996
+2026-09-28,London,Repair,Leak,237,401
+2026-09-29,London,Service,Annual Service,613,968
+2026-09-29,London,Repair,Leak,251,500
+2026-09-30,London,Service,Annual Service,671,1306
+2026-09-30,London,Repair,Leak,213,448
+2026-10-01,London,Service,Annual Service,675,1341
+2026-10-01,London,Repair,Leak,273,518
+2026-10-02,London,Service,Annual Service,617,960
+2026-10-02,London,Repair,Boiler Breakdown,225,478
+2026-10-03,London,Service,Annual Service,626,1528
+2026-10-03,London,Repair,Leak,242,501
+2026-10-04,London,Service,Annual Service,664,1640
+2026-10-04,London,Repair,Leak,221,539
+2026-10-05,London,Service,Annual Service,622,1008
+2026-10-05,London,Repair,Boiler Breakdown,211,459
+2026-10-06,London,Service,Annual Service,690,1639
+2026-10-06,London,Repair,Boiler Breakdown,238,459
+2026-10-07,London,Service,Annual Service,664,1108
+2026-10-07,London,Repair,Leak,254,607
+2026-10-08,London,Service,Annual Service,623,1368
+2026-10-08,London,Repair,Leak,214,381
+2026-10-09,London,Service,Annual Service,738,1824
+2026-10-09,London,Repair,Boiler Breakdown,268,646
+2026-10-10,London,Service,Annual Service,685,1183
+2026-10-10,London,Repair,Boiler Breakdown,220,446
+2026-10-11,London,Service,Annual Service,652,1476
+2026-10-11,London,Repair,Boiler Breakdown,262,604
+2026-10-12,London,Service,Annual Service,594,1181
+2026-10-12,London,Repair,Leak,225,558
+2026-10-13,London,Service,Annual Service,580,965
+2026-10-13,London,Repair,Boiler Breakdown,239,404
+2026-10-14,London,Service,Annual Service,673,1349
+2026-10-14,London,Repair,Boiler Breakdown,205,491
+2026-10-15,London,Service,Annual Service,662,1647
+2026-10-15,London,Repair,Leak,275,475
+2026-10-16,London,Service,Annual Service,690,1566
+2026-10-16,London,Repair,Boiler Breakdown,293,724
+2026-10-17,London,Service,Annual Service,662,1653
+2026-10-17,London,Repair,Leak,265,495
+2026-10-18,London,Service,Annual Service,580,1333
+2026-10-18,London,Repair,Leak,247,407
+2026-10-19,London,Service,Annual Service,617,1281
+2026-10-19,London,Repair,Boiler Breakdown,224,357
+2026-10-20,London,Service,Annual Service,639,1501
+2026-10-20,London,Repair,Leak,226,365
+2026-10-21,London,Service,Annual Service,682,1365
+2026-10-21,London,Repair,Leak,261,415
+2026-10-22,London,Service,Annual Service,554,1232
+2026-10-22,London,Repair,Boiler Breakdown,326,637
+2026-10-23,London,Service,Annual Service,673,1072
+2026-10-23,London,Repair,Boiler Breakdown,228,539
+2026-10-24,London,Service,Annual Service,574,983
+2026-10-24,London,Repair,Leak,214,370
+2026-10-25,London,Service,Annual Service,745,1484
+2026-10-25,London,Repair,Leak,216,325
+2026-10-26,London,Service,Annual Service,585,1246
+2026-10-26,London,Repair,Leak,256,456
+2026-10-27,London,Service,Annual Service,651,1540
+2026-10-27,London,Repair,Leak,206,426
+2026-10-28,London,Service,Annual Service,628,1283
+2026-10-28,London,Repair,Leak,232,492
+2026-10-29,London,Service,Annual Service,567,1155
+2026-10-29,London,Repair,Boiler Breakdown,263,626
+2026-07-09,South East,Service,Annual Service,709,1067
+2026-07-09,South East,Repair,Leak,215,388
+2026-07-10,South East,Service,Annual Service,667,1181
+2026-07-10,South East,Repair,Boiler Breakdown,255,582
+2026-07-11,South East,Service,Annual Service,705,1565
+2026-07-11,South East,Repair,Boiler Breakdown,292,644
+2026-07-12,South East,Service,Annual Service,568,1010
+2026-07-12,South East,Repair,Leak,234,418
+2026-07-13,South East,Service,Annual Service,651,1228
+2026-07-13,South East,Repair,Boiler Breakdown,276,432
+2026-07-14,South East,Service,Annual Service,627,1014
+2026-07-14,South East,Repair,Leak,265,546
+2026-07-15,South East,Service,Annual Service,709,1119
+2026-07-15,South East,Repair,Boiler Breakdown,265,496
+2026-07-16,South East,Service,Annual Service,587,1099
+2026-07-16,South East,Repair,Boiler Breakdown,261,456
+2026-07-17,South East,Service,Annual Service,588,1220
+2026-07-17,South East,Repair,Boiler Breakdown,257,488
+2026-07-18,South East,Service,Annual Service,632,1013
+2026-07-18,South East,Repair,Boiler Breakdown,212,396
+2026-07-19,South East,Service,Annual Service,618,1220
+2026-07-19,South East,Repair,Boiler Breakdown,252,527
+2026-07-20,South East,Service,Annual Service,727,1245
+2026-07-20,South East,Repair,Leak,253,401
+2026-07-21,South East,Service,Annual Service,679,1038
+2026-07-21,South East,Repair,Leak,210,369
+2026-07-22,South East,Service,Annual Service,700,1088
+2026-07-22,South East,Repair,Leak,201,444
+2026-07-23,South East,Service,Annual Service,597,1436
+2026-07-23,South East,Repair,Leak,225,499
+2026-07-24,South East,Service,Annual Service,671,1297
+2026-07-24,South East,Repair,Leak,203,309
+2026-07-25,South East,Service,Annual Service,573,1059
+2026-07-25,South East,Repair,Boiler Breakdown,233,373
+2026-07-26,South East,Service,Annual Service,695,1297
+2026-07-26,South East,Repair,Boiler Breakdown,208,323
+2026-07-27,South East,Service,Annual Service,681,1549
+2026-07-27,South East,Repair,Leak,214,382
+2026-07-28,South East,Service,Annual Service,606,994
+2026-07-28,South East,Repair,Leak,277,504
+2026-07-29,South East,Service,Annual Service,622,1508
+2026-07-29,South East,Repair,Leak,203,438
+2026-07-30,South East,Service,Annual Service,574,1033
+2026-07-30,South East,Repair,Leak,270,610
+2026-07-31,South East,Service,Annual Service,607,1000
+2026-07-31,South East,Repair,Leak,256,385
+2026-08-01,South East,Service,Annual Service,658,1230
+2026-08-01,South East,Repair,Boiler Breakdown,279,660
+2026-08-02,South East,Service,Annual Service,637,1322
+2026-08-02,South East,Repair,Boiler Breakdown,273,496
+2026-08-03,South East,Service,Annual Service,632,1523
+2026-08-03,South East,Repair,Boiler Breakdown,270,514
+2026-08-04,South East,Service,Annual Service,647,1567
+2026-08-04,South East,Repair,Leak,280,660
+2026-08-05,South East,Service,Annual Service,589,905
+2026-08-05,South East,Repair,Boiler Breakdown,224,393
+2026-08-07,South East,Service,Annual Service,573,929
+2026-08-07,South East,Repair,Boiler Breakdown,289,582
+2026-08-08,South East,Service,Annual Service,540,912
+2026-08-08,South East,Repair,Leak,243,488
+2026-08-09,South East,Service,Annual Service,669,1267
+2026-08-09,South East,Repair,Leak,293,557
+2026-08-10,South East,Service,Annual Service,657,1423
+2026-08-10,South East,Repair,Leak,261,540
+2026-08-11,South East,Service,Annual Service,653,1183
+2026-08-11,South East,Repair,Leak,261,448
+2026-08-12,South East,Service,Annual Service,688,1155
+2026-08-12,South East,Repair,Leak,222,409
+2026-08-13,South East,Service,Annual Service,534,1166
+2026-08-13,South East,Repair,Boiler Breakdown,197,378
+2026-08-14,South East,Service,Annual Service,618,959
+2026-08-14,South East,Repair,Boiler Breakdown,250,392
+2026-08-15,South East,Service,Annual Service,646,1437
+2026-08-15,South East,Repair,Leak,200,405
+2026-08-16,South East,Service,Annual Service,607,1255
+2026-08-16,South East,Repair,Boiler Breakdown,283,549
+2026-08-17,South East,Service,Annual Service,528,973
+2026-08-17,South East,Repair,Boiler Breakdown,250,577
+2026-08-18,South East,Service,Annual Service,525,1111
+2026-08-18,South East,Repair,Leak,203,375
+2026-08-19,South East,Service,Annual Service,592,1042
+2026-08-19,South East,Repair,Boiler Breakdown,280,549
+2026-08-20,South East,Service,Annual Service,627,1074
+2026-08-20,South East,Repair,Leak,278,636
+2026-08-21,South East,Service,Annual Service,644,1459
+2026-08-21,South East,Repair,Boiler Breakdown,254,577
+2026-08-22,South East,Service,Annual Service,664,1039
+2026-08-22,South East,Repair,Boiler Breakdown,283,480
+2026-08-23,South East,Service,Annual Service,668,1185
+2026-08-23,South East,Repair,Boiler Breakdown,271,564
+2026-08-24,South East,Service,Annual Service,641,1269
+2026-08-24,South East,Repair,Leak,273,611
+2026-08-25,South East,Service,Annual Service,589,1398
+2026-08-25,South East,Repair,Boiler Breakdown,268,418
+2026-08-26,South East,Service,Annual Service,642,1323
+2026-08-26,South East,Repair,Boiler Breakdown,270,617
+2026-08-27,South East,Service,Annual Service,685,1194
+2026-08-27,South East,Repair,Boiler Breakdown,245,582
+2026-08-28,South East,Service,Annual Service,661,1382
+2026-08-28,South East,Repair,Boiler Breakdown,235,414
+2026-08-29,South East,Service,Annual Service,604,1102
+2026-08-29,South East,Repair,Leak,227,451
+2026-08-30,South East,Service,Annual Service,720,1194
+2026-08-30,South East,Repair,Leak,221,535
+2026-08-31,South East,Service,Annual Service,544,1170
+2026-08-31,South East,Repair,Leak,297,620
+2026-09-01,South East,Service,Annual Service,582,1454
+2026-09-01,South East,Repair,Boiler Breakdown,229,396
+2026-09-02,South East,Service,Annual Service,534,994
+2026-09-02,South East,Repair,Boiler Breakdown,240,391
+2026-09-03,South East,Service,Annual Service,585,1394
+2026-09-03,South East,Repair,Leak,238,473
+2026-09-04,South East,Service,Annual Service,609,1442
+2026-09-04,South East,Repair,Leak,218,476
+2026-09-05,South East,Service,Annual Service,727,1414
+2026-09-05,South East,Repair,Leak,201,500
+2026-09-06,South East,Service,Annual Service,571,858
+2026-09-06,South East,Repair,Leak,272,484
+2026-09-07,South East,Service,Annual Service,632,1501
+2026-09-07,South East,Repair,Boiler Breakdown,217,432
+2026-09-08,South East,Service,Annual Service,630,1464
+2026-09-08,South East,Repair,Boiler Breakdown,208,481
+2026-09-09,South East,Service,Annual Service,676,1459
+2026-09-09,South East,Repair,Leak,263,399
+2026-09-10,South East,Service,Annual Service,630,1119
+2026-09-10,South East,Repair,Leak,223,521
+2026-09-11,South East,Service,Annual Service,627,1121
+2026-09-11,South East,Repair,Leak,213,489
+2026-09-12,South East,Service,Annual Service,605,1495
+2026-09-12,South East,Repair,Leak,237,526
+2026-09-13,South East,Service,Annual Service,607,923
+2026-09-13,South East,Repair,Boiler Breakdown,240,360
+2026-09-14,South East,Service,Annual Service,671,1377
+2026-09-14,South East,Repair,Boiler Breakdown,220,344
+2026-09-15,South East,Service,Annual Service,763,1185
+2026-09-15,South East,Repair,Leak,287,643
+2026-09-16,South East,Service,Annual Service,681,1687
+2026-09-16,South East,Repair,Boiler Breakdown,244,608
+2026-09-17,South East,Service,Annual Service,678,1475
+2026-09-17,South East,Repair,Leak,205,363
+2026-09-18,South East,Service,Annual Service,617,1447
+2026-09-18,South East,Repair,Boiler Breakdown,249,573
+2026-09-19,South East,Service,Annual Service,556,1307
+2026-09-19,South East,Repair,Leak,200,360
+2026-09-20,South East,Service,Annual Service,661,1386
+2026-09-20,South East,Repair,Boiler Breakdown,283,596
+2026-09-21,South East,Service,Annual Service,564,954
+2026-09-21,South East,Repair,Boiler Breakdown,208,489
+2026-09-22,South East,Service,Annual Service,793,1349
+2026-09-22,South East,Repair,Boiler Breakdown,244,597
+2026-09-23,South East,Service,Annual Service,579,1014
+2026-09-23,South East,Repair,Leak,274,437
+2026-09-24,South East,Service,Annual Service,621,1286
+2026-09-24,South East,Repair,Boiler Breakdown,265,653
+2026-09-25,South East,Service,Annual Service,592,912
+2026-09-25,South East,Repair,Leak,252,577
+2026-09-26,South East,Service,Annual Service,626,1481
+2026-09-26,South East,Repair,Boiler Breakdown,233,392
+2026-09-27,South East,Service,Annual Service,626,1196
+2026-09-27,South East,Repair,Boiler Breakdown,211,362
+2026-09-28,South East,Service,Annual Service,655,1373
+2026-09-28,South East,Repair,Leak,198,418
+2026-09-29,South East,Service,Annual Service,628,1133
+2026-09-29,South East,Repair,Leak,237,370
+2026-09-30,South East,Service,Annual Service,605,1396
+2026-09-30,South East,Repair,Leak,242,492
+2026-10-01,South East,Service,Annual Service,703,1296
+2026-10-01,South East,Repair,Boiler Breakdown,236,401
+2026-10-02,South East,Service,Annual Service,558,1300
+2026-10-02,South East,Repair,Boiler Breakdown,238,524
+2026-10-03,South East,Service,Annual Service,608,1241
+2026-10-03,South East,Repair,Leak,314,607
+2026-10-04,South East,Service,Annual Service,662,1394
+2026-10-04,South East,Repair,Leak,223,357
+2026-10-05,South East,Service,Annual Service,658,1111
+2026-10-05,South East,Repair,Leak,231,517
+2026-10-06,South East,Service,Annual Service,676,1080
+2026-10-06,South East,Repair,Leak,210,466
+2026-10-07,South East,Service,Annual Service,659,1139
+2026-10-07,South East,Repair,Boiler Breakdown,272,519
+2026-10-08,South East,Service,Annual Service,619,955
+2026-10-08,South East,Repair,Boiler Breakdown,244,411
+2026-10-09,South East,Service,Annual Service,596,1078
+2026-10-09,South East,Repair,Boiler Breakdown,283,682
+2026-10-10,South East,Service,Annual Service,586,976
+2026-10-10,South East,Repair,Boiler Breakdown,217,514
+2026-10-11,South East,Service,Annual Service,654,1518
+2026-10-11,South East,Repair,Boiler Breakdown,227,444
+2026-10-12,South East,Service,Annual Service,641,1229
+2026-10-12,South East,Repair,Boiler Breakdown,260,448
+2026-10-13,South East,Service,Annual Service,584,1400
+2026-10-13,South East,Repair,Leak,226,357
+2026-10-14,South East,Service,Annual Service,654,1289
+2026-10-14,South East,Repair,Boiler Breakdown,249,466
+2026-10-15,South East,Service,Annual Service,602,1314
+2026-10-15,South East,Repair,Boiler Breakdown,202,407
+2026-10-16,South East,Service,Annual Service,608,939
+2026-10-16,South East,Repair,Leak,246,500
+2026-10-17,South East,Service,Annual Service,647,1375
+2026-10-17,South East,Repair,Leak,311,750
+2026-10-18,South East,Service,Annual Service,659,1073
+2026-10-18,South East,Repair,Boiler Breakdown,296,726
+2026-10-19,South East,Service,Annual Service,642,1450
+2026-10-19,South East,Repair,Leak,237,471
+2026-10-20,South East,Service,Annual Service,619,1405
+2026-10-20,South East,Repair,Boiler Breakdown,236,453
+2026-10-21,South East,Service,Annual Service,579,1445
+2026-10-21,South East,Repair,Leak,271,484
+2026-10-22,South East,Service,Annual Service,677,1138
+2026-10-22,South East,Repair,Boiler Breakdown,227,427
+2026-10-23,South East,Service,Annual Service,681,1492
+2026-10-23,South East,Repair,Boiler Breakdown,232,565
+2026-10-24,South East,Service,Annual Service,658,1232
+2026-10-24,South East,Repair,Boiler Breakdown,213,341
+2026-10-25,South East,Service,Annual Service,684,1306
+2026-10-25,South East,Repair,Boiler Breakdown,254,593
+2026-10-26,South East,Service,Annual Service,675,1612
+2026-10-26,South East,Repair,Boiler Breakdown,187,377
+2026-10-27,South East,Service,Annual Service,659,1477
+2026-10-27,South East,Repair,Boiler Breakdown,216,412
+2026-10-28,South East,Service,Annual Service,599,1051
+2026-10-28,South East,Repair,Leak,250,485
+2026-10-29,South East,Service,Annual Service,710,1337
+2026-10-29,South East,Repair,Leak,233,413
+2026-07-09,South West,Service,Annual Service,603,1507
+2026-07-09,South West,Repair,Leak,240,498
+2026-07-10,South West,Service,Annual Service,652,1078
+2026-07-10,South West,Repair,Leak,246,589
+2026-07-11,South West,Service,Annual Service,606,1420
+2026-07-11,South West,Repair,Boiler Breakdown,221,523
+2026-07-12,South West,Service,Annual Service,609,981
+2026-07-12,South West,Repair,Boiler Breakdown,269,422
+2026-07-13,South West,Service,Annual Service,676,1041
+2026-07-13,South West,Repair,Boiler Breakdown,221,451
+2026-07-14,South West,Service,Annual Service,639,1019
+2026-07-14,South West,Repair,Leak,196,464
+2026-07-15,South West,Service,Annual Service,666,1332
+2026-07-15,South West,Repair,Boiler Breakdown,226,514
+2026-07-16,South West,Service,Annual Service,645,1089
+2026-07-16,South West,Repair,Boiler Breakdown,245,543
+2026-07-17,South West,Service,Annual Service,541,1224
+2026-07-17,South West,Repair,Boiler Breakdown,265,610
+2026-07-18,South West,Service,Annual Service,497,1242
+2026-07-18,South West,Repair,Leak,238,438
+2026-07-19,South West,Service,Annual Service,662,1182
+2026-07-19,South West,Repair,Leak,288,604
+2026-07-20,South West,Service,Annual Service,646,1010
+2026-07-20,South West,Repair,Leak,259,524
+2026-07-21,South West,Service,Annual Service,762,1779
+2026-07-21,South West,Repair,Boiler Breakdown,250,558
+2026-07-22,South West,Service,Annual Service,595,1182
+2026-07-22,South West,Repair,Leak,174,297
+2026-07-23,South West,Service,Annual Service,639,1181
+2026-07-23,South West,Repair,Leak,221,548
+2026-07-24,South West,Service,Annual Service,641,1540
+2026-07-24,South West,Repair,Leak,270,542
+2026-07-25,South West,Service,Annual Service,707,1545
+2026-07-25,South West,Repair,Boiler Breakdown,271,410
+2026-07-26,South West,Service,Annual Service,633,1427
+2026-07-26,South West,Repair,Boiler Breakdown,269,600
+2026-07-27,South West,Service,Annual Service,641,1014
+2026-07-27,South West,Repair,Boiler Breakdown,256,448
+2026-07-28,South West,Service,Annual Service,674,1275
+2026-07-28,South West,Repair,Boiler Breakdown,261,554
+2026-07-29,South West,Service,Annual Service,777,1515
+2026-07-29,South West,Repair,Boiler Breakdown,241,405
+2026-07-30,South West,Service,Annual Service,564,862
+2026-07-30,South West,Repair,Boiler Breakdown,231,382
+2026-07-31,South West,Service,Annual Service,639,1359
+2026-07-31,South West,Repair,Leak,224,392
+2026-08-01,South West,Service,Annual Service,669,1413
+2026-08-01,South West,Repair,Boiler Breakdown,247,433
+2026-08-02,South West,Service,Annual Service,661,1109
+2026-08-02,South West,Repair,Leak,226,413
+2026-08-03,South West,Service,Annual Service,665,1591
+2026-08-03,South West,Repair,Leak,227,528
+2026-08-04,South West,Service,Annual Service,709,1671
+2026-08-04,South West,Repair,Leak,206,349
+2026-08-05,South West,Service,Annual Service,674,1286
+2026-08-05,South West,Repair,Leak,251,475
+2026-08-07,South West,Service,Annual Service,652,1226
+2026-08-07,South West,Repair,Leak,246,403
+2026-08-08,South West,Service,Annual Service,659,1493
+2026-08-08,South West,Repair,Boiler Breakdown,232,457
+2026-08-09,South West,Service,Annual Service,600,1429
+2026-08-09,South West,Repair,Boiler Breakdown,285,678
+2026-08-10,South West,Service,Annual Service,715,1580
+2026-08-10,South West,Repair,Leak,234,523
+2026-08-11,South West,Service,Annual Service,663,1501
+2026-08-11,South West,Repair,Leak,210,357
+2026-08-12,South West,Service,Annual Service,586,1305
+2026-08-12,South West,Repair,Leak,248,579
+2026-08-13,South West,Service,Annual Service,659,1375
+2026-08-13,South West,Repair,Boiler Breakdown,239,430
+2026-08-14,South West,Service,Annual Service,494,1206
+2026-08-14,South West,Repair,Boiler Breakdown,300,561
+2026-08-15,South West,Service,Annual Service,602,1313
+2026-08-15,South West,Repair,Leak,269,537
+2026-08-16,South West,Service,Annual Service,640,1170
+2026-08-16,South West,Repair,Boiler Breakdown,269,659
+2026-08-17,South West,Service,Annual Service,714,1717
+2026-08-17,South West,Repair,Leak,182,351
+2026-08-18,South West,Service,Annual Service,664,1179
+2026-08-18,South West,Repair,Boiler Breakdown,246,557
+2026-08-19,South West,Service,Annual Service,681,1477
+2026-08-19,South West,Repair,Leak,224,387
+2026-08-20,South West,Service,Annual Service,692,1152
+2026-08-20,South West,Repair,Leak,267,636
+2026-08-21,South West,Service,Annual Service,620,1017
+2026-08-21,South West,Repair,Leak,196,408
+2026-08-22,South West,Service,Annual Service,680,1223
+2026-08-22,South West,Repair,Leak,234,445
+2026-08-23,South West,Service,Annual Service,761,1635
+2026-08-23,South West,Repair,Boiler Breakdown,249,556
+2026-08-24,South West,Service,Annual Service,641,1321
+2026-08-24,South West,Repair,Leak,219,379
+2026-08-25,South West,Service,Annual Service,733,1426
+2026-08-25,South West,Repair,Leak,254,441
+2026-08-26,South West,Service,Annual Service,578,1175
+2026-08-26,South West,Repair,Boiler Breakdown,285,528
+2026-08-27,South West,Service,Annual Service,610,1302
+2026-08-27,South West,Repair,Leak,227,412
+2026-08-28,South West,Service,Annual Service,678,1284
+2026-08-28,South West,Repair,Boiler Breakdown,269,421
+2026-08-29,South West,Service,Annual Service,577,1387
+2026-08-29,South West,Repair,Leak,263,644
+2026-08-30,South West,Service,Annual Service,552,1266
+2026-08-30,South West,Repair,Boiler Breakdown,205,327
+2026-08-31,South West,Service,Annual Service,625,1154
+2026-08-31,South West,Repair,Boiler Breakdown,235,366
+2026-09-01,South West,Service,Annual Service,657,1517
+2026-09-01,South West,Repair,Leak,243,451
+2026-09-02,South West,Service,Annual Service,700,1241
+2026-09-02,South West,Repair,Boiler Breakdown,240,401
+2026-09-03,South West,Service,Annual Service,586,1370
+2026-09-03,South West,Repair,Leak,221,404
+2026-09-04,South West,Service,Annual Service,665,1599
+2026-09-04,South West,Repair,Leak,233,378
+2026-09-05,South West,Service,Annual Service,661,1178
+2026-09-05,South West,Repair,Leak,216,436
+2026-09-06,South West,Service,Annual Service,661,1167
+2026-09-06,South West,Repair,Leak,271,604
+2026-09-07,South West,Service,Annual Service,618,1084
+2026-09-07,South West,Repair,Boiler Breakdown,263,462
+2026-09-08,South West,Service,Annual Service,567,1078
+2026-09-08,South West,Repair,Boiler Breakdown,266,422
+2026-09-09,South West,Service,Annual Service,644,1340
+2026-09-09,South West,Repair,Leak,225,537
+2026-09-10,South West,Service,Annual Service,666,1492
+2026-09-10,South West,Repair,Leak,279,430
+2026-09-11,South West,Service,Annual Service,624,1190
+2026-09-11,South West,Repair,Boiler Breakdown,218,369
+2026-09-12,South West,Service,Annual Service,634,1127
+2026-09-12,South West,Repair,Leak,264,493
+2026-09-13,South West,Service,Annual Service,669,1592
+2026-09-13,South West,Repair,Leak,322,536
+2026-09-14,South West,Service,Annual Service,679,1053
+2026-09-14,South West,Repair,Leak,298,522
+2026-09-15,South West,Service,Annual Service,637,1221
+2026-09-15,South West,Repair,Boiler Breakdown,230,446
+2026-09-16,South West,Service,Annual Service,612,1361
+2026-09-16,South West,Repair,Boiler Breakdown,213,507
+2026-09-17,South West,Service,Annual Service,581,940
+2026-09-17,South West,Repair,Leak,240,585
+2026-09-18,South West,Service,Annual Service,602,1289
+2026-09-18,South West,Repair,Boiler Breakdown,255,497
+2026-09-19,South West,Service,Annual Service,633,1111
+2026-09-19,South West,Repair,Boiler Breakdown,212,323
+2026-09-20,South West,Service,Annual Service,588,1326
+2026-09-20,South West,Repair,Leak,266,650
+2026-09-21,South West,Service,Annual Service,593,1343
+2026-09-21,South West,Repair,Boiler Breakdown,196,326
+2026-09-22,South West,Service,Annual Service,597,1198
+2026-09-22,South West,Repair,Leak,225,340
+2026-09-23,South West,Service,Annual Service,748,1425
+2026-09-23,South West,Repair,Leak,287,623
+2026-09-24,South West,Service,Annual Service,605,1159
+2026-09-24,South West,Repair,Leak,197,306
+2026-09-25,South West,Service,Annual Service,601,1125
+2026-09-25,South West,Repair,Boiler Breakdown,254,567
+2026-09-26,South West,Service,Annual Service,631,1225
+2026-09-26,South West,Repair,Boiler Breakdown,257,561
+2026-09-27,South West,Service,Annual Service,677,1040
+2026-09-27,South West,Repair,Boiler Breakdown,208,396
+2026-09-28,South West,Service,Annual Service,677,1589
+2026-09-28,South West,Repair,Leak,254,400
+2026-09-29,South West,Service,Annual Service,637,1496
+2026-09-29,South West,Repair,Boiler Breakdown,274,438
+2026-09-30,South West,Service,Annual Service,588,1169
+2026-09-30,South West,Repair,Boiler Breakdown,211,376
+2026-10-01,South West,Service,Annual Service,630,1211
+2026-10-01,South West,Repair,Boiler Breakdown,305,461
+2026-10-02,South West,Service,Annual Service,669,1177
+2026-10-02,South West,Repair,Leak,269,610
+2026-10-03,South West,Service,Annual Service,751,1301
+2026-10-03,South West,Repair,Boiler Breakdown,237,526
+2026-10-04,South West,Service,Annual Service,691,1226
+2026-10-04,South West,Repair,Boiler Breakdown,196,343
+2026-10-05,South West,Service,Annual Service,588,1406
+2026-10-05,South West,Repair,Boiler Breakdown,230,394
+2026-10-06,South West,Service,Annual Service,591,1176
+2026-10-06,South West,Repair,Leak,201,338
+2026-10-07,South West,Service,Annual Service,585,1016
+2026-10-07,South West,Repair,Leak,247,427
+2026-10-08,South West,Service,Annual Service,649,1491
+2026-10-08,South West,Repair,Leak,239,594
+2026-10-09,South West,Service,Annual Service,714,1074
+2026-10-09,South West,Repair,Boiler Breakdown,214,443
+2026-10-10,South West,Service,Annual Service,599,1394
+2026-10-10,South West,Repair,Boiler Breakdown,286,453
+2026-10-11,South West,Service,Annual Service,684,1157
+2026-10-11,South West,Repair,Leak,216,440
+2026-10-12,South West,Service,Annual Service,706,1623
+2026-10-12,South West,Repair,Leak,257,464
+2026-10-13,South West,Service,Annual Service,665,1302
+2026-10-13,South West,Repair,Boiler Breakdown,250,598
+2026-10-14,South West,Service,Annual Service,637,1169
+2026-10-14,South West,Repair,Leak,245,545
+2026-10-15,South West,Service,Annual Service,644,1432
+2026-10-15,South West,Repair,Boiler Breakdown,262,585
+2026-10-16,South West,Service,Annual Service,606,1392
+2026-10-16,South West,Repair,Leak,228,432
+2026-10-17,South West,Service,Annual Service,668,1661
+2026-10-17,South West,Repair,Boiler Breakdown,215,519
+2026-10-18,South West,Service,Annual Service,589,1456
+2026-10-18,South West,Repair,Leak,208,458
+2026-10-19,South West,Service,Annual Service,698,1691
+2026-10-19,South West,Repair,Boiler Breakdown,259,624
+2026-10-20,South West,Service,Annual Service,703,1446
+2026-10-20,South West,Repair,Leak,256,478
+2026-10-21,South West,Service,Annual Service,691,1606
+2026-10-21,South West,Repair,Boiler Breakdown,231,577
+2026-10-22,South West,Service,Annual Service,611,920
+2026-10-22,South West,Repair,Leak,261,575
+2026-10-23,South West,Service,Annual Service,647,1188
+2026-10-23,South West,Repair,Boiler Breakdown,202,470
+2026-10-24,South West,Service,Annual Service,677,1439
+2026-10-24,South West,Repair,Leak,217,355
+2026-10-25,South West,Service,Annual Service,655,1055
+2026-10-25,South West,Repair,Boiler Breakdown,209,375
+2026-10-26,South West,Service,Annual Service,669,1566
+2026-10-26,South West,Repair,Leak,244,377
+2026-10-27,South West,Service,Annual Service,677,1595
+2026-10-27,South West,Repair,Leak,249,607
+2026-10-28,South West,Service,Annual Service,577,1420
+2026-10-28,South West,Repair,Leak,253,570
+2026-10-29,South West,Service,Annual Service,624,1513
+2026-10-29,South West,Repair,Leak,249,422
+2026-07-09,Midlands,Service,Annual Service,662,1017
+2026-07-09,Midlands,Repair,Leak,209,513
+2026-07-10,Midlands,Service,Annual Service,650,1440
+2026-07-10,Midlands,Repair,Boiler Breakdown,235,449
+2026-07-11,Midlands,Service,Annual Service,623,1072
+2026-07-11,Midlands,Repair,Leak,232,421
+2026-07-12,Midlands,Service,Annual Service,616,1280
+2026-07-12,Midlands,Repair,Leak,253,585
+2026-07-13,Midlands,Service,Annual Service,584,1017
+2026-07-13,Midlands,Repair,Leak,251,596
+2026-07-14,Midlands,Service,Annual Service,613,968
+2026-07-14,Midlands,Repair,Leak,248,520
+2026-07-15,Midlands,Service,Annual Service,627,1368
+2026-07-15,Midlands,Repair,Boiler Breakdown,224,445
+2026-07-16,Midlands,Service,Annual Service,629,1179
+2026-07-16,Midlands,Repair,Leak,222,336
+2026-07-17,Midlands,Service,Annual Service,505,1231
+2026-07-17,Midlands,Repair,Leak,246,457
+2026-07-18,Midlands,Service,Annual Service,658,1358
+2026-07-18,Midlands,Repair,Boiler Breakdown,242,382
+2026-07-19,Midlands,Service,Annual Service,652,1477
+2026-07-19,Midlands,Repair,Boiler Breakdown,279,690
+2026-07-20,Midlands,Service,Annual Service,611,1372
+2026-07-20,Midlands,Repair,Boiler Breakdown,235,380
+2026-07-21,Midlands,Service,Annual Service,604,1317
+2026-07-21,Midlands,Repair,Boiler Breakdown,220,332
+2026-07-22,Midlands,Service,Annual Service,602,1006
+2026-07-22,Midlands,Repair,Leak,213,363
+2026-07-23,Midlands,Service,Annual Service,616,1394
+2026-07-23,Midlands,Repair,Leak,220,525
+2026-07-24,Midlands,Service,Annual Service,686,1567
+2026-07-24,Midlands,Repair,Boiler Breakdown,297,648
+2026-07-25,Midlands,Service,Annual Service,548,1158
+2026-07-25,Midlands,Repair,Leak,201,386
+2026-07-26,Midlands,Service,Annual Service,535,898
+2026-07-26,Midlands,Repair,Boiler Breakdown,247,377
+2026-07-27,Midlands,Service,Annual Service,501,774
+2026-07-27,Midlands,Repair,Boiler Breakdown,214,430
+2026-07-28,Midlands,Service,Annual Service,669,1554
+2026-07-28,Midlands,Repair,Leak,214,352
+2026-07-29,Midlands,Service,Annual Service,577,1063
+2026-07-29,Midlands,Repair,Boiler Breakdown,246,600
+2026-07-30,Midlands,Service,Annual Service,563,942
+2026-07-30,Midlands,Repair,Boiler Breakdown,225,464
+2026-07-31,Midlands,Service,Annual Service,667,1121
+2026-07-31,Midlands,Repair,Leak,256,538
+2026-08-01,Midlands,Service,Annual Service,727,1246
+2026-08-01,Midlands,Repair,Leak,248,443
+2026-08-02,Midlands,Service,Annual Service,690,1268
+2026-08-02,Midlands,Repair,Boiler Breakdown,246,523
+2026-08-03,Midlands,Service,Annual Service,656,1249
+2026-08-03,Midlands,Repair,Leak,252,409
+2026-08-04,Midlands,Service,Annual Service,619,1425
+2026-08-04,Midlands,Repair,Leak,262,558
+2026-08-05,Midlands,Service,Annual Service,666,1331
+2026-08-05,Midlands,Repair,Leak,209,498
+2026-08-07,Midlands,Service,Annual Service,644,1150
+2026-08-07,Midlands,Repair,Leak,206,479
+2026-08-08,Midlands,Service,Annual Service,660,1631
+2026-08-08,Midlands,Repair,Leak,275,630
+2026-08-09,Midlands,Service,Annual Service,657,1243
+2026-08-09,Midlands,Repair,Leak,254,451
+2026-08-10,Midlands,Service,Annual Service,550,1195
+2026-08-10,Midlands,Repair,Boiler Breakdown,196,473
+2026-08-11,Midlands,Service,Annual Service,654,1028
+2026-08-11,Midlands,Repair,Boiler Breakdown,316,686
+2026-08-12,Midlands,Service,Annual Service,630,1479
+2026-08-12,Midlands,Repair,Boiler Breakdown,216,371
+2026-08-13,Midlands,Service,Annual Service,728,1246
+2026-08-13,Midlands,Repair,Leak,212,456
+2026-08-14,Midlands,Service,Annual Service,676,1185
+2026-08-14,Midlands,Repair,Leak,258,553
+2026-08-15,Midlands,Service,Annual Service,688,1591
+2026-08-15,Midlands,Repair,Boiler Breakdown,244,423
+2026-08-16,Midlands,Service,Annual Service,652,1441
+2026-08-16,Midlands,Repair,Boiler Breakdown,261,489
+2026-08-17,Midlands,Service,Annual Service,542,859
+2026-08-17,Midlands,Repair,Leak,216,385
+2026-08-18,Midlands,Service,Annual Service,623,1039
+2026-08-18,Midlands,Repair,Boiler Breakdown,247,586
+2026-08-19,Midlands,Service,Annual Service,705,1497
+2026-08-19,Midlands,Repair,Boiler Breakdown,251,402
+2026-08-20,Midlands,Service,Annual Service,735,1333
+2026-08-20,Midlands,Repair,Leak,252,508
+2026-08-21,Midlands,Service,Annual Service,663,1150
+2026-08-21,Midlands,Repair,Leak,271,655
+2026-08-22,Midlands,Service,Annual Service,599,1147
+2026-08-22,Midlands,Repair,Leak,242,420
+2026-08-23,Midlands,Service,Annual Service,764,1751
+2026-08-23,Midlands,Repair,Boiler Breakdown,224,531
+2026-08-24,Midlands,Service,Annual Service,700,1427
+2026-08-24,Midlands,Repair,Leak,209,370
+2026-08-25,Midlands,Service,Annual Service,676,1101
+2026-08-25,Midlands,Repair,Leak,209,517
+2026-08-26,Midlands,Service,Annual Service,573,907
+2026-08-26,Midlands,Repair,Boiler Breakdown,285,436
+2026-08-27,Midlands,Service,Annual Service,705,1193
+2026-08-27,Midlands,Repair,Boiler Breakdown,257,566
+2026-08-28,Midlands,Service,Annual Service,620,1336
+2026-08-28,Midlands,Repair,Boiler Breakdown,258,458
+2026-08-29,Midlands,Service,Annual Service,572,1020
+2026-08-29,Midlands,Repair,Boiler Breakdown,222,530
+2026-08-30,Midlands,Service,Annual Service,639,1204
+2026-08-30,Midlands,Repair,Leak,273,646
+2026-08-31,Midlands,Service,Annual Service,663,1124
+2026-08-31,Midlands,Repair,Leak,223,425
+2026-09-01,Midlands,Service,Annual Service,632,1214
+2026-09-01,Midlands,Repair,Boiler Breakdown,288,553
+2026-09-02,Midlands,Service,Annual Service,636,1412
+2026-09-02,Midlands,Repair,Boiler Breakdown,230,411
+2026-09-03,Midlands,Service,Annual Service,649,1519
+2026-09-03,Midlands,Repair,Boiler Breakdown,257,456
+2026-09-04,Midlands,Service,Annual Service,621,1161
+2026-09-04,Midlands,Repair,Boiler Breakdown,230,481
+2026-09-05,Midlands,Service,Annual Service,677,1339
+2026-09-05,Midlands,Repair,Leak,242,530
+2026-09-06,Midlands,Service,Annual Service,702,1304
+2026-09-06,Midlands,Repair,Boiler Breakdown,230,460
+2026-09-07,Midlands,Service,Annual Service,619,1380
+2026-09-07,Midlands,Repair,Boiler Breakdown,222,392
+2026-09-08,Midlands,Service,Annual Service,604,1393
+2026-09-08,Midlands,Repair,Leak,241,478
+2026-09-09,Midlands,Service,Annual Service,660,1169
+2026-09-09,Midlands,Repair,Leak,237,576
+2026-09-10,Midlands,Service,Annual Service,686,1557
+2026-09-10,Midlands,Repair,Boiler Breakdown,194,435
+2026-09-11,Midlands,Service,Annual Service,647,1451
+2026-09-11,Midlands,Repair,Leak,219,544
+2026-09-12,Midlands,Service,Annual Service,591,997
+2026-09-12,Midlands,Repair,Boiler Breakdown,240,426
+2026-09-13,Midlands,Service,Annual Service,751,1332
+2026-09-13,Midlands,Repair,Boiler Breakdown,227,373
+2026-09-14,Midlands,Service,Annual Service,626,1301
+2026-09-14,Midlands,Repair,Leak,252,434
+2026-09-15,Midlands,Service,Annual Service,583,1443
+2026-09-15,Midlands,Repair,Boiler Breakdown,234,383
+2026-09-16,Midlands,Service,Annual Service,734,1364
+2026-09-16,Midlands,Repair,Boiler Breakdown,254,526
+2026-09-17,Midlands,Service,Annual Service,670,1647
+2026-09-17,Midlands,Repair,Leak,230,471
+2026-09-18,Midlands,Service,Annual Service,756,1474
+2026-09-18,Midlands,Repair,Boiler Breakdown,252,544
+2026-09-19,Midlands,Service,Annual Service,666,1116
+2026-09-19,Midlands,Repair,Leak,269,529
+2026-09-20,Midlands,Service,Annual Service,615,1305
+2026-09-20,Midlands,Repair,Leak,297,700
+2026-09-21,Midlands,Service,Annual Service,737,1751
+2026-09-21,Midlands,Repair,Leak,223,363
+2026-09-22,Midlands,Service,Annual Service,651,1238
+2026-09-22,Midlands,Repair,Leak,255,555
+2026-09-23,Midlands,Service,Annual Service,625,1141
+2026-09-23,Midlands,Repair,Leak,282,578
+2026-09-24,Midlands,Service,Annual Service,652,1282
+2026-09-24,Midlands,Repair,Boiler Breakdown,217,471
+2026-09-25,Midlands,Service,Annual Service,667,1031
+2026-09-25,Midlands,Repair,Leak,223,466
+2026-09-26,Midlands,Service,Annual Service,651,1274
+2026-09-26,Midlands,Repair,Leak,273,467
+2026-09-27,Midlands,Service,Annual Service,590,1260
+2026-09-27,Midlands,Repair,Leak,242,471
+2026-09-28,Midlands,Service,Annual Service,616,1365
+2026-09-28,Midlands,Repair,Boiler Breakdown,292,663
+2026-09-29,Midlands,Service,Annual Service,676,1026
+2026-09-29,Midlands,Repair,Leak,270,410
+2026-09-30,Midlands,Service,Annual Service,765,1444
+2026-09-30,Midlands,Repair,Leak,272,488
+2026-10-01,Midlands,Service,Annual Service,624,1250
+2026-10-01,Midlands,Repair,Leak,222,491
+2026-10-02,Midlands,Service,Annual Service,599,1177
+2026-10-02,Midlands,Repair,Boiler Breakdown,265,479
+2026-10-03,Midlands,Service,Annual Service,654,1020
+2026-10-03,Midlands,Repair,Leak,221,399
+2026-10-04,Midlands,Service,Annual Service,661,1325
+2026-10-04,Midlands,Repair,Boiler Breakdown,289,465
+2026-10-05,Midlands,Service,Annual Service,645,1155
+2026-10-05,Midlands,Repair,Boiler Breakdown,231,476
+2026-10-06,Midlands,Service,Annual Service,629,1089
+2026-10-06,Midlands,Repair,Leak,181,369
+2026-10-07,Midlands,Service,Annual Service,750,1275
+2026-10-07,Midlands,Repair,Leak,240,408
+2026-10-08,Midlands,Service,Annual Service,580,1204
+2026-10-08,Midlands,Repair,Boiler Breakdown,190,296
+2026-10-09,Midlands,Service,Annual Service,699,1133
+2026-10-09,Midlands,Repair,Leak,226,517
+2026-10-10,Midlands,Service,Annual Service,673,1563
+2026-10-10,Midlands,Repair,Leak,276,538
+2026-10-11,Midlands,Service,Annual Service,708,1548
+2026-10-11,Midlands,Repair,Boiler Breakdown,170,261
+2026-10-12,Midlands,Service,Annual Service,807,1733
+2026-10-12,Midlands,Repair,Leak,254,432
+2026-10-13,Midlands,Service,Annual Service,672,1324
+2026-10-13,Midlands,Repair,Leak,217,351
+2026-10-14,Midlands,Service,Annual Service,606,1111
+2026-10-14,Midlands,Repair,Boiler Breakdown,307,485
+2026-10-15,Midlands,Service,Annual Service,703,1387
+2026-10-15,Midlands,Repair,Boiler Breakdown,258,617
+2026-10-16,Midlands,Service,Annual Service,654,1442
+2026-10-16,Midlands,Repair,Leak,283,555
+2026-10-17,Midlands,Service,Annual Service,608,1322
+2026-10-17,Midlands,Repair,Leak,200,493
+2026-10-18,Midlands,Service,Annual Service,760,1535
+2026-10-18,Midlands,Repair,Boiler Breakdown,219,534
+2026-10-19,Midlands,Service,Annual Service,564,1211
+2026-10-19,Midlands,Repair,Leak,218,354
+2026-10-20,Midlands,Service,Annual Service,617,1523
+2026-10-20,Midlands,Repair,Boiler Breakdown,258,463
+2026-10-21,Midlands,Service,Annual Service,592,1255
+2026-10-21,Midlands,Repair,Boiler Breakdown,286,642
+2026-10-22,Midlands,Service,Annual Service,646,1229
+2026-10-22,Midlands,Repair,Leak,250,553
+2026-10-23,Midlands,Service,Annual Service,596,1093
+2026-10-23,Midlands,Repair,Leak,248,481
+2026-10-24,Midlands,Service,Annual Service,581,1175
+2026-10-24,Midlands,Repair,Boiler Breakdown,238,526
+2026-10-25,Midlands,Service,Annual Service,734,1379
+2026-10-25,Midlands,Repair,Boiler Breakdown,280,526
+2026-10-26,Midlands,Service,Annual Service,683,1547
+2026-10-26,Midlands,Repair,Leak,256,586
+2026-10-27,Midlands,Service,Annual Service,695,1715
+2026-10-27,Midlands,Repair,Boiler Breakdown,180,332
+2026-10-28,Midlands,Service,Annual Service,669,1387
+2026-10-28,Midlands,Repair,Boiler Breakdown,225,372
+2026-10-29,Midlands,Service,Annual Service,552,1050
+2026-10-29,Midlands,Repair,Boiler Breakdown,230,443
+2026-07-09,North West,Service,Annual Service,695,1096
+2026-07-09,North West,Repair,Leak,164,311
+2026-07-10,North West,Service,Annual Service,602,1060
+2026-07-10,North West,Repair,Boiler Breakdown,238,585
+2026-07-11,North West,Service,Annual Service,591,1113
+2026-07-11,North West,Repair,Leak,282,461
+2026-07-12,North West,Service,Annual Service,607,925
+2026-07-12,North West,Repair,Boiler Breakdown,215,504
+2026-07-13,North West,Service,Annual Service,569,965
+2026-07-13,North West,Repair,Leak,205,379
+2026-07-14,North West,Service,Annual Service,681,1193
+2026-07-14,North West,Repair,Leak,229,446
+2026-07-15,North West,Service,Annual Service,674,1512
+2026-07-15,North West,Repair,Leak,319,653
+2026-07-16,North West,Service,Annual Service,652,1395
+2026-07-16,North West,Repair,Leak,283,522
+2026-07-17,North West,Service,Annual Service,634,1027
+2026-07-17,North West,Repair,Boiler Breakdown,232,545
+2026-07-18,North West,Service,Annual Service,651,1409
+2026-07-18,North West,Repair,Leak,232,368
+2026-07-19,North West,Service,Annual Service,593,1452
+2026-07-19,North West,Repair,Boiler Breakdown,282,447
+2026-07-20,North West,Service,Annual Service,727,1193
+2026-07-20,North West,Repair,Boiler Breakdown,212,360
+2026-07-21,North West,Service,Annual Service,661,998
+2026-07-21,North West,Repair,Boiler Breakdown,253,602
+2026-07-22,North West,Service,Annual Service,666,1314
+2026-07-22,North West,Repair,Leak,244,542
+2026-07-23,North West,Service,Annual Service,610,1159
+2026-07-23,North West,Repair,Boiler Breakdown,290,569
+2026-07-24,North West,Service,Annual Service,685,1121
+2026-07-24,North West,Repair,Leak,239,510
+2026-07-25,North West,Service,Annual Service,625,1036
+2026-07-25,North West,Repair,Leak,255,522
+2026-07-26,North West,Service,Annual Service,652,1275
+2026-07-26,North West,Repair,Boiler Breakdown,275,591
+2026-07-27,North West,Service,Annual Service,651,1267
+2026-07-27,North West,Repair,Leak,208,389
+2026-07-28,North West,Service,Annual Service,538,1159
+2026-07-28,North West,Repair,Boiler Breakdown,281,478
+2026-07-29,North West,Service,Annual Service,654,1167
+2026-07-29,North West,Repair,Boiler Breakdown,228,357
+2026-07-30,North West,Service,Annual Service,653,1356
+2026-07-30,North West,Repair,Boiler Breakdown,225,357
+2026-07-31,North West,Service,Annual Service,655,1092
+2026-07-31,North West,Repair,Boiler Breakdown,220,527
+2026-08-01,North West,Service,Annual Service,639,1409
+2026-08-01,North West,Repair,Boiler Breakdown,255,419
+2026-08-02,North West,Service,Annual Service,624,983
+2026-08-02,North West,Repair,Leak,262,584
+2026-08-03,North West,Service,Annual Service,651,1325
+2026-08-03,North West,Repair,Leak,261,537
+2026-08-04,North West,Service,Annual Service,670,1448
+2026-08-04,North West,Repair,Leak,237,549
+2026-08-05,North West,Service,Annual Service,705,1497
+2026-08-05,North West,Repair,Boiler Breakdown,283,698
+2026-08-07,North West,Service,Annual Service,685,1292
+2026-08-07,North West,Repair,Leak,247,487
+2026-08-08,North West,Service,Annual Service,656,1594
+2026-08-08,North West,Repair,Boiler Breakdown,214,397
+2026-08-09,North West,Service,Annual Service,688,1403
+2026-08-09,North West,Repair,Leak,229,565
+2026-08-10,North West,Service,Annual Service,524,986
+2026-08-10,North West,Repair,Boiler Breakdown,251,501
+2026-08-11,North West,Service,Annual Service,631,1372
+2026-08-11,North West,Repair,Boiler Breakdown,259,453
+2026-08-12,North West,Service,Annual Service,612,1004
+2026-08-12,North West,Repair,Leak,239,569
+2026-08-13,North West,Service,Annual Service,673,1603
+2026-08-13,North West,Repair,Leak,234,408
+2026-08-14,North West,Service,Annual Service,611,1040
+2026-08-14,North West,Repair,Boiler Breakdown,225,393
+2026-08-15,North West,Service,Annual Service,638,1129
+2026-08-15,North West,Repair,Leak,226,449
+2026-08-16,North West,Service,Annual Service,650,1123
+2026-08-16,North West,Repair,Leak,273,619
+2026-08-17,North West,Service,Annual Service,657,1020
+2026-08-17,North West,Repair,Leak,242,511
+2026-08-18,North West,Service,Annual Service,645,1196
+2026-08-18,North West,Repair,Leak,276,645
+2026-08-19,North West,Service,Annual Service,697,1369
+2026-08-19,North West,Repair,Leak,210,370
+2026-08-20,North West,Service,Annual Service,626,1236
+2026-08-20,North West,Repair,Leak,218,446
+2026-08-21,North West,Service,Annual Service,644,1402
+2026-08-21,North West,Repair,Leak,230,474
+2026-08-22,North West,Service,Annual Service,675,1060
+2026-08-22,North West,Repair,Boiler Breakdown,326,507
+2026-08-23,North West,Service,Annual Service,621,1317
+2026-08-23,North West,Repair,Boiler Breakdown,240,512
+2026-08-24,North West,Service,Annual Service,687,1178
+2026-08-24,North West,Repair,Boiler Breakdown,178,294
+2026-08-25,North West,Service,Annual Service,679,1171
+2026-08-25,North West,Repair,Leak,248,544
+2026-08-26,North West,Service,Annual Service,545,1151
+2026-08-26,North West,Repair,Leak,308,728
+2026-08-27,North West,Service,Annual Service,618,1460
+2026-08-27,North West,Repair,Boiler Breakdown,264,562
+2026-08-28,North West,Service,Annual Service,682,1269
+2026-08-28,North West,Repair,Leak,248,516
+2026-08-29,North West,Service,Annual Service,601,1139
+2026-08-29,North West,Repair,Boiler Breakdown,275,433
+2026-08-30,North West,Service,Annual Service,578,944
+2026-08-30,North West,Repair,Leak,263,528
+2026-08-31,North West,Service,Annual Service,671,1318
+2026-08-31,North West,Repair,Leak,279,651
+2026-09-01,North West,Service,Annual Service,604,956
+2026-09-01,North West,Repair,Boiler Breakdown,259,478
+2026-09-02,North West,Service,Annual Service,627,1413
+2026-09-02,North West,Repair,Boiler Breakdown,259,443
+2026-09-03,North West,Service,Annual Service,573,1245
+2026-09-03,North West,Repair,Leak,241,507
+2026-09-04,North West,Service,Annual Service,637,1282
+2026-09-04,North West,Repair,Boiler Breakdown,244,504
+2026-09-05,North West,Service,Annual Service,710,1302
+2026-09-05,North West,Repair,Leak,220,405
+2026-09-06,North West,Service,Annual Service,682,1147
+2026-09-06,North West,Repair,Boiler Breakdown,289,454
+2026-09-07,North West,Service,Annual Service,710,1673
+2026-09-07,North West,Repair,Leak,230,408
+2026-09-08,North West,Service,Annual Service,615,1373
+2026-09-08,North West,Repair,Leak,240,543
+2026-09-09,North West,Service,Annual Service,706,1091
+2026-09-09,North West,Repair,Boiler Breakdown,241,497
+2026-09-10,North West,Service,Annual Service,746,1504
+2026-09-10,North West,Repair,Boiler Breakdown,270,566
+2026-09-11,North West,Service,Annual Service,519,1047
+2026-09-11,North West,Repair,Leak,259,494
+2026-09-12,North West,Service,Annual Service,691,1195
+2026-09-12,North West,Repair,Leak,228,482
+2026-09-13,North West,Service,Annual Service,611,1027
+2026-09-13,North West,Repair,Boiler Breakdown,236,471
+2026-09-14,North West,Service,Annual Service,567,916
+2026-09-14,North West,Repair,Boiler Breakdown,290,439
+2026-09-15,North West,Service,Annual Service,613,1317
+2026-09-15,North West,Repair,Leak,195,365
+2026-09-16,North West,Service,Annual Service,673,1153
+2026-09-16,North West,Repair,Boiler Breakdown,239,593
+2026-09-17,North West,Service,Annual Service,646,1568
+2026-09-17,North West,Repair,Leak,256,580
+2026-09-18,North West,Service,Annual Service,686,1525
+2026-09-18,North West,Repair,Leak,245,435
+2026-09-19,North West,Service,Annual Service,688,1365
+2026-09-19,North West,Repair,Leak,184,432
+2026-09-20,North West,Service,Annual Service,674,1602
+2026-09-20,North West,Repair,Leak,228,415
+2026-09-21,North West,Service,Annual Service,677,1417
+2026-09-21,North West,Repair,Boiler Breakdown,225,508
+2026-09-22,North West,Service,Annual Service,637,1224
+2026-09-22,North West,Repair,Leak,250,441
+2026-09-23,North West,Service,Annual Service,627,1411
+2026-09-23,North West,Repair,Boiler Breakdown,262,510
+2026-09-24,North West,Service,Annual Service,654,1408
+2026-09-24,North West,Repair,Leak,252,457
+2026-09-25,North West,Service,Annual Service,621,1433
+2026-09-25,North West,Repair,Leak,278,536
+2026-09-26,North West,Service,Annual Service,661,1247
+2026-09-26,North West,Repair,Leak,198,424
+2026-09-27,North West,Service,Annual Service,582,1026
+2026-09-27,North West,Repair,Boiler Breakdown,249,389
+2026-09-28,North West,Service,Annual Service,716,1393
+2026-09-28,North West,Repair,Boiler Breakdown,250,453
+2026-09-29,North West,Service,Annual Service,623,1080
+2026-09-29,North West,Repair,Leak,270,418
+2026-09-30,North West,Service,Annual Service,596,1087
+2026-09-30,North West,Repair,Leak,243,600
+2026-10-01,North West,Service,Annual Service,683,1333
+2026-10-01,North West,Repair,Leak,257,579
+2026-10-02,North West,Service,Annual Service,586,942
+2026-10-02,North West,Repair,Boiler Breakdown,203,477
+2026-10-03,North West,Service,Annual Service,573,1293
+2026-10-03,North West,Repair,Leak,229,373
+2026-10-04,North West,Service,Annual Service,704,1631
+2026-10-04,North West,Repair,Leak,280,680
+2026-10-05,North West,Service,Annual Service,580,1206
+2026-10-05,North West,Repair,Leak,260,392
+2026-10-06,North West,Service,Annual Service,654,1450
+2026-10-06,North West,Repair,Boiler Breakdown,196,379
+2026-10-07,North West,Service,Annual Service,595,1047
+2026-10-07,North West,Repair,Boiler Breakdown,258,531
+2026-10-08,North West,Service,Annual Service,602,1119
+2026-10-08,North West,Repair,Leak,222,463
+2026-10-09,North West,Service,Annual Service,680,1270
+2026-10-09,North West,Repair,Leak,224,344
+2026-10-10,North West,Service,Annual Service,566,1245
+2026-10-10,North West,Repair,Leak,252,470
+2026-10-11,North West,Service,Annual Service,642,1009
+2026-10-11,North West,Repair,Leak,214,322
+2026-10-12,North West,Service,Annual Service,731,1812
+2026-10-12,North West,Repair,Leak,310,526
+2026-10-13,North West,Service,Annual Service,629,1432
+2026-10-13,North West,Repair,Leak,198,441
+2026-10-14,North West,Service,Annual Service,560,1149
+2026-10-14,North West,Repair,Boiler Breakdown,226,447
+2026-10-15,North West,Service,Annual Service,634,952
+2026-10-15,North West,Repair,Boiler Breakdown,236,434
+2026-10-16,North West,Service,Annual Service,565,1330
+2026-10-16,North West,Repair,Leak,211,389
+2026-10-17,North West,Service,Annual Service,601,906
+2026-10-17,North West,Repair,Leak,266,500
+2026-10-18,North West,Service,Annual Service,665,1605
+2026-10-18,North West,Repair,Boiler Breakdown,253,631
+2026-10-19,North West,Service,Annual Service,645,1430
+2026-10-19,North West,Repair,Boiler Breakdown,209,372
+2026-10-20,North West,Service,Annual Service,675,1491
+2026-10-20,North West,Repair,Boiler Breakdown,260,572
+2026-10-21,North West,Service,Annual Service,607,1373
+2026-10-21,North West,Repair,Boiler Breakdown,217,530
+2026-10-22,North West,Service,Annual Service,622,1102
+2026-10-22,North West,Repair,Leak,203,337
+2026-10-23,North West,Service,Annual Service,677,1582
+2026-10-23,North West,Repair,Leak,244,441
+2026-10-24,North West,Service,Annual Service,690,1707
+2026-10-24,North West,Repair,Boiler Breakdown,285,615
+2026-10-25,North West,Service,Annual Service,609,1417
+2026-10-25,North West,Repair,Boiler Breakdown,238,462
+2026-10-26,North West,Service,Annual Service,555,1048
+2026-10-26,North West,Repair,Boiler Breakdown,196,298
+2026-10-27,North West,Service,Annual Service,598,1250
+2026-10-27,North West,Repair,Leak,278,657
+2026-10-28,North West,Service,Annual Service,653,1205
+2026-10-28,North West,Repair,Leak,207,403
+2026-10-29,North West,Service,Annual Service,643,1224
+2026-10-29,North West,Repair,Leak,281,463
+2026-07-09,North East,Service,Annual Service,681,1333
+2026-07-09,North East,Repair,Boiler Breakdown,262,434
+2026-07-10,North East,Service,Annual Service,708,1656
+2026-07-10,North East,Repair,Leak,204,487
+2026-07-11,North East,Service,Annual Service,638,1445
+2026-07-11,North East,Repair,Leak,286,682
+2026-07-12,North East,Service,Annual Service,715,1495
+2026-07-12,North East,Repair,Boiler Breakdown,261,617
+2026-07-13,North East,Service,Annual Service,694,1395
+2026-07-13,North East,Repair,Boiler Breakdown,260,520
+2026-07-14,North East,Service,Annual Service,611,1424
+2026-07-14,North East,Repair,Leak,231,397
+2026-07-15,North East,Service,Annual Service,667,1503
+2026-07-15,North East,Repair,Boiler Breakdown,221,466
+2026-07-16,North East,Service,Annual Service,666,1206
+2026-07-16,North East,Repair,Boiler Breakdown,236,526
+2026-07-17,North East,Service,Annual Service,666,1191
+2026-07-17,North East,Repair,Leak,250,595
+2026-07-18,North East,Service,Annual Service,620,1385
+2026-07-18,North East,Repair,Leak,288,442
+2026-07-19,North East,Service,Annual Service,671,1634
+2026-07-19,North East,Repair,Leak,242,555
+2026-07-20,North East,Service,Annual Service,626,1295
+2026-07-20,North East,Repair,Leak,245,554
+2026-07-21,North East,Service,Annual Service,608,1256
+2026-07-21,North East,Repair,Boiler Breakdown,189,287
+2026-07-22,North East,Service,Annual Service,647,1162
+2026-07-22,North East,Repair,Boiler Breakdown,203,343
+2026-07-23,North East,Service,Annual Service,594,950
+2026-07-23,North East,Repair,Boiler Breakdown,240,414
+2026-07-24,North East,Service,Annual Service,633,1118
+2026-07-24,North East,Repair,Leak,237,514
+2026-07-25,North East,Service,Annual Service,682,1367
+2026-07-25,North East,Repair,Leak,237,360
+2026-07-26,North East,Service,Annual Service,650,1451
+2026-07-26,North East,Repair,Leak,253,627
+2026-07-27,North East,Service,Annual Service,736,1760
+2026-07-27,North East,Repair,Boiler Breakdown,238,406
+2026-07-28,North East,Service,Annual Service,687,1698
+2026-07-28,North East,Repair,Boiler Breakdown,226,436
+2026-07-29,North East,Service,Annual Service,654,1084
+2026-07-29,North East,Repair,Boiler Breakdown,211,321
+2026-07-30,North East,Service,Annual Service,667,1497
+2026-07-30,North East,Repair,Boiler Breakdown,269,437
+2026-07-31,North East,Service,Annual Service,654,1051
+2026-07-31,North East,Repair,Boiler Breakdown,265,568
+2026-08-01,North East,Service,Annual Service,607,929
+2026-08-01,North East,Repair,Boiler Breakdown,230,541
+2026-08-02,North East,Service,Annual Service,607,1087
+2026-08-02,North East,Repair,Boiler Breakdown,211,393
+2026-08-03,North East,Service,Annual Service,566,1285
+2026-08-03,North East,Repair,Leak,226,406
+2026-08-04,North East,Service,Annual Service,646,1115
+2026-08-04,North East,Repair,Boiler Breakdown,237,404
+2026-08-05,North East,Service,Annual Service,506,982
+2026-08-05,North East,Repair,Boiler Breakdown,200,400
+2026-08-07,North East,Service,Annual Service,767,1330
+2026-08-07,North East,Repair,Boiler Breakdown,249,620
+2026-08-08,North East,Service,Annual Service,624,1050
+2026-08-08,North East,Repair,Leak,234,493
+2026-08-09,North East,Service,Annual Service,736,1400
+2026-08-09,North East,Repair,Boiler Breakdown,214,450
+2026-08-10,North East,Service,Annual Service,606,1024
+2026-08-10,North East,Repair,Boiler Breakdown,240,492
+2026-08-11,North East,Service,Annual Service,618,1543
+2026-08-11,North East,Repair,Boiler Breakdown,255,405
+2026-08-12,North East,Service,Annual Service,623,1416
+2026-08-12,North East,Repair,Boiler Breakdown,223,521
+2026-08-13,North East,Service,Annual Service,620,1147
+2026-08-13,North East,Repair,Boiler Breakdown,251,615
+2026-08-14,North East,Service,Annual Service,624,1341
+2026-08-14,North East,Repair,Leak,246,427
+2026-08-15,North East,Service,Annual Service,693,1070
+2026-08-15,North East,Repair,Leak,251,606
+2026-08-16,North East,Service,Annual Service,678,1471
+2026-08-16,North East,Repair,Boiler Breakdown,212,444
+2026-08-17,North East,Service,Annual Service,640,1480
+2026-08-17,North East,Repair,Leak,203,475
+2026-08-18,North East,Service,Annual Service,740,1679
+2026-08-18,North East,Repair,Boiler Breakdown,222,402
+2026-08-19,North East,Service,Annual Service,590,1004
+2026-08-19,North East,Repair,Leak,261,525
+2026-08-20,North East,Service,Annual Service,589,1162
+2026-08-20,North East,Repair,Leak,242,475
+2026-08-21,North East,Service,Annual Service,553,1007
+2026-08-21,North East,Repair,Boiler Breakdown,249,441
+2026-08-22,North East,Service,Annual Service,642,1174
+2026-08-22,North East,Repair,Leak,280,694
+2026-08-23,North East,Service,Annual Service,720,1360
+2026-08-23,North East,Repair,Boiler Breakdown,277,575
+2026-08-24,North East,Service,Annual Service,683,1465
+2026-08-24,North East,Repair,Boiler Breakdown,272,518
+2026-08-25,North East,Service,Annual Service,713,1384
+2026-08-25,North East,Repair,Boiler Breakdown,277,678
+2026-08-26,North East,Service,Annual Service,659,1075
+2026-08-26,North East,Repair,Boiler Breakdown,226,396
+2026-08-27,North East,Service,Annual Service,677,1648
+2026-08-27,North East,Repair,Leak,243,490
+2026-08-28,North East,Service,Annual Service,626,1363
+2026-08-28,North East,Repair,Boiler Breakdown,187,383
+2026-08-29,North East,Service,Annual Service,651,1138
+2026-08-29,North East,Repair,Leak,212,391
+2026-08-30,North East,Service,Annual Service,631,1431
+2026-08-30,North East,Repair,Boiler Breakdown,212,481
+2026-08-31,North East,Service,Annual Service,689,1638
+2026-08-31,North East,Repair,Leak,299,742
+2026-09-01,North East,Service,Annual Service,649,1200
+2026-09-01,North East,Repair,Boiler Breakdown,271,458
+2026-09-02,North East,Service,Annual Service,656,1599
+2026-09-02,North East,Repair,Boiler Breakdown,180,374
+2026-09-03,North East,Service,Annual Service,587,1067
+2026-09-03,North East,Repair,Boiler Breakdown,216,530
+2026-09-04,North East,Service,Annual Service,630,1315
+2026-09-04,North East,Repair,Boiler Breakdown,245,407
+2026-09-05,North East,Service,Annual Service,616,1019
+2026-09-05,North East,Repair,Leak,251,425
+2026-09-06,North East,Service,Annual Service,706,1595
+2026-09-06,North East,Repair,Leak,225,426
+2026-09-07,North East,Service,Annual Service,513,1273
+2026-09-07,North East,Repair,Leak,256,412
+2026-09-08,North East,Service,Annual Service,704,1693
+2026-09-08,North East,Repair,Boiler Breakdown,198,319
+2026-09-09,North East,Service,Annual Service,572,1370
+2026-09-09,North East,Repair,Leak,224,451
+2026-09-10,North East,Service,Annual Service,654,1132
+2026-09-10,North East,Repair,Leak,194,388
+2026-09-11,North East,Service,Annual Service,645,1099
+2026-09-11,North East,Repair,Boiler Breakdown,232,530
+2026-09-12,North East,Service,Annual Service,664,1484
+2026-09-12,North East,Repair,Boiler Breakdown,221,417
+2026-09-13,North East,Service,Annual Service,638,1587
+2026-09-13,North East,Repair,Leak,336,549
+2026-09-14,North East,Service,Annual Service,633,1537
+2026-09-14,North East,Repair,Boiler Breakdown,220,475
+2026-09-15,North East,Service,Annual Service,686,1063
+2026-09-15,North East,Repair,Boiler Breakdown,250,582
+2026-09-16,North East,Service,Annual Service,618,1542
+2026-09-16,North East,Repair,Boiler Breakdown,215,410
+2026-09-17,North East,Service,Annual Service,507,769
+2026-09-17,North East,Repair,Boiler Breakdown,247,549
+2026-09-18,North East,Service,Annual Service,661,1388
+2026-09-18,North East,Repair,Leak,246,573
+2026-09-19,North East,Service,Annual Service,608,920
+2026-09-19,North East,Repair,Boiler Breakdown,273,680
+2026-09-20,North East,Service,Annual Service,655,1408
+2026-09-20,North East,Repair,Boiler Breakdown,220,453
+2026-09-21,North East,Service,Annual Service,644,1065
+2026-09-21,North East,Repair,Leak,257,386
+2026-09-22,North East,Service,Annual Service,652,1122
+2026-09-22,North East,Repair,Leak,308,541
+2026-09-23,North East,Service,Annual Service,677,1280
+2026-09-23,North East,Repair,Leak,220,451
+2026-09-24,North East,Service,Annual Service,695,1124
+2026-09-24,North East,Repair,Boiler Breakdown,234,549
+2026-09-25,North East,Service,Annual Service,522,999
+2026-09-25,North East,Repair,Boiler Breakdown,250,542
+2026-09-26,North East,Service,Annual Service,624,939
+2026-09-26,North East,Repair,Leak,284,556
+2026-09-27,North East,Service,Annual Service,649,1218
+2026-09-27,North East,Repair,Boiler Breakdown,285,626
+2026-09-28,North East,Service,Annual Service,617,1503
+2026-09-28,North East,Repair,Leak,209,436
+2026-09-29,North East,Service,Annual Service,692,1190
+2026-09-29,North East,Repair,Leak,243,460
+2026-09-30,North East,Service,Annual Service,651,988
+2026-09-30,North East,Repair,Boiler Breakdown,265,622
+2026-10-01,North East,Service,Annual Service,616,960
+2026-10-01,North East,Repair,Boiler Breakdown,215,380
+2026-10-02,North East,Service,Annual Service,677,1176
+2026-10-02,North East,Repair,Leak,285,530
+2026-10-03,North East,Service,Annual Service,667,1593
+2026-10-03,North East,Repair,Boiler Breakdown,262,643
+2026-10-04,North East,Service,Annual Service,617,1211
+2026-10-04,North East,Repair,Leak,239,559
+2026-10-05,North East,Service,Annual Service,694,1149
+2026-10-05,North East,Repair,Boiler Breakdown,176,436
+2026-10-06,North East,Service,Annual Service,638,1086
+2026-10-06,North East,Repair,Boiler Breakdown,274,439
+2026-10-07,North East,Service,Annual Service,702,1411
+2026-10-07,North East,Repair,Leak,245,498
+2026-10-08,North East,Service,Annual Service,575,1293
+2026-10-08,North East,Repair,Boiler Breakdown,245,501
+2026-10-09,North East,Service,Annual Service,620,1462
+2026-10-09,North East,Repair,Leak,294,525
+2026-10-10,North East,Service,Annual Service,669,1371
+2026-10-10,North East,Repair,Leak,244,593
+2026-10-11,North East,Service,Annual Service,605,1061
+2026-10-11,North East,Repair,Leak,237,394
+2026-10-12,North East,Service,Annual Service,764,1538
+2026-10-12,North East,Repair,Boiler Breakdown,221,366
+2026-10-13,North East,Service,Annual Service,657,1135
+2026-10-13,North East,Repair,Boiler Breakdown,264,543
+2026-10-14,North East,Service,Annual Service,614,1075
+2026-10-14,North East,Repair,Leak,209,429
+2026-10-15,North East,Service,Annual Service,636,1526
+2026-10-15,North East,Repair,Boiler Breakdown,201,380
+2026-10-16,North East,Service,Annual Service,583,1126
+2026-10-16,North East,Repair,Leak,274,494
+2026-10-17,North East,Service,Annual Service,603,969
+2026-10-17,North East,Repair,Boiler Breakdown,230,498
+2026-10-18,North East,Service,Annual Service,636,1545
+2026-10-18,North East,Repair,Boiler Breakdown,218,493
+2026-10-19,North East,Service,Annual Service,670,1235
+2026-10-19,North East,Repair,Leak,252,486
+2026-10-20,North East,Service,Annual Service,672,1144
+2026-10-20,North East,Repair,Leak,225,352
+2026-10-21,North East,Service,Annual Service,617,1480
+2026-10-21,North East,Repair,Boiler Breakdown,246,436
+2026-10-22,North East,Service,Annual Service,717,1285
+2026-10-22,North East,Repair,Boiler Breakdown,296,625
+2026-10-23,North East,Service,Annual Service,678,1108
+2026-10-23,North East,Repair,Boiler Breakdown,212,390
+2026-10-24,North East,Service,Annual Service,584,1359
+2026-10-24,North East,Repair,Leak,208,330
+2026-10-25,North East,Service,Annual Service,495,912
+2026-10-25,North East,Repair,Boiler Breakdown,226,533
+2026-10-26,North East,Service,Annual Service,658,1108
+2026-10-26,North East,Repair,Leak,219,378
+2026-10-27,North East,Service,Annual Service,678,1187
+2026-10-27,North East,Repair,Boiler Breakdown,273,677
+2026-10-28,North East,Service,Annual Service,701,1467
+2026-10-28,North East,Repair,Boiler Breakdown,229,357
+2026-10-29,North East,Service,Annual Service,544,1123
+2026-10-29,North East,Repair,Boiler Breakdown,241,411
+2026-07-09,Yorkshire,Service,Annual Service,668,1327
+2026-07-09,Yorkshire,Repair,Boiler Breakdown,259,480
+2026-07-10,Yorkshire,Service,Annual Service,666,1608
+2026-07-10,Yorkshire,Repair,Leak,285,474
+2026-07-11,Yorkshire,Service,Annual Service,630,1025
+2026-07-11,Yorkshire,Repair,Leak,198,297
+2026-07-12,Yorkshire,Service,Annual Service,631,1252
+2026-07-12,Yorkshire,Repair,Leak,276,510
+2026-07-13,Yorkshire,Service,Annual Service,643,1335
+2026-07-13,Yorkshire,Repair,Leak,262,617
+2026-07-14,Yorkshire,Service,Annual Service,666,1255
+2026-07-14,Yorkshire,Repair,Leak,208,437
+2026-07-15,Yorkshire,Service,Annual Service,631,1067
+2026-07-15,Yorkshire,Repair,Boiler Breakdown,218,475
+2026-07-16,Yorkshire,Service,Annual Service,629,1446
+2026-07-16,Yorkshire,Repair,Boiler Breakdown,212,400
+2026-07-17,Yorkshire,Service,Annual Service,669,1106
+2026-07-17,Yorkshire,Repair,Boiler Breakdown,257,563
+2026-07-18,Yorkshire,Service,Annual Service,639,1031
+2026-07-18,Yorkshire,Repair,Boiler Breakdown,208,352
+2026-07-19,Yorkshire,Service,Annual Service,645,1304
+2026-07-19,Yorkshire,Repair,Boiler Breakdown,270,647
+2026-07-20,Yorkshire,Service,Annual Service,712,1210
+2026-07-20,Yorkshire,Repair,Boiler Breakdown,255,408
+2026-07-21,Yorkshire,Service,Annual Service,639,1499
+2026-07-21,Yorkshire,Repair,Leak,208,421
+2026-07-22,Yorkshire,Service,Annual Service,629,1327
+2026-07-22,Yorkshire,Repair,Leak,190,403
+2026-07-23,Yorkshire,Service,Annual Service,585,1198
+2026-07-23,Yorkshire,Repair,Leak,257,595
+2026-07-24,Yorkshire,Service,Annual Service,689,1216
+2026-07-24,Yorkshire,Repair,Boiler Breakdown,249,463
+2026-07-25,Yorkshire,Service,Annual Service,702,1358
+2026-07-25,Yorkshire,Repair,Boiler Breakdown,219,404
+2026-07-26,Yorkshire,Service,Annual Service,655,1569
+2026-07-26,Yorkshire,Repair,Boiler Breakdown,245,450
+2026-07-27,Yorkshire,Service,Annual Service,588,1407
+2026-07-27,Yorkshire,Repair,Boiler Breakdown,242,424
+2026-07-28,Yorkshire,Service,Annual Service,659,1500
+2026-07-28,Yorkshire,Repair,Leak,247,565
+2026-07-29,Yorkshire,Service,Annual Service,614,986
+2026-07-29,Yorkshire,Repair,Boiler Breakdown,263,517
+2026-07-30,Yorkshire,Service,Annual Service,591,1133
+2026-07-30,Yorkshire,Repair,Leak,222,356
+2026-07-31,Yorkshire,Service,Annual Service,687,1070
+2026-07-31,Yorkshire,Repair,Leak,235,464
+2026-08-01,Yorkshire,Service,Annual Service,621,1294
+2026-08-01,Yorkshire,Repair,Boiler Breakdown,222,519
+2026-08-02,Yorkshire,Service,Annual Service,623,1037
+2026-08-02,Yorkshire,Repair,Leak,197,436
+2026-08-03,Yorkshire,Service,Annual Service,633,1256
+2026-08-03,Yorkshire,Repair,Boiler Breakdown,208,418
+2026-08-04,Yorkshire,Service,Annual Service,656,1341
+2026-08-04,Yorkshire,Repair,Boiler Breakdown,240,372
+2026-08-05,Yorkshire,Service,Annual Service,692,1464
+2026-08-05,Yorkshire,Repair,Leak,270,410
+2026-08-07,Yorkshire,Service,Annual Service,654,1320
+2026-08-07,Yorkshire,Repair,Leak,253,477
+2026-08-08,Yorkshire,Service,Annual Service,610,919
+2026-08-08,Yorkshire,Repair,Leak,256,595
+2026-08-09,Yorkshire,Service,Annual Service,680,1580
+2026-08-09,Yorkshire,Repair,Boiler Breakdown,229,344
+2026-08-10,Yorkshire,Service,Annual Service,681,1215
+2026-08-10,Yorkshire,Repair,Leak,253,552
+2026-08-11,Yorkshire,Service,Annual Service,571,914
+2026-08-11,Yorkshire,Repair,Leak,262,610
+2026-08-12,Yorkshire,Service,Annual Service,703,1148
+2026-08-12,Yorkshire,Repair,Boiler Breakdown,281,437
+2026-08-13,Yorkshire,Service,Annual Service,644,1389
+2026-08-13,Yorkshire,Repair,Boiler Breakdown,248,460
+2026-08-14,Yorkshire,Service,Annual Service,661,1336
+2026-08-14,Yorkshire,Repair,Boiler Breakdown,216,527
+2026-08-15,Yorkshire,Service,Annual Service,595,895
+2026-08-15,Yorkshire,Repair,Boiler Breakdown,215,524
+2026-08-16,Yorkshire,Service,Annual Service,631,1134
+2026-08-16,Yorkshire,Repair,Boiler Breakdown,280,659
+2026-08-17,Yorkshire,Service,Annual Service,707,1089
+2026-08-17,Yorkshire,Repair,Boiler Breakdown,270,421
+2026-08-18,Yorkshire,Service,Annual Service,599,1396
+2026-08-18,Yorkshire,Repair,Boiler Breakdown,251,439
+2026-08-19,Yorkshire,Service,Annual Service,661,1517
+2026-08-19,Yorkshire,Repair,Leak,240,574
+2026-08-20,Yorkshire,Service,Annual Service,767,1310
+2026-08-20,Yorkshire,Repair,Boiler Breakdown,292,647
+2026-08-21,Yorkshire,Service,Annual Service,581,1027
+2026-08-21,Yorkshire,Repair,Leak,163,369
+2026-08-22,Yorkshire,Service,Annual Service,662,1524
+2026-08-22,Yorkshire,Repair,Leak,297,655
+2026-08-23,Yorkshire,Service,Annual Service,639,1137
+2026-08-23,Yorkshire,Repair,Boiler Breakdown,263,399
+2026-08-24,Yorkshire,Service,Annual Service,636,1052
+2026-08-24,Yorkshire,Repair,Boiler Breakdown,262,506
+2026-08-25,Yorkshire,Service,Annual Service,665,1221
+2026-08-25,Yorkshire,Repair,Leak,209,347
+2026-08-26,Yorkshire,Service,Annual Service,769,1786
+2026-08-26,Yorkshire,Repair,Leak,236,539
+2026-08-27,Yorkshire,Service,Annual Service,711,1350
+2026-08-27,Yorkshire,Repair,Leak,195,322
+2026-08-28,Yorkshire,Service,Annual Service,662,1054
+2026-08-28,Yorkshire,Repair,Boiler Breakdown,210,399
+2026-08-29,Yorkshire,Service,Annual Service,569,998
+2026-08-29,Yorkshire,Repair,Boiler Breakdown,233,449
+2026-08-30,Yorkshire,Service,Annual Service,613,959
+2026-08-30,Yorkshire,Repair,Boiler Breakdown,245,590
+2026-08-31,Yorkshire,Service,Annual Service,581,1402
+2026-08-31,Yorkshire,Repair,Boiler Breakdown,190,401
+2026-09-01,Yorkshire,Service,Annual Service,592,1092
+2026-09-01,Yorkshire,Repair,Boiler Breakdown,222,505
+2026-09-02,Yorkshire,Service,Annual Service,618,1323
+2026-09-02,Yorkshire,Repair,Boiler Breakdown,237,487
+2026-09-03,Yorkshire,Service,Annual Service,634,1333
+2026-09-03,Yorkshire,Repair,Leak,240,487
+2026-09-04,Yorkshire,Service,Annual Service,597,994
+2026-09-04,Yorkshire,Repair,Boiler Breakdown,283,620
+2026-09-05,Yorkshire,Service,Annual Service,670,1246
+2026-09-05,Yorkshire,Repair,Boiler Breakdown,246,486
+2026-09-06,Yorkshire,Service,Annual Service,690,1548
+2026-09-06,Yorkshire,Repair,Boiler Breakdown,257,447
+2026-09-07,Yorkshire,Service,Annual Service,628,1124
+2026-09-07,Yorkshire,Repair,Leak,238,362
+2026-09-08,Yorkshire,Service,Annual Service,729,1344
+2026-09-08,Yorkshire,Repair,Boiler Breakdown,280,683
+2026-09-09,Yorkshire,Service,Annual Service,545,909
+2026-09-09,Yorkshire,Repair,Boiler Breakdown,209,462
+2026-09-10,Yorkshire,Service,Annual Service,651,989
+2026-09-10,Yorkshire,Repair,Boiler Breakdown,234,423
+2026-09-11,Yorkshire,Service,Annual Service,666,1605
+2026-09-11,Yorkshire,Repair,Leak,253,562
+2026-09-12,Yorkshire,Service,Annual Service,586,962
+2026-09-12,Yorkshire,Repair,Boiler Breakdown,242,377
+2026-09-13,Yorkshire,Service,Annual Service,609,1248
+2026-09-13,Yorkshire,Repair,Leak,216,361
+2026-09-14,Yorkshire,Service,Annual Service,676,1090
+2026-09-14,Yorkshire,Repair,Leak,261,560
+2026-09-15,Yorkshire,Service,Annual Service,670,1250
+2026-09-15,Yorkshire,Repair,Leak,241,524
+2026-09-16,Yorkshire,Service,Annual Service,668,1311
+2026-09-16,Yorkshire,Repair,Leak,283,497
+2026-09-17,Yorkshire,Service,Annual Service,774,1627
+2026-09-17,Yorkshire,Repair,Boiler Breakdown,239,544
+2026-09-18,Yorkshire,Service,Annual Service,691,1208
+2026-09-18,Yorkshire,Repair,Leak,198,415
+2026-09-19,Yorkshire,Service,Annual Service,666,1443
+2026-09-19,Yorkshire,Repair,Boiler Breakdown,248,532
+2026-09-20,Yorkshire,Service,Annual Service,704,1081
+2026-09-20,Yorkshire,Repair,Leak,248,449
+2026-09-21,Yorkshire,Service,Annual Service,722,1783
+2026-09-21,Yorkshire,Repair,Boiler Breakdown,182,332
+2026-09-22,Yorkshire,Service,Annual Service,654,1259
+2026-09-22,Yorkshire,Repair,Boiler Breakdown,241,516
+2026-09-23,Yorkshire,Service,Annual Service,588,1316
+2026-09-23,Yorkshire,Repair,Boiler Breakdown,307,743
+2026-09-24,Yorkshire,Service,Annual Service,623,1380
+2026-09-24,Yorkshire,Repair,Leak,231,423
+2026-09-25,Yorkshire,Service,Annual Service,597,1425
+2026-09-25,Yorkshire,Repair,Boiler Breakdown,272,529
+2026-09-26,Yorkshire,Service,Annual Service,690,1168
+2026-09-26,Yorkshire,Repair,Leak,232,434
+2026-09-27,Yorkshire,Service,Annual Service,590,915
+2026-09-27,Yorkshire,Repair,Boiler Breakdown,247,563
+2026-09-28,Yorkshire,Service,Annual Service,664,1466
+2026-09-28,Yorkshire,Repair,Leak,243,438
+2026-09-29,Yorkshire,Service,Annual Service,664,1203
+2026-09-29,Yorkshire,Repair,Leak,278,655
+2026-09-30,Yorkshire,Service,Annual Service,700,1188
+2026-09-30,Yorkshire,Repair,Leak,234,486
+2026-10-01,Yorkshire,Service,Annual Service,593,1173
+2026-10-01,Yorkshire,Repair,Leak,289,558
+2026-10-02,Yorkshire,Service,Annual Service,749,1381
+2026-10-02,Yorkshire,Repair,Boiler Breakdown,245,375
+2026-10-03,Yorkshire,Service,Annual Service,663,1049
+2026-10-03,Yorkshire,Repair,Leak,264,657
+2026-10-04,Yorkshire,Service,Annual Service,642,1078
+2026-10-04,Yorkshire,Repair,Leak,260,410
+2026-10-05,Yorkshire,Service,Annual Service,652,1446
+2026-10-05,Yorkshire,Repair,Boiler Breakdown,238,500
+2026-10-06,Yorkshire,Service,Annual Service,624,1228
+2026-10-06,Yorkshire,Repair,Leak,273,661
+2026-10-07,Yorkshire,Service,Annual Service,749,1413
+2026-10-07,Yorkshire,Repair,Leak,274,675
+2026-10-08,Yorkshire,Service,Annual Service,562,1121
+2026-10-08,Yorkshire,Repair,Boiler Breakdown,256,550
+2026-10-09,Yorkshire,Service,Annual Service,704,1206
+2026-10-09,Yorkshire,Repair,Leak,289,521
+2026-10-10,Yorkshire,Service,Annual Service,671,1426
+2026-10-10,Yorkshire,Repair,Boiler Breakdown,239,522
+2026-10-11,Yorkshire,Service,Annual Service,752,1309
+2026-10-11,Yorkshire,Repair,Boiler Breakdown,244,597
+2026-10-12,Yorkshire,Service,Annual Service,580,1223
+2026-10-12,Yorkshire,Repair,Leak,214,416
+2026-10-13,Yorkshire,Service,Annual Service,649,1495
+2026-10-13,Yorkshire,Repair,Boiler Breakdown,242,442
+2026-10-14,Yorkshire,Service,Annual Service,550,1090
+2026-10-14,Yorkshire,Repair,Leak,205,433
+2026-10-15,Yorkshire,Service,Annual Service,696,1327
+2026-10-15,Yorkshire,Repair,Boiler Breakdown,199,330
+2026-10-16,Yorkshire,Service,Annual Service,654,1597
+2026-10-16,Yorkshire,Repair,Boiler Breakdown,232,495
+2026-10-17,Yorkshire,Service,Annual Service,652,1481
+2026-10-17,Yorkshire,Repair,Leak,256,612
+2026-10-18,Yorkshire,Service,Annual Service,700,1128
+2026-10-18,Yorkshire,Repair,Boiler Breakdown,261,559
+2026-10-19,Yorkshire,Service,Annual Service,683,1073
+2026-10-19,Yorkshire,Repair,Boiler Breakdown,210,392
+2026-10-20,Yorkshire,Service,Annual Service,526,1182
+2026-10-20,Yorkshire,Repair,Boiler Breakdown,235,391
+2026-10-21,Yorkshire,Service,Annual Service,683,1247
+2026-10-21,Yorkshire,Repair,Leak,235,510
+2026-10-22,Yorkshire,Service,Annual Service,601,919
+2026-10-22,Yorkshire,Repair,Boiler Breakdown,284,706
+2026-10-23,Yorkshire,Service,Annual Service,645,1120
+2026-10-23,Yorkshire,Repair,Boiler Breakdown,217,474
+2026-10-24,Yorkshire,Service,Annual Service,648,1451
+2026-10-24,Yorkshire,Repair,Leak,224,554
+2026-10-25,Yorkshire,Service,Annual Service,749,1330
+2026-10-25,Yorkshire,Repair,Boiler Breakdown,210,322
+2026-10-26,Yorkshire,Service,Annual Service,573,1350
+2026-10-26,Yorkshire,Repair,Boiler Breakdown,256,409
+2026-10-27,Yorkshire,Service,Annual Service,543,1074
+2026-10-27,Yorkshire,Repair,Boiler Breakdown,228,527
+2026-10-28,Yorkshire,Service,Annual Service,648,1411
+2026-10-28,Yorkshire,Repair,Leak,271,420
+2026-10-29,Yorkshire,Service,Annual Service,663,1634
+2026-10-29,Yorkshire,Repair,Leak,229,397
+2026-07-09,Wales,Service,Annual Service,703,1058
+2026-07-09,Wales,Repair,Boiler Breakdown,270,521
+2026-07-10,Wales,Service,Annual Service,614,1516
+2026-07-10,Wales,Repair,Boiler Breakdown,210,425
+2026-07-11,Wales,Service,Annual Service,639,1375
+2026-07-11,Wales,Repair,Leak,224,377
+2026-07-12,Wales,Service,Annual Service,675,1315
+2026-07-12,Wales,Repair,Leak,260,397
+2026-07-13,Wales,Service,Annual Service,617,1339
+2026-07-13,Wales,Repair,Boiler Breakdown,268,596
+2026-07-14,Wales,Service,Annual Service,633,1445
+2026-07-14,Wales,Repair,Leak,225,345
+2026-07-15,Wales,Service,Annual Service,595,897
+2026-07-15,Wales,Repair,Boiler Breakdown,205,330
+2026-07-16,Wales,Service,Annual Service,635,1148
+2026-07-16,Wales,Repair,Leak,262,511
+2026-07-17,Wales,Service,Annual Service,653,1212
+2026-07-17,Wales,Repair,Leak,215,501
+2026-07-18,Wales,Service,Annual Service,675,1553
+2026-07-18,Wales,Repair,Leak,224,386
+2026-07-19,Wales,Service,Annual Service,733,1486
+2026-07-19,Wales,Repair,Boiler Breakdown,219,448
+2026-07-20,Wales,Service,Annual Service,590,973
+2026-07-20,Wales,Repair,Leak,208,403
+2026-07-21,Wales,Service,Annual Service,542,857
+2026-07-21,Wales,Repair,Boiler Breakdown,208,326
+2026-07-22,Wales,Service,Annual Service,618,1037
+2026-07-22,Wales,Repair,Leak,247,595
+2026-07-23,Wales,Service,Annual Service,692,1260
+2026-07-23,Wales,Repair,Boiler Breakdown,280,695
+2026-07-24,Wales,Service,Annual Service,647,1539
+2026-07-24,Wales,Repair,Leak,268,548
+2026-07-25,Wales,Service,Annual Service,663,1505
+2026-07-25,Wales,Repair,Leak,207,458
+2026-07-26,Wales,Service,Annual Service,599,1149
+2026-07-26,Wales,Repair,Leak,218,448
+2026-07-27,Wales,Service,Annual Service,639,1261
+2026-07-27,Wales,Repair,Boiler Breakdown,261,551
+2026-07-28,Wales,Service,Annual Service,617,1079
+2026-07-28,Wales,Repair,Boiler Breakdown,250,571
+2026-07-29,Wales,Service,Annual Service,673,1628
+2026-07-29,Wales,Repair,Boiler Breakdown,260,450
+2026-07-30,Wales,Service,Annual Service,679,1686
+2026-07-30,Wales,Repair,Leak,287,504
+2026-07-31,Wales,Service,Annual Service,661,1549
+2026-07-31,Wales,Repair,Boiler Breakdown,232,471
+2026-08-01,Wales,Service,Annual Service,667,1509
+2026-08-01,Wales,Repair,Boiler Breakdown,269,588
+2026-08-02,Wales,Service,Annual Service,654,1599
+2026-08-02,Wales,Repair,Leak,241,492
+2026-08-03,Wales,Service,Annual Service,722,1179
+2026-08-03,Wales,Repair,Boiler Breakdown,253,521
+2026-08-04,Wales,Service,Annual Service,664,1153
+2026-08-04,Wales,Repair,Boiler Breakdown,233,508
+2026-08-05,Wales,Service,Annual Service,591,1237
+2026-08-05,Wales,Repair,Boiler Breakdown,258,565
+2026-08-07,Wales,Service,Annual Service,592,1283
+2026-08-07,Wales,Repair,Leak,248,565
+2026-08-08,Wales,Service,Annual Service,555,1009
+2026-08-08,Wales,Repair,Leak,246,602
+2026-08-09,Wales,Service,Annual Service,607,1256
+2026-08-09,Wales,Repair,Boiler Breakdown,261,520
+2026-08-10,Wales,Service,Annual Service,716,1216
+2026-08-10,Wales,Repair,Leak,269,537
+2026-08-11,Wales,Service,Annual Service,696,1123
+2026-08-11,Wales,Repair,Leak,187,338
+2026-08-12,Wales,Service,Annual Service,568,1306
+2026-08-12,Wales,Repair,Leak,188,306
+2026-08-13,Wales,Service,Annual Service,643,1351
+2026-08-13,Wales,Repair,Boiler Breakdown,254,536
+2026-08-14,Wales,Service,Annual Service,658,1451
+2026-08-14,Wales,Repair,Boiler Breakdown,239,483
+2026-08-15,Wales,Service,Annual Service,612,1012
+2026-08-15,Wales,Repair,Boiler Breakdown,226,545
+2026-08-16,Wales,Service,Annual Service,631,1281
+2026-08-16,Wales,Repair,Boiler Breakdown,224,475
+2026-08-17,Wales,Service,Annual Service,654,1030
+2026-08-17,Wales,Repair,Leak,242,539
+2026-08-18,Wales,Service,Annual Service,695,1650
+2026-08-18,Wales,Repair,Leak,224,509
+2026-08-19,Wales,Service,Annual Service,704,1402
+2026-08-19,Wales,Repair,Leak,253,530
+2026-08-20,Wales,Service,Annual Service,674,1425
+2026-08-20,Wales,Repair,Leak,208,448
+2026-08-21,Wales,Service,Annual Service,659,1274
+2026-08-21,Wales,Repair,Boiler Breakdown,246,534
+2026-08-22,Wales,Service,Annual Service,619,953
+2026-08-22,Wales,Repair,Boiler Breakdown,242,405
+2026-08-23,Wales,Service,Annual Service,665,1592
+2026-08-23,Wales,Repair,Boiler Breakdown,261,460
+2026-08-24,Wales,Service,Annual Service,673,1387
+2026-08-24,Wales,Repair,Boiler Breakdown,211,459
+2026-08-25,Wales,Service,Annual Service,599,1257
+2026-08-25,Wales,Repair,Boiler Breakdown,276,458
+2026-08-26,Wales,Service,Annual Service,645,1530
+2026-08-26,Wales,Repair,Leak,206,362
+2026-08-27,Wales,Service,Annual Service,681,1031
+2026-08-27,Wales,Repair,Boiler Breakdown,242,457
+2026-08-28,Wales,Service,Annual Service,627,1348
+2026-08-28,Wales,Repair,Leak,207,450
+2026-08-29,Wales,Service,Annual Service,623,1158
+2026-08-29,Wales,Repair,Leak,252,430
+2026-08-30,Wales,Service,Annual Service,636,974
+2026-08-30,Wales,Repair,Leak,231,380
+2026-08-31,Wales,Service,Annual Service,616,1499
+2026-08-31,Wales,Repair,Leak,247,586
+2026-09-01,Wales,Service,Annual Service,592,1143
+2026-09-01,Wales,Repair,Leak,263,524
+2026-09-02,Wales,Service,Annual Service,652,1166
+2026-09-02,Wales,Repair,Boiler Breakdown,221,541
+2026-09-03,Wales,Service,Annual Service,660,1649
+2026-09-03,Wales,Repair,Leak,266,426
+2026-09-04,Wales,Service,Annual Service,602,1015
+2026-09-04,Wales,Repair,Boiler Breakdown,184,450
+2026-09-05,Wales,Service,Annual Service,684,1221
+2026-09-05,Wales,Repair,Boiler Breakdown,253,610
+2026-09-06,Wales,Service,Annual Service,626,1529
+2026-09-06,Wales,Repair,Boiler Breakdown,258,549
+2026-09-07,Wales,Service,Annual Service,646,1393
+2026-09-07,Wales,Repair,Leak,207,333
+2026-09-08,Wales,Service,Annual Service,591,1428
+2026-09-08,Wales,Repair,Leak,252,379
+2026-09-09,Wales,Service,Annual Service,706,1132
+2026-09-09,Wales,Repair,Leak,201,501
+2026-09-10,Wales,Service,Annual Service,645,1440
+2026-09-10,Wales,Repair,Boiler Breakdown,253,605
+2026-09-11,Wales,Service,Annual Service,613,1087
+2026-09-11,Wales,Repair,Leak,166,328
+2026-09-12,Wales,Service,Annual Service,502,945
+2026-09-12,Wales,Repair,Leak,225,504
+2026-09-13,Wales,Service,Annual Service,613,1071
+2026-09-13,Wales,Repair,Leak,202,502
+2026-09-14,Wales,Service,Annual Service,682,1023
+2026-09-14,Wales,Repair,Boiler Breakdown,297,498
+2026-09-15,Wales,Service,Annual Service,675,1357
+2026-09-15,Wales,Repair,Boiler Breakdown,215,529
+2026-09-16,Wales,Service,Annual Service,683,1568
+2026-09-16,Wales,Repair,Boiler Breakdown,279,462
+2026-09-17,Wales,Service,Annual Service,711,1738
+2026-09-17,Wales,Repair,Boiler Breakdown,242,432
+2026-09-18,Wales,Service,Annual Service,648,1122
+2026-09-18,Wales,Repair,Boiler Breakdown,253,497
+2026-09-19,Wales,Service,Annual Service,618,1450
+2026-09-19,Wales,Repair,Boiler Breakdown,232,361
+2026-09-20,Wales,Service,Annual Service,691,1464
+2026-09-20,Wales,Repair,Boiler Breakdown,248,533
+2026-09-21,Wales,Service,Annual Service,651,1038
+2026-09-21,Wales,Repair,Boiler Breakdown,223,545
+2026-09-22,Wales,Service,Annual Service,676,1243
+2026-09-22,Wales,Repair,Leak,242,526
+2026-09-23,Wales,Service,Annual Service,691,1475
+2026-09-23,Wales,Repair,Boiler Breakdown,259,628
+2026-09-24,Wales,Service,Annual Service,659,1133
+2026-09-24,Wales,Repair,Leak,216,448
+2026-09-25,Wales,Service,Annual Service,591,1407
+2026-09-25,Wales,Repair,Boiler Breakdown,232,542
+2026-09-26,Wales,Service,Annual Service,699,1733
+2026-09-26,Wales,Repair,Boiler Breakdown,244,463
+2026-09-27,Wales,Service,Annual Service,594,1253
+2026-09-27,Wales,Repair,Leak,198,383
+2026-09-28,Wales,Service,Annual Service,589,1437
+2026-09-28,Wales,Repair,Leak,258,484
+2026-09-29,Wales,Service,Annual Service,601,1465
+2026-09-29,Wales,Repair,Boiler Breakdown,230,561
+2026-09-30,Wales,Service,Annual Service,703,1244
+2026-09-30,Wales,Repair,Leak,219,516
+2026-10-01,Wales,Service,Annual Service,674,1126
+2026-10-01,Wales,Repair,Boiler Breakdown,241,583
+2026-10-02,Wales,Service,Annual Service,607,1067
+2026-10-02,Wales,Repair,Leak,214,534
+2026-10-03,Wales,Service,Annual Service,602,1010
+2026-10-03,Wales,Repair,Boiler Breakdown,253,399
+2026-10-04,Wales,Service,Annual Service,556,1201
+2026-10-04,Wales,Repair,Boiler Breakdown,211,475
+2026-10-05,Wales,Service,Annual Service,644,1246
+2026-10-05,Wales,Repair,Leak,234,583
+2026-10-06,Wales,Service,Annual Service,770,1620
+2026-10-06,Wales,Repair,Boiler Breakdown,254,504
+2026-10-07,Wales,Service,Annual Service,678,1354
+2026-10-07,Wales,Repair,Leak,272,470
+2026-10-08,Wales,Service,Annual Service,655,1521
+2026-10-08,Wales,Repair,Boiler Breakdown,219,506
+2026-10-09,Wales,Service,Annual Service,601,1161
+2026-10-09,Wales,Repair,Leak,224,488
+2026-10-10,Wales,Service,Annual Service,649,1147
+2026-10-10,Wales,Repair,Boiler Breakdown,210,404
+2026-10-11,Wales,Service,Annual Service,638,1141
+2026-10-11,Wales,Repair,Leak,242,411
+2026-10-12,Wales,Service,Annual Service,547,1212
+2026-10-12,Wales,Repair,Leak,205,481
+2026-10-13,Wales,Service,Annual Service,644,1323
+2026-10-13,Wales,Repair,Boiler Breakdown,204,408
+2026-10-14,Wales,Service,Annual Service,637,1053
+2026-10-14,Wales,Repair,Leak,229,511
+2026-10-15,Wales,Service,Annual Service,597,1440
+2026-10-15,Wales,Repair,Boiler Breakdown,183,305
+2026-10-16,Wales,Service,Annual Service,598,1232
+2026-10-16,Wales,Repair,Boiler Breakdown,252,574
+2026-10-17,Wales,Service,Annual Service,603,1107
+2026-10-17,Wales,Repair,Leak,316,644
+2026-10-18,Wales,Service,Annual Service,745,1216
+2026-10-18,Wales,Repair,Boiler Breakdown,223,510
+2026-10-19,Wales,Service,Annual Service,677,1124
+2026-10-19,Wales,Repair,Boiler Breakdown,218,484
+2026-10-20,Wales,Service,Annual Service,620,1422
+2026-10-20,Wales,Repair,Leak,237,573
+2026-10-21,Wales,Service,Annual Service,591,1268
+2026-10-21,Wales,Repair,Leak,231,564
+2026-10-22,Wales,Service,Annual Service,679,1109
+2026-10-22,Wales,Repair,Leak,245,441
+2026-10-23,Wales,Service,Annual Service,650,1147
+2026-10-23,Wales,Repair,Boiler Breakdown,225,539
+2026-10-24,Wales,Service,Annual Service,660,1097
+2026-10-24,Wales,Repair,Boiler Breakdown,258,610
+2026-10-25,Wales,Service,Annual Service,606,1512
+2026-10-25,Wales,Repair,Leak,222,419
+2026-10-26,Wales,Service,Annual Service,610,1017
+2026-10-26,Wales,Repair,Leak,282,448
+2026-10-27,Wales,Service,Annual Service,596,1226
+2026-10-27,Wales,Repair,Leak,237,469
+2026-10-28,Wales,Service,Annual Service,686,1675
+2026-10-28,Wales,Repair,Boiler Breakdown,277,646
+2026-10-29,Wales,Service,Annual Service,619,1353
+2026-10-29,Wales,Repair,Leak,207,353
+2026-07-09,Scotland,Service,Annual Service,638,1110
+2026-07-09,Scotland,Repair,Leak,221,451
+2026-07-10,Scotland,Service,Annual Service,673,1097
+2026-07-10,Scotland,Repair,Boiler Breakdown,304,641
+2026-07-11,Scotland,Service,Annual Service,649,1413
+2026-07-11,Scotland,Repair,Boiler Breakdown,289,530
+2026-07-12,Scotland,Service,Annual Service,547,1112
+2026-07-12,Scotland,Repair,Leak,306,474
+2026-07-13,Scotland,Service,Annual Service,642,1117
+2026-07-13,Scotland,Repair,Boiler Breakdown,180,327
+2026-07-14,Scotland,Service,Annual Service,692,1126
+2026-07-14,Scotland,Repair,Leak,286,436
+2026-07-15,Scotland,Service,Annual Service,705,1711
+2026-07-15,Scotland,Repair,Leak,243,554
+2026-07-16,Scotland,Service,Annual Service,659,1129
+2026-07-16,Scotland,Repair,Boiler Breakdown,264,575
+2026-07-17,Scotland,Service,Annual Service,670,1610
+2026-07-17,Scotland,Repair,Leak,251,402
+2026-07-18,Scotland,Service,Annual Service,586,1358
+2026-07-18,Scotland,Repair,Leak,235,488
+2026-07-19,Scotland,Service,Annual Service,685,1313
+2026-07-19,Scotland,Repair,Boiler Breakdown,254,439
+2026-07-20,Scotland,Service,Annual Service,722,1191
+2026-07-20,Scotland,Repair,Boiler Breakdown,262,418
+2026-07-21,Scotland,Service,Annual Service,615,1106
+2026-07-21,Scotland,Repair,Boiler Breakdown,238,434
+2026-07-22,Scotland,Service,Annual Service,644,1272
+2026-07-22,Scotland,Repair,Leak,230,513
+2026-07-23,Scotland,Service,Annual Service,638,1222
+2026-07-23,Scotland,Repair,Leak,307,615
+2026-07-24,Scotland,Service,Annual Service,647,1255
+2026-07-24,Scotland,Repair,Boiler Breakdown,266,413
+2026-07-25,Scotland,Service,Annual Service,663,1437
+2026-07-25,Scotland,Repair,Leak,208,349
+2026-07-26,Scotland,Service,Annual Service,676,1675
+2026-07-26,Scotland,Repair,Boiler Breakdown,323,766
+2026-07-27,Scotland,Service,Annual Service,578,1436
+2026-07-27,Scotland,Repair,Leak,241,602
+2026-07-28,Scotland,Service,Annual Service,660,1628
+2026-07-28,Scotland,Repair,Leak,286,455
+2026-07-29,Scotland,Service,Annual Service,616,1041
+2026-07-29,Scotland,Repair,Leak,198,484
+2026-07-30,Scotland,Service,Annual Service,625,1296
+2026-07-30,Scotland,Repair,Boiler Breakdown,294,724
+2026-07-31,Scotland,Service,Annual Service,670,1346
+2026-07-31,Scotland,Repair,Leak,278,566
+2026-08-01,Scotland,Service,Annual Service,659,1463
+2026-08-01,Scotland,Repair,Boiler Breakdown,277,624
+2026-08-02,Scotland,Service,Annual Service,624,1543
+2026-08-02,Scotland,Repair,Boiler Breakdown,189,325
+2026-08-03,Scotland,Service,Annual Service,605,968
+2026-08-03,Scotland,Repair,Leak,186,363
+2026-08-04,Scotland,Service,Annual Service,664,1412
+2026-08-04,Scotland,Repair,Boiler Breakdown,271,602
+2026-08-05,Scotland,Service,Annual Service,665,1172
+2026-08-05,Scotland,Repair,Boiler Breakdown,255,528
+2026-08-07,Scotland,Service,Annual Service,646,1050
+2026-08-07,Scotland,Repair,Leak,274,473
+2026-08-08,Scotland,Service,Annual Service,639,1103
+2026-08-08,Scotland,Repair,Boiler Breakdown,242,538
+2026-08-09,Scotland,Service,Annual Service,581,917
+2026-08-09,Scotland,Repair,Leak,282,584
+2026-08-10,Scotland,Service,Annual Service,687,1540
+2026-08-10,Scotland,Repair,Leak,197,336
+2026-08-11,Scotland,Service,Annual Service,575,1060
+2026-08-11,Scotland,Repair,Leak,256,422
+2026-08-12,Scotland,Service,Annual Service,609,1415
+2026-08-12,Scotland,Repair,Boiler Breakdown,275,652
+2026-08-13,Scotland,Service,Annual Service,678,1582
+2026-08-13,Scotland,Repair,Boiler Breakdown,237,508
+2026-08-14,Scotland,Service,Annual Service,654,1030
+2026-08-14,Scotland,Repair,Leak,224,456
+2026-08-15,Scotland,Service,Annual Service,602,1131
+2026-08-15,Scotland,Repair,Boiler Breakdown,215,483
+2026-08-16,Scotland,Service,Annual Service,622,1141
+2026-08-16,Scotland,Repair,Leak,212,365
+2026-08-17,Scotland,Service,Annual Service,725,1510
+2026-08-17,Scotland,Repair,Leak,274,577
+2026-08-18,Scotland,Service,Annual Service,649,1124
+2026-08-18,Scotland,Repair,Leak,244,463
+2026-08-19,Scotland,Service,Annual Service,591,1473
+2026-08-19,Scotland,Repair,Boiler Breakdown,211,470
+2026-08-20,Scotland,Service,Annual Service,630,1261
+2026-08-20,Scotland,Repair,Leak,270,621
+2026-08-21,Scotland,Service,Annual Service,623,1050
+2026-08-21,Scotland,Repair,Boiler Breakdown,268,483
+2026-08-22,Scotland,Service,Annual Service,626,1440
+2026-08-22,Scotland,Repair,Boiler Breakdown,211,381
+2026-08-23,Scotland,Service,Annual Service,642,1059
+2026-08-23,Scotland,Repair,Leak,221,551
+2026-08-24,Scotland,Service,Annual Service,641,1585
+2026-08-24,Scotland,Repair,Leak,253,472
+2026-08-25,Scotland,Service,Annual Service,669,1199
+2026-08-25,Scotland,Repair,Boiler Breakdown,285,673
+2026-08-26,Scotland,Service,Annual Service,574,991
+2026-08-26,Scotland,Repair,Boiler Breakdown,176,433
+2026-08-27,Scotland,Service,Annual Service,515,1121
+2026-08-27,Scotland,Repair,Leak,269,519
+2026-08-28,Scotland,Service,Annual Service,708,1397
+2026-08-28,Scotland,Repair,Boiler Breakdown,242,367
+2026-08-29,Scotland,Service,Annual Service,570,894
+2026-08-29,Scotland,Repair,Boiler Breakdown,279,473
+2026-08-30,Scotland,Service,Annual Service,603,1206
+2026-08-30,Scotland,Repair,Leak,252,480
+2026-08-31,Scotland,Service,Annual Service,686,1093
+2026-08-31,Scotland,Repair,Leak,294,588
+2026-09-01,Scotland,Service,Annual Service,639,1322
+2026-09-01,Scotland,Repair,Leak,226,389
+2026-09-02,Scotland,Service,Annual Service,577,1153
+2026-09-02,Scotland,Repair,Leak,189,313
+2026-09-03,Scotland,Service,Annual Service,641,1588
+2026-09-03,Scotland,Repair,Boiler Breakdown,242,499
+2026-09-04,Scotland,Service,Annual Service,628,986
+2026-09-04,Scotland,Repair,Boiler Breakdown,214,413
+2026-09-05,Scotland,Service,Annual Service,572,1298
+2026-09-05,Scotland,Repair,Boiler Breakdown,240,470
+2026-09-06,Scotland,Service,Annual Service,593,1108
+2026-09-06,Scotland,Repair,Leak,178,394
+2026-09-07,Scotland,Service,Annual Service,608,1073
+2026-09-07,Scotland,Repair,Leak,258,537
+2026-09-08,Scotland,Service,Annual Service,692,1597
+2026-09-08,Scotland,Repair,Leak,219,526
+2026-09-09,Scotland,Service,Annual Service,580,1230
+2026-09-09,Scotland,Repair,Boiler Breakdown,210,465
+2026-09-10,Scotland,Service,Annual Service,683,1333
+2026-09-10,Scotland,Repair,Boiler Breakdown,210,419
+2026-09-11,Scotland,Service,Annual Service,651,1136
+2026-09-11,Scotland,Repair,Boiler Breakdown,210,412
+2026-09-12,Scotland,Service,Annual Service,582,1087
+2026-09-12,Scotland,Repair,Leak,239,382
+2026-09-13,Scotland,Service,Annual Service,654,1499
+2026-09-13,Scotland,Repair,Leak,241,497
+2026-09-14,Scotland,Service,Annual Service,656,1210
+2026-09-14,Scotland,Repair,Leak,248,537
+2026-09-15,Scotland,Service,Annual Service,564,1138
+2026-09-15,Scotland,Repair,Leak,295,724
+2026-09-16,Scotland,Service,Annual Service,578,1321
+2026-09-16,Scotland,Repair,Boiler Breakdown,250,528
+2026-09-17,Scotland,Service,Annual Service,660,1263
+2026-09-17,Scotland,Repair,Leak,182,324
+2026-09-18,Scotland,Service,Annual Service,570,1175
+2026-09-18,Scotland,Repair,Leak,218,385
+2026-09-19,Scotland,Service,Annual Service,638,1032
+2026-09-19,Scotland,Repair,Leak,237,495
+2026-09-20,Scotland,Service,Annual Service,679,1297
+2026-09-20,Scotland,Repair,Leak,210,340
+2026-09-21,Scotland,Service,Annual Service,751,1536
+2026-09-21,Scotland,Repair,Leak,267,528
+2026-09-22,Scotland,Service,Annual Service,639,1504
+2026-09-22,Scotland,Repair,Boiler Breakdown,274,507
+2026-09-23,Scotland,Service,Annual Service,588,1024
+2026-09-23,Scotland,Repair,Leak,202,371
+2026-09-24,Scotland,Service,Annual Service,559,987
+2026-09-24,Scotland,Repair,Boiler Breakdown,175,268
+2026-09-25,Scotland,Service,Annual Service,599,1213
+2026-09-25,Scotland,Repair,Boiler Breakdown,226,556
+2026-09-26,Scotland,Service,Annual Service,693,1229
+2026-09-26,Scotland,Repair,Boiler Breakdown,225,510
+2026-09-27,Scotland,Service,Annual Service,777,1695
+2026-09-27,Scotland,Repair,Boiler Breakdown,273,482
+2026-09-28,Scotland,Service,Annual Service,735,1331
+2026-09-28,Scotland,Repair,Leak,222,399
+2026-09-29,Scotland,Service,Annual Service,708,1128
+2026-09-29,Scotland,Repair,Boiler Breakdown,255,565
+2026-09-30,Scotland,Service,Annual Service,732,1170
+2026-09-30,Scotland,Repair,Boiler Breakdown,250,478
+2026-10-01,Scotland,Service,Annual Service,689,1412
+2026-10-01,Scotland,Repair,Leak,180,381
+2026-10-02,Scotland,Service,Annual Service,651,1617
+2026-10-02,Scotland,Repair,Boiler Breakdown,234,573
+2026-10-03,Scotland,Service,Annual Service,570,1146
+2026-10-03,Scotland,Repair,Boiler Breakdown,248,430
+2026-10-04,Scotland,Service,Annual Service,676,1188
+2026-10-04,Scotland,Repair,Boiler Breakdown,239,497
+2026-10-05,Scotland,Service,Annual Service,710,1357
+2026-10-05,Scotland,Repair,Leak,275,638
+2026-10-06,Scotland,Service,Annual Service,617,1499
+2026-10-06,Scotland,Repair,Boiler Breakdown,299,567
+2026-10-07,Scotland,Service,Annual Service,645,1014
+2026-10-07,Scotland,Repair,Boiler Breakdown,250,564
+2026-10-08,Scotland,Service,Annual Service,675,1084
+2026-10-08,Scotland,Repair,Boiler Breakdown,274,575
+2026-10-09,Scotland,Service,Annual Service,579,1229
+2026-10-09,Scotland,Repair,Leak,176,415
+2026-10-10,Scotland,Service,Annual Service,595,1394
+2026-10-10,Scotland,Repair,Boiler Breakdown,238,415
+2026-10-11,Scotland,Service,Annual Service,663,1114
+2026-10-11,Scotland,Repair,Leak,195,331
+2026-10-12,Scotland,Service,Annual Service,676,1367
+2026-10-12,Scotland,Repair,Leak,247,522
+2026-10-13,Scotland,Service,Annual Service,669,1510
+2026-10-13,Scotland,Repair,Boiler Breakdown,202,473
+2026-10-14,Scotland,Service,Annual Service,571,1139
+2026-10-14,Scotland,Repair,Boiler Breakdown,263,441
+2026-10-15,Scotland,Service,Annual Service,640,1586
+2026-10-15,Scotland,Repair,Leak,260,608
+2026-10-16,Scotland,Service,Annual Service,717,1205
+2026-10-16,Scotland,Repair,Boiler Breakdown,259,402
+2026-10-17,Scotland,Service,Annual Service,594,1207
+2026-10-17,Scotland,Repair,Boiler Breakdown,287,631
+2026-10-18,Scotland,Service,Annual Service,616,1504
+2026-10-18,Scotland,Repair,Boiler Breakdown,242,451
+2026-10-19,Scotland,Service,Annual Service,617,1411
+2026-10-19,Scotland,Repair,Leak,238,509
+2026-10-20,Scotland,Service,Annual Service,690,1444
+2026-10-20,Scotland,Repair,Leak,275,509
+2026-10-21,Scotland,Service,Annual Service,648,1578
+2026-10-21,Scotland,Repair,Leak,237,375
+2026-10-22,Scotland,Service,Annual Service,623,1443
+2026-10-22,Scotland,Repair,Boiler Breakdown,226,355
+2026-10-23,Scotland,Service,Annual Service,639,1336
+2026-10-23,Scotland,Repair,Leak,191,377
+2026-10-24,Scotland,Service,Annual Service,537,984
+2026-10-24,Scotland,Repair,Leak,234,399
+2026-10-25,Scotland,Service,Annual Service,737,1658
+2026-10-25,Scotland,Repair,Leak,226,362
+2026-10-26,Scotland,Service,Annual Service,627,1386
+2026-10-26,Scotland,Repair,Leak,263,561
+2026-10-27,Scotland,Service,Annual Service,662,1194
+2026-10-27,Scotland,Repair,Leak,234,576
+2026-10-28,Scotland,Service,Annual Service,655,1322
+2026-10-28,Scotland,Repair,Leak,263,532
+2026-10-29,Scotland,Service,Annual Service,634,975
+2026-10-29,Scotland,Repair,Leak,239,382

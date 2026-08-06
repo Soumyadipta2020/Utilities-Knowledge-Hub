@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 # Paths
 BASE_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = BASE_DIR.parent
-DATA_DIR = BASE_DIR / "data"
+DATA_DIR = PROJECT_ROOT / "data"
 TEMPLATES_DIR = BASE_DIR / "templates"
 
 # Load environment variables from .env file

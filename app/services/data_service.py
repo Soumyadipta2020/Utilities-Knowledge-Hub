@@ -62,7 +62,7 @@ class DataService:
         if not matches:
             # Fall back to returning top sample records from first available dataset
             first_df = self._read_csv_safe("customer_master.csv")
-            matches = first_df.head(5).to_dict(orient="records") if not first_df.empty else []
+            matches = [{"dataset": "customer_master", **record} for record in first_df.head(5).to_dict(orient="records")] if not first_df.empty else []
             
         return {"success": True, "count": len(matches), "records": matches}
 
