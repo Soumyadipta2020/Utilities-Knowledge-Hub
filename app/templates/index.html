@@ -15,7 +15,7 @@
         :root {
             --bg-dark: #0d0d0d;
             --panel-bg: rgba(18, 18, 18, 0.92);
-            --panel-border: rgba(255, 255, 255, 0.07);
+            --panel-border: var(--border-subtle);
             --accent-orange: #D9662B;
             --accent-orange-soft: rgba(217, 102, 43, 0.14);
             --accent-orange-glow: rgba(217, 102, 43, 0.25);
@@ -26,6 +26,30 @@
             --user-msg-bg: linear-gradient(135deg, #D9662B 0%, #A64719 100%);
             --agent-msg-bg: rgba(22, 22, 22, 0.95);
             --card-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.8);
+            --bg-darker: rgba(12, 12, 12, 0.95);
+            --bg-lighter: rgba(22, 22, 22, 0.9);
+            --border-subtle: rgba(255, 255, 255, 0.06);
+            --border-strong: rgba(255, 255, 255, 0.15);
+        }
+
+        :root[data-theme="light"] {
+            --bg-dark: #f0f2f5;
+            --panel-bg: rgba(255, 255, 255, 0.95);
+            --panel-border: rgba(0, 0, 0, 0.08);
+            --accent-orange: #D9662B;
+            --accent-orange-soft: rgba(217, 102, 43, 0.14);
+            --accent-orange-glow: rgba(217, 102, 43, 0.25);
+            --accent-emerald: #10b981;
+            --accent-rose: #ef4444;
+            --text-primary: #111827;
+            --text-muted: #4b5563;
+            --user-msg-bg: linear-gradient(135deg, #D9662B 0%, #A64719 100%);
+            --agent-msg-bg: rgba(255, 255, 255, 0.95);
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --bg-darker: rgba(255, 255, 255, 0.95);
+            --bg-lighter: rgba(249, 250, 251, 1);
+            --border-subtle: rgba(0, 0, 0, 0.06);
+            --border-strong: rgba(0, 0, 0, 0.15);
         }
 
         /* Enterprise Multi-Cloud Storage Hub Styling */
@@ -37,8 +61,8 @@
         }
 
         .storage-card {
-            background: rgba(22, 22, 22, 0.9);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: var(--bg-lighter);
+            border: 1px solid var(--border-subtle);
             border-radius: 10px;
             padding: 14px;
             display: flex;
@@ -82,7 +106,7 @@
             font-family: 'Outfit', sans-serif;
             font-size: 13px;
             font-weight: 600;
-            color: #fff;
+            color: var(--text-primary);
             line-height: 1.2;
         }
 
@@ -119,7 +143,7 @@
 
         .storage-card-desc {
             font-size: 11px;
-            color: #94a3b8;
+            color: var(--text-primary);
             line-height: 1.45;
             margin-bottom: 10px;
         }
@@ -132,16 +156,16 @@
 
         .storage-tag {
             font-size: 9px;
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            color: #cbd5e1;
+            background: var(--border-subtle);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-primary);
             padding: 2px 5px;
             border-radius: 3px;
         }
 
         .storage-filter-btn {
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: var(--border-subtle);
+            border: 1px solid var(--border-subtle);
             color: var(--text-muted);
             padding: 5px 12px;
             border-radius: 6px;
@@ -152,7 +176,7 @@
 
         .storage-filter-btn.active, .storage-filter-btn:hover {
             background: var(--accent-orange);
-            color: #fff;
+            color: var(--text-primary);
             border-color: var(--accent-orange);
         }
 
@@ -206,7 +230,7 @@
             font-family: 'Outfit', sans-serif;
             font-weight: 700;
             font-size: 20px;
-            color: #fff;
+            color: var(--text-primary);
             box-shadow: 0 4px 14px var(--accent-orange-glow);
         }
 
@@ -215,7 +239,7 @@
             font-size: 18px;
             font-weight: 600;
             letter-spacing: -0.02em;
-            color: #fff;
+            color: var(--text-primary);
         }
 
         .brand-title p {
@@ -240,8 +264,8 @@
         select, input[type="email"] {
             width: 100%;
             padding: 12px 14px;
-            background: rgba(8, 8, 8, 0.7);
-            border: 1px solid rgba(255,255,255,0.08);
+            background: var(--panel-bg);
+            border: 1px solid var(--border-subtle);
             border-radius: 8px;
             color: var(--text-primary);
             font-size: 14px;
@@ -271,8 +295,8 @@
         .role-badge.Admin { background: rgba(244, 63, 94, 0.12); color: #f43f5e; border: 1px solid rgba(244, 63, 94, 0.3); }
 
         .permissions-card {
-            background: rgba(10, 10, 10, 0.6);
-            border: 1px solid rgba(255,255,255,0.07);
+            background: var(--panel-bg);
+            border: 1px solid var(--border-subtle);
             border-radius: 12px;
             padding: 16px;
             display: flex;
@@ -305,8 +329,8 @@
         }
 
         .prompt-btn {
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255,255,255,0.08);
+            background: var(--border-subtle);
+            border: 1px solid var(--border-subtle);
             border-radius: 8px;
             padding: 10px 12px;
             color: var(--text-muted);
@@ -324,8 +348,8 @@
 
         /* Knowledge Pipeline Visualizer Panel */
         .pipeline-banner {
-            background: rgba(10, 10, 10, 0.97);
-            border-bottom: 1px solid rgba(255,255,255,0.06);
+            background: var(--panel-bg);
+            border-bottom: 1px solid var(--border-subtle);
             padding: 16px 24px;
             display: flex;
             flex-direction: column;
@@ -343,15 +367,15 @@
             font-family: 'Outfit', sans-serif;
             font-size: 16px;
             font-weight: 600;
-            color: #fff;
+            color: var(--text-primary);
             display: flex;
             align-items: center;
             gap: 8px;
         }
 
         .pipeline-sidebar-panel {
-            background: rgba(14, 14, 14, 0.85);
-            border: 1px solid rgba(255,255,255,0.07);
+            background: var(--bg-darker);
+            border: 1px solid var(--border-subtle);
             border-radius: 12px;
             padding: 12px;
             display: flex;
@@ -377,8 +401,8 @@
             align-items: center;
             justify-content: space-between;
             padding: 0 10px;
-            background: rgba(20, 20, 20, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.06);
+            background: var(--bg-lighter);
+            border: 1px solid var(--border-subtle);
             border-radius: 6px;
             transition: all 0.2s ease;
             flex: 1;
@@ -394,8 +418,8 @@
             width: 22px;
             height: 22px;
             border-radius: 50%;
-            background: rgba(10, 10, 10, 0.9);
-            border: 1.5px solid rgba(255, 255, 255, 0.15);
+            background: var(--panel-bg);
+            border: 1.5px solid var(--border-strong);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -463,7 +487,7 @@
             position: fixed;
             bottom: 24px;
             right: 24px;
-            background: rgba(15, 15, 15, 0.97);
+            background: var(--panel-bg);
             backdrop-filter: blur(12px);
             border: 1px solid rgba(217, 102, 43, 0.35);
             border-radius: 12px;
@@ -490,7 +514,7 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: rgba(0, 0, 0, 0.92);
+            background: var(--panel-bg);
             backdrop-filter: blur(12px);
             z-index: 10000;
             display: flex;
@@ -504,7 +528,7 @@
             width: 100%;
             max-width: 1300px;
             height: calc(100vh - 32px);
-            background: rgba(14, 14, 14, 0.99);
+            background: var(--bg-darker);
             border: 1px solid rgba(217, 102, 43, 0.22);
             border-radius: 14px;
             box-shadow: 0 24px 80px rgba(0, 0, 0, 0.95);
@@ -516,8 +540,8 @@
         .graph-modal-header {
             flex-shrink: 0;
             padding: 12px 20px;
-            background: rgba(10, 10, 10, 0.9);
-            border-bottom: 1px solid rgba(255,255,255,0.07);
+            background: var(--panel-bg);
+            border-bottom: 1px solid var(--border-subtle);
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -526,7 +550,7 @@
         .graph-modal-body {
             flex: 1;
             min-height: 0;
-            background: #080808;
+            background: var(--panel-bg);
             display: flex;
             flex-direction: column;
             overflow: hidden;
@@ -535,8 +559,8 @@
         .graph-controls-bar {
             flex-shrink: 0;
             padding: 8px 16px;
-            background: rgba(12, 12, 12, 0.95);
-            border-bottom: 1px solid rgba(255,255,255,0.07);
+            background: var(--bg-darker);
+            border-bottom: 1px solid var(--border-subtle);
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -554,8 +578,8 @@
         }
 
         .filter-pill {
-            background: rgba(22, 22, 22, 0.8);
-            border: 1px solid rgba(255, 255, 255, 0.09);
+            background: var(--bg-lighter);
+            border: 1px solid var(--border-subtle);
             border-radius: 20px;
             padding: 5px 14px;
             font-size: 11px;
@@ -568,7 +592,7 @@
         .filter-pill:hover, .filter-pill.active {
             background: var(--accent-orange-soft);
             border-color: var(--accent-orange);
-            color: #fff;
+            color: var(--text-primary);
         }
 
         .filter-pill.domain.active { border-color: #22c55e; color: #22c55e; background: rgba(34, 197, 94, 0.15); }
@@ -579,8 +603,8 @@
         .view-mode-toggle {
             display: flex;
             align-items: center;
-            background: rgba(8, 8, 8, 0.9);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: var(--panel-bg);
+            border: 1px solid var(--border-subtle);
             border-radius: 20px;
             padding: 2px;
             gap: 2px;
@@ -591,18 +615,18 @@
             border-radius: 16px;
             font-size: 11px;
             font-weight: 600;
-            color: #94a3b8;
+            color: var(--text-primary);
             background: transparent;
             border: none;
             cursor: pointer;
             transition: all 0.2s ease;
         }
 
-        .view-toggle-btn:hover { color: #fff; }
+        .view-toggle-btn:hover { color: var(--text-primary); }
 
         .view-toggle-btn.active {
             background: var(--accent-orange);
-            color: #fff;
+            color: var(--text-primary);
             box-shadow: 0 2px 8px var(--accent-orange-glow);
         }
 
@@ -612,7 +636,7 @@
             overflow-y: auto;
             overflow-x: hidden;
             position: relative;
-            background: #080808;
+            background: var(--panel-bg);
         }
 
         #graphCanvas {
@@ -625,8 +649,8 @@
             flex-shrink: 0;
             width: 100%;
             padding: 10px 20px;
-            background: rgba(8, 8, 8, 0.98);
-            border-top: 1px solid rgba(255,255,255,0.07);
+            background: var(--panel-bg);
+            border-top: 1px solid var(--border-subtle);
             max-height: 100px;
             overflow-y: auto;
         }
@@ -641,9 +665,9 @@
 
         .chat-header {
             padding: 20px 32px;
-            background: rgba(12, 12, 12, 0.95);
+            background: var(--bg-darker);
             backdrop-filter: blur(16px);
-            border-bottom: 1px solid rgba(255,255,255,0.06);
+            border-bottom: 1px solid var(--border-subtle);
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -722,13 +746,13 @@
         }
 
         .avatar.user {
-            background: rgba(30, 30, 30, 1);
+            background: var(--panel-bg);
             border: 1.5px solid rgba(217, 102, 43, 0.4);
             color: var(--accent-orange);
         }
 
         .avatar.agent {
-            background: rgba(30, 30, 30, 1);
+            background: var(--panel-bg);
             border: 1.5px solid rgba(217, 102, 43, 0.4);
             color: var(--accent-orange);
         }
@@ -763,16 +787,16 @@
         }
 
         .message-row.user .message-bubble {
-            background: rgba(28, 20, 16, 0.95);
+            background: var(--panel-bg);
             border: 1px solid rgba(217, 102, 43, 0.35);
-            color: #f5f5f5;
+            color: var(--text-primary);
             border-bottom-right-radius: 4px;
         }
 
         .message-row.agent .message-bubble {
-            background: rgba(18, 18, 18, 0.97);
+            background: var(--panel-bg);
             color: var(--text-primary);
-            border: 1px solid rgba(255, 255, 255, 0.07);
+            border: 1px solid var(--border-subtle);
             border-left: 2px solid rgba(217, 102, 43, 0.35);
             border-bottom-left-radius: 4px;
             backdrop-filter: blur(12px);
@@ -788,7 +812,7 @@
         .action-btn {
             background: transparent;
             border: none;
-            color: rgba(255, 255, 255, 0.4);
+            color: var(--text-primary);
             cursor: pointer;
             padding: 4px;
             border-radius: 4px;
@@ -799,7 +823,7 @@
         }
 
         .action-btn:hover {
-            color: rgba(255, 255, 255, 0.9);
+            color: var(--text-primary);
             background: rgba(255, 255, 255, 0.1);
         }
 
@@ -854,9 +878,9 @@
         /* Input Bar */
         .chat-input-area {
             padding: 14px 24px;
-            background: rgba(10, 10, 10, 0.97);
+            background: var(--panel-bg);
             backdrop-filter: blur(16px);
-            border-top: 1px solid rgba(255,255,255,0.06);
+            border-top: 1px solid var(--border-subtle);
         }
 
         .input-form {
@@ -868,10 +892,10 @@
         .input-field {
             flex: 1;
             padding: 11px 16px;
-            background: rgba(18, 18, 18, 0.9);
-            border: 1px solid rgba(255,255,255,0.09);
+            background: var(--panel-bg);
+            border: 1px solid var(--border-subtle);
             border-radius: 10px;
-            color: #fff;
+            color: var(--text-primary);
             font-size: 13px;
             outline: none;
             transition: all 0.2s ease;
@@ -887,7 +911,7 @@
             background: var(--accent-orange);
             border: none;
             border-radius: 10px;
-            color: #fff;
+            color: #ffffff;
             font-weight: 600;
             font-size: 13px;
             cursor: pointer;
@@ -908,8 +932,8 @@
             display: flex;
             gap: 24px;
             padding: 0 32px;
-            background: rgba(12, 12, 12, 0.95);
-            border-bottom: 1px solid rgba(255,255,255,0.06);
+            background: var(--bg-darker);
+            border-bottom: 1px solid var(--border-subtle);
             overflow-x: auto;
             flex-shrink: 0;
         }
@@ -952,8 +976,8 @@
             gap: 12px;
         }
         .metric-card {
-            background: rgba(20, 20, 20, 0.8);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            background: var(--bg-lighter);
+            border: 1px solid var(--border-subtle);
             border-radius: 10px;
             padding: 12px;
             display: flex;
@@ -978,7 +1002,7 @@
             font-size: 18px; margin: 0;
             font-family: 'Outfit', sans-serif;
             font-weight: 700;
-            color: #fff;
+            color: var(--text-primary);
         }
         .metric-change {
             font-size: 12px;
@@ -996,9 +1020,9 @@
             align-items: center;
             justify-content: space-between;
             padding: 6px 12px;
-            background: rgba(10, 10, 10, 0.6);
+            background: var(--panel-bg);
             border-radius: 6px;
-            border: 1px solid rgba(255,255,255,0.05);
+            border: 1px solid var(--border-subtle);
             font-size: 11.5px;
         }
         .status-badge {
@@ -1017,8 +1041,8 @@
             margin: 12px 0;
         }
         .process-step {
-            background: rgba(30, 30, 30, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: var(--panel-bg);
+            border: 1px solid var(--border-subtle);
             border-radius: 6px;
             padding: 8px;
             flex: 1;
@@ -1039,14 +1063,14 @@
             line-height: 1.3;
         }
         .process-arrow {
-            color: rgba(255, 255, 255, 0.2);
+            color: var(--text-primary);
             font-size: 14px;
             display: flex;
             align-items: center;
         }
         .tab-section-title {
             font-size: 12px;
-            color: #fff;
+            color: var(--text-primary);
             margin-top: 14px;
             text-transform: uppercase;
             letter-spacing: 0.05em;
@@ -1066,7 +1090,7 @@
     display: none;
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.7);
+    background: var(--panel-bg);
     backdrop-filter: blur(4px);
     z-index: 1000;
     align-items: center;
@@ -1074,8 +1098,8 @@
 }
 .modal-overlay.active { display: flex; }
 .relation-modal {
-    background: #111;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--panel-bg);
+    border: 1px solid var(--border-subtle);
     border-radius: 12px;
     width: 600px;
     padding: 24px;
@@ -1107,12 +1131,12 @@
 
 .relation-header {
     display: flex; justify-content: space-between; align-items: center;
-    border-bottom: 1px solid rgba(255,255,255,0.05);
+    border-bottom: 1px solid var(--border-subtle);
     padding-bottom: 12px;
 }
-.relation-header h3 { margin: 0; font-size: 16px; color: #fff; }
-.close-modal { background: none; border: none; color: #a1a1aa; cursor: pointer; font-size: 20px; }
-.close-modal:hover { color: #fff; }
+.relation-header h3 { margin: 0; font-size: 16px; color: var(--text-primary); }
+.close-modal { background: none; border: none; color: var(--text-primary); cursor: pointer; font-size: 20px; }
+.close-modal:hover { color: var(--text-primary); }
 .relation-body { display: flex; flex-direction: column; gap: 16px; }
 .relations-tab-content {
     padding: 24px 28px;
@@ -1121,8 +1145,8 @@
 .relations-tab-panel {
     width: min(980px, 100%);
     margin: 0 auto;
-    background: rgba(17, 17, 17, 0.94);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--panel-bg);
+    border: 1px solid var(--border-subtle);
     border-radius: 14px;
     padding: 24px;
     box-shadow: 0 16px 45px rgba(0, 0, 0, 0.35);
@@ -1137,18 +1161,18 @@
     align-items: flex-start;
     gap: 24px;
     padding-bottom: 18px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    border-bottom: 1px solid var(--border-subtle);
 }
 .relations-tab-header h3 {
     margin: 0;
-    color: #fff;
+    color: var(--text-primary);
     font-family: 'Outfit', sans-serif;
     font-size: 20px;
 }
 .relations-tab-header p {
     margin: 6px 0 0;
     max-width: 690px;
-    color: #94a3b8;
+    color: var(--text-primary);
     font-size: 12px;
     line-height: 1.55;
 }
@@ -1175,15 +1199,15 @@
     width: 32px;
     height: 32px;
     padding: 0;
-    color: #94a3b8;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+    background: var(--border-subtle);
+    border: 1px solid var(--border-subtle);
     border-radius: 8px;
     cursor: pointer;
     transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
 }
 .relations-tab-close:hover {
-    color: #fff;
+    color: var(--text-primary);
     background: rgba(244, 63, 94, 0.12);
     border-color: rgba(244, 63, 94, 0.45);
 }
@@ -1200,7 +1224,7 @@
     gap: 8px;
     min-width: 0;
     background: rgba(255, 255, 255, 0.025);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--border-subtle);
     border-radius: 10px;
     padding: 16px;
 }
@@ -1211,7 +1235,7 @@
     align-items: center;
     gap: 8px;
     margin-bottom: 4px;
-    color: #fff;
+    color: var(--text-primary);
     font-size: 13px;
     font-weight: 700;
 }
@@ -1232,7 +1256,7 @@
 }
 .relation-side-card label {
     margin-top: 4px;
-    color: #94a3b8;
+    color: var(--text-primary);
     font-size: 10px;
     font-weight: 700;
     text-transform: uppercase;
@@ -1245,8 +1269,8 @@
 }
 .relation-side-card select {
     width: 100%;
-    background: #1a1a1a;
-    border: 1px solid rgba(255,255,255,0.1);
+    background: var(--panel-bg);
+    border: 1px solid var(--border-subtle);
     color: #e4e4e7;
     padding: 10px 12px;
     border-radius: 6px;
@@ -1281,11 +1305,11 @@
     margin-top: 18px;
     padding: 14px 16px;
     background: rgba(255, 255, 255, 0.025);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--border-subtle);
     border-radius: 9px;
 }
 .relationship-definition-field label {
-    color: #e2e8f0;
+    color: var(--text-primary);
     font-size: 10px;
     font-weight: 700;
     text-transform: uppercase;
@@ -1295,8 +1319,8 @@
     width: 100%;
     padding: 10px 12px;
     color: #f8fafc;
-    background: #1a1a1a;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--panel-bg);
+    border: 1px solid var(--border-subtle);
     border-radius: 6px;
     outline: none;
 }
@@ -1325,14 +1349,14 @@
     letter-spacing: 0.035em;
     text-transform: uppercase;
 }
-.ai-relation-suggestion-title i { color: #a5b4fc; }
+.ai-relation-suggestion-title i { color: var(--text-primary); }
 .ai-suggestion-refresh,
 .ai-suggestion-apply {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 6px;
-    color: #c7d2fe;
+    color: var(--text-primary);
     background: rgba(99, 102, 241, 0.12);
     border: 1px solid rgba(129, 140, 248, 0.28);
     border-radius: 6px;
@@ -1346,7 +1370,7 @@
 .ai-suggestion-refresh:disabled { opacity: 0.55; cursor: wait; }
 .ai-suggestion-status {
     margin-top: 10px;
-    color: #94a3b8;
+    color: var(--text-primary);
     font-size: 10px;
     line-height: 1.45;
 }
@@ -1360,7 +1384,7 @@
 }
 .ai-suggestion-chip {
     padding: 3px 7px;
-    color: #c7d2fe;
+    color: var(--text-primary);
     background: rgba(99, 102, 241, 0.12);
     border: 1px solid rgba(129, 140, 248, 0.2);
     border-radius: 999px;
@@ -1369,11 +1393,11 @@
 }
 .ai-suggestion-result p {
     margin: 5px 0;
-    color: #cbd5e1;
+    color: var(--text-primary);
     font-size: 10px;
     line-height: 1.5;
 }
-.ai-suggestion-result .ai-suggestion-reason { color: #94a3b8; }
+.ai-suggestion-result .ai-suggestion-reason { color: var(--text-primary); }
 .ai-suggestion-result .ai-suggestion-warning { color: #fbbf24; }
 .ai-suggestion-apply { margin-top: 8px; }
 .relation-form-status {
@@ -1384,7 +1408,7 @@
 }
 .save-relation-btn {
     background: #22c55e;
-    color: #fff;
+    color: var(--text-primary);
     border: none;
     padding: 10px 16px;
     border-radius: 6px;
@@ -1397,7 +1421,7 @@
 .save-relation-btn:disabled { opacity: 0.55; cursor: wait; }
 .saved-relations-list {
     margin-top: 22px;
-    border-top: 1px solid rgba(255,255,255,0.05);
+    border-top: 1px solid var(--border-subtle);
     padding-top: 16px;
 }
 .saved-relations-heading {
@@ -1406,16 +1430,16 @@
     align-items: center;
     margin-bottom: 10px;
 }
-.saved-relations-heading h4 { margin: 0; color: #fff; font-size: 12px; }
+.saved-relations-heading h4 { margin: 0; color: var(--text-primary); font-size: 12px; }
 .saved-relations-heading span { color: #64748b; font-size: 10px; }
 .relation-item {
     background: rgba(255,255,255,0.02);
-    border: 1px solid rgba(255,255,255,0.05);
+    border: 1px solid var(--border-subtle);
     padding: 10px;
     border-radius: 6px;
     margin-bottom: 8px;
     font-size: 12px;
-    color: #a1a1aa;
+    color: var(--text-primary);
     line-height: 1.4;
     display: flex;
     align-items: center;
@@ -1423,9 +1447,9 @@
     gap: 12px;
 }
 .relation-item-content { min-width: 0; }
-.relation-item strong { color: #fff; }
+.relation-item strong { color: var(--text-primary); }
 .relation-item code {
-    color: #e2a37e;
+    color: var(--text-primary);
     background: rgba(217, 102, 43, 0.1);
     border-radius: 4px;
     padding: 2px 5px;
@@ -1446,7 +1470,7 @@
     transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 .delete-relation-btn:hover {
-    color: #fff;
+    color: var(--text-primary);
     background: rgba(244, 63, 94, 0.22);
     border-color: rgba(244, 63, 94, 0.6);
 }
@@ -1459,7 +1483,7 @@
     align-items: center;
     justify-content: center;
     padding: 20px;
-    background: rgba(0, 0, 0, 0.72);
+    background: var(--panel-bg);
     backdrop-filter: blur(5px);
 }
 .manual-confirm-overlay.active { display: flex; }
@@ -1467,7 +1491,7 @@
     width: min(460px, 100%);
     padding: 22px;
     color: #f8fafc;
-    background: #151515;
+    background: var(--panel-bg);
     border: 1px solid rgba(244, 63, 94, 0.32);
     border-radius: 12px;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.65);
@@ -1487,15 +1511,15 @@
 .manual-confirm-dialog h4 { margin: 0; font-size: 16px; }
 .manual-confirm-dialog p {
     margin: 7px 0 14px;
-    color: #94a3b8;
+    color: var(--text-primary);
     font-size: 11px;
     line-height: 1.5;
 }
 .manual-confirm-mapping {
     padding: 11px 12px;
-    color: #e2e8f0;
+    color: var(--text-primary);
     background: rgba(255, 255, 255, 0.035);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--border-subtle);
     border-radius: 7px;
     font-family: monospace;
     font-size: 11px;
@@ -1516,12 +1540,12 @@
     font-weight: 700;
 }
 .manual-confirm-cancel {
-    color: #cbd5e1;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: var(--text-primary);
+    background: var(--border-subtle);
+    border: 1px solid var(--border-strong);
 }
 .manual-confirm-delete {
-    color: #fff;
+    color: var(--text-primary);
     background: #e11d48;
     border: 1px solid #f43f5e;
 }
@@ -1530,7 +1554,7 @@
 .relations-empty-state {
     padding: 18px;
     color: #64748b;
-    border: 1px dashed rgba(255, 255, 255, 0.1);
+    border: 1px dashed var(--border-subtle);
     border-radius: 8px;
     text-align: center;
     font-size: 11px;
@@ -1569,18 +1593,18 @@
     margin: 5px 0;
     font-family: 'Outfit', sans-serif;
     font-size: 22px;
-    color: #fff;
+    color: var(--text-primary);
 }
 .executive-section-header p {
     max-width: 780px;
-    color: #94a3b8;
+    color: var(--text-primary);
     font-size: 12px;
     line-height: 1.55;
 }
 .trace-run-btn {
     flex-shrink: 0;
     padding: 8px 13px;
-    color: #fff;
+    color: var(--text-primary);
     background: var(--accent-orange);
     border: none;
     border-radius: 6px;
@@ -1597,8 +1621,8 @@
 }
 .trust-posture-card {
     padding: 14px;
-    background: rgba(18,18,18,.92);
-    border: 1px solid rgba(255,255,255,.075);
+    background: var(--panel-bg);
+    border: 1px solid var(--border-subtle);
     border-radius: 10px;
 }
 .trust-posture-card.security-overall-card { border-color: rgba(245,158,11,.28); }
@@ -1618,7 +1642,7 @@
 .trust-posture-card > small {
     display: block;
     margin-top: 4px;
-    color: #94a3b8;
+    color: var(--text-primary);
     font-size: 9.5px;
     line-height: 1.4;
 }
@@ -1630,8 +1654,8 @@
 }
 .trust-center-panel {
     padding: 16px;
-    background: rgba(16,16,16,.94);
-    border: 1px solid rgba(255,255,255,.07);
+    background: var(--panel-bg);
+    border: 1px solid var(--border-subtle);
     border-radius: 10px;
 }
 .security-access-panel { margin-bottom: 14px; }
@@ -1642,7 +1666,7 @@
     gap: 16px;
     margin-bottom: 12px;
 }
-.security-section-heading h4 { margin: 0 0 4px; color: #fff; font-size: 12px; }
+.security-section-heading h4 { margin: 0 0 4px; color: var(--text-primary); font-size: 12px; }
 .security-section-heading p { color: #64748b; font-size: 9.5px; line-height: 1.45; }
 .security-summary-chip {
     flex-shrink: 0;
@@ -1659,7 +1683,7 @@
 .security-status-card {
     padding: 11px;
     background: rgba(255,255,255,.025);
-    border: 1px solid rgba(255,255,255,.065);
+    border: 1px solid var(--border-subtle);
     border-radius: 7px;
 }
 .security-status-heading {
@@ -1668,8 +1692,8 @@
     align-items: flex-start;
     gap: 10px;
 }
-.security-status-heading strong { color: #e2e8f0; font-size: 10.5px; }
-.security-status-card p { margin-top: 7px; color: #94a3b8; font-size: 9.5px; line-height: 1.45; }
+.security-status-heading strong { color: var(--text-primary); font-size: 10.5px; }
+.security-status-card p { margin-top: 7px; color: var(--text-primary); font-size: 9.5px; line-height: 1.45; }
 .security-status-badge {
     padding: 2px 6px;
     border-radius: 4px;
@@ -1684,8 +1708,8 @@
     width: fit-content;
     margin-top: 7px;
     padding: 2px 6px;
-    color: #94a3b8;
-    background: rgba(0,0,0,.28);
+    color: var(--text-primary);
+    background: var(--bg-darker);
     border-radius: 4px;
     font-family: monospace;
     font-size: 8.5px;
@@ -1696,18 +1720,18 @@
     gap: 7px;
     margin-top: 8px;
     padding-top: 8px;
-    color: #cbd5e1;
+    color: var(--text-primary);
     border-top: 1px solid rgba(255,255,255,.05);
     font-size: 9px;
     line-height: 1.45;
 }
 .security-protection-detail i { margin-top: 2px; color: #4ade80; }
-.security-table-wrap { overflow-x: auto; border: 1px solid rgba(255,255,255,.06); border-radius: 7px; }
+.security-table-wrap { overflow-x: auto; border: 1px solid var(--border-subtle); border-radius: 7px; }
 .security-table { width: 100%; border-collapse: collapse; font-size: 9.5px; text-align: left; }
 .security-table th {
     padding: 8px 10px;
     color: #64748b;
-    background: rgba(0,0,0,.26);
+    background: var(--bg-darker);
     border-bottom: 1px solid rgba(255,255,255,.07);
     font-size: 8px;
     letter-spacing: .05em;
@@ -1716,7 +1740,7 @@
 }
 .security-table td {
     padding: 9px 10px;
-    color: #cbd5e1;
+    color: var(--text-primary);
     border-bottom: 1px solid rgba(255,255,255,.045);
     white-space: nowrap;
 }
@@ -1746,7 +1770,7 @@
 .control-register-item {
     padding: 10px;
     background: rgba(255,255,255,.025);
-    border: 1px solid rgba(255,255,255,.06);
+    border: 1px solid var(--border-subtle);
     border-radius: 7px;
 }
 .control-register-heading {
@@ -1754,11 +1778,11 @@
     justify-content: space-between;
     gap: 8px;
     margin-bottom: 6px;
-    color: #e2e8f0;
+    color: var(--text-primary);
     font-size: 9.5px;
     font-weight: 700;
 }
-.control-register-item p { color: #94a3b8; font-size: 8.8px; line-height: 1.45; }
+.control-register-item p { color: var(--text-primary); font-size: 8.8px; line-height: 1.45; }
 
 @media (max-width: 1150px) {
     .trust-posture-grid, .control-register { grid-template-columns: repeat(2, 1fr); }
@@ -1769,7 +1793,7 @@
 }
 .arch-bucket {
     transition: all 0.4s ease;
-    border: 1px solid rgba(255,255,255,0.08);
+    border: 1px solid var(--border-subtle);
 }
 .arch-bucket.exec-stage-active {
     border-color: var(--accent-orange);
@@ -1782,7 +1806,7 @@
     background: rgba(34, 197, 94, 0.05) !important;
 }
 .arch-arrow {
-    color: rgba(255, 255, 255, 0.15);
+    color: var(--border-strong);
     transition: all 0.4s ease;
 }
 .arch-arrow.exec-arrow-active {
@@ -1792,6 +1816,86 @@
 .arch-arrow.exec-arrow-done {
     color: rgba(34, 197, 94, 0.8);
 }
+        /* Light Theme Overrides for hardcoded elements */
+        [data-theme="light"] .executive-tab {
+            background: var(--bg-dark) !important;
+        }
+        [data-theme="light"] .ai-relation-suggestion-title i,
+        [data-theme="light"] .ai-suggestion-refresh,
+        [data-theme="light"] .ai-suggestion-apply,
+        [data-theme="light"] .ai-suggestion-chip,
+        [data-theme="light"] .ai-suggestion-status,
+        [data-theme="light"] .ai-suggestion-result p,
+        [data-theme="light"] .ai-suggestion-result .ai-suggestion-reason {
+            color: var(--text-primary) !important;
+        }
+
+        [data-theme="light"] body {
+            background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(at 5% 5%, rgba(217, 102, 43, 0.08) 0px, transparent 45%),
+                radial-gradient(at 95% 95%, rgba(217, 102, 43, 0.05) 0px, transparent 45%);
+        }
+        [data-theme="light"] .chat-input-area {
+            background: rgba(255, 255, 255, 0.95) !important;
+            border-top: 1px solid var(--panel-border) !important;
+        }
+        [data-theme="light"] select, 
+        [data-theme="light"] input[type="email"],
+        [data-theme="light"] .input-field {
+            background: #f0f2f5 !important;
+            color: var(--text-primary) !important;
+            border-color: var(--panel-border) !important;
+        }
+        [data-theme="light"] .message-row.agent .message-bubble {
+            background: rgba(255, 255, 255, 0.95) !important;
+            border-color: var(--panel-border) !important;
+            border-left: 2px solid rgba(217, 102, 43, 0.5) !important;
+        }
+        [data-theme="light"] .message-row.user .message-bubble {
+            background: linear-gradient(135deg, #D9662B 0%, #A64719 100%) !important;
+            color: #ffffff !important;
+            border: none !important;
+        }
+        [data-theme="light"] .chat-header {
+            background: rgba(255, 255, 255, 0.95) !important;
+            border-bottom: 1px solid var(--panel-border) !important;
+        }
+        [data-theme="light"] [style*="color: var(--text-primary)"],
+        [data-theme="light"] [style*="color: var(--text-primary)"],
+        [data-theme="light"] [style*="color: white"],
+        [data-theme="light"] [style*="color: var(--text-primary)"] {
+            color: var(--text-primary) !important;
+        }
+        /* Except badge text which might need white */
+        [data-theme="light"] span[style*="background: var(--accent-orange)"],
+        [data-theme="light"] span[style*="background: #c084fc"],
+        [data-theme="light"] span[style*="background: #22c55e"] {
+            color: var(--text-primary) !important;
+        }
+        [data-theme="light"] [style*="background: rgba(12, 12, 12"],
+        [data-theme="light"] [style*="background: rgba(14,14,14"],
+        [data-theme="light"] [style*="background: rgba(22, 22, 22"],
+        [data-theme="light"] [style*="background: rgba(20, 20, 20"],
+        [data-theme="light"] [style*="background: rgba(10, 10, 10"] {
+            background: var(--bg-lighter) !important;
+        }
+        /* Additional Light Theme text fixes */
+        [data-theme="light"] .ai-relation-suggestion-title,
+        [data-theme="light"] .stage-title,
+        [data-theme="light"] .security-table td strong {
+            color: var(--text-primary) !important;
+        }
+        [data-theme="light"] .security-live-badge,
+        [data-theme="light"] [style*="color: #4ade80"] {
+            color: #16a34a !important;
+        }
+        [data-theme="light"] .stage-status {
+            color: var(--text-muted) !important;
+        }
+        [data-theme="light"] .stage-status[style*="#4ade80"] {
+            color: #16a34a !important;
+        }
 </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -1818,7 +1922,7 @@
         <div class="pipeline-sidebar-panel" id="pipelineBanner">
             <div style="display: flex; justify-content: space-between; align-items: center;">
                 <div>
-                    <h3 style="font-size: 15px; font-weight: 600; color: #fff;">OEM Knowledge Base</h3>
+                    <h3 style="font-size: 15px; font-weight: 600; color: var(--text-primary);">OEM Knowledge Base</h3>
                 </div>
                 <button class="ticket-btn" style="background: var(--accent-orange); padding: 5px 10px; font-size: 11px; display: inline-flex; align-items: center; gap: 4px;" onclick="triggerPipeline()">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Run Pipeline
@@ -1839,7 +1943,7 @@
             </div>
         </div>
 
-        <button class="prompt-btn" style="background: var(--accent-orange-soft); border-color: rgba(217, 102, 43, 0.35); color: #e2a37e; margin-top: auto; display: flex; align-items: center; gap: 8px;" onclick="toggleGraphModal()">
+        <button class="prompt-btn" style="background: var(--accent-orange-soft); border-color: rgba(217, 102, 43, 0.35); color: var(--text-primary); margin-top: auto; display: flex; align-items: center; gap: 8px;" onclick="toggleGraphModal()">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg> View Interactive Knowledge Graph
         </button>
         <button class="prompt-btn" style="background: rgba(34, 197, 94, 0.1); border-color: rgba(34, 197, 94, 0.35); color: #4ade80; margin-top: 8px; display: flex; align-items: center; gap: 8px;" onclick="openRelationModal()">
@@ -1849,16 +1953,21 @@
 
     <!-- Main Chat View -->
     <main class="chat-container">
-        <header class="chat-header" style="padding: 0 24px; border-bottom: 1px solid rgba(255,255,255,0.06); display: flex; justify-content: space-between; align-items: center; background: rgba(12, 12, 12, 0.95); backdrop-filter: blur(16px); flex-shrink: 0;">
+        <header class="chat-header" style="padding: 0 24px; border-bottom: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; background: var(--bg-darker); backdrop-filter: blur(16px); flex-shrink: 0;">
             <div class="nav-tabs" style="padding: 0; background: transparent; border-bottom: none; margin: 0;">
                 <div class="nav-tab active" onclick="switchMainTab(this, 'tab-conversation')">Conversation</div>
                 <div class="nav-tab" onclick="switchMainTab(this, 'tab-harnessing')">Domain Intelligence Sub-System Metrics</div>
                 <div class="nav-tab" onclick="switchMainTab(this, 'tab-storage')">Storage & Governance</div>
                 <div class="nav-tab" onclick="switchMainTab(this, 'tab-trust')">Trust Center</div>
             </div>
-            <div class="status-indicator">
-                <span class="status-dot"></span>
-                <span>AI Agent Active</span>
+            <div style="display: flex; align-items: center; gap: 16px;">
+                <button id="themeToggleBtn" onclick="toggleTheme()" style="background: none; border: none; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; transition: all 0.2s ease;" title="Toggle Theme">
+                    <i class="fa-solid fa-moon"></i>
+                </button>
+                <div class="status-indicator">
+                    <span class="status-dot"></span>
+                    <span>AI Agent Active</span>
+                </div>
             </div>
         </header>
 
@@ -1886,9 +1995,9 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
                 <div onclick="runDemoScenario('Check telemetry metrics for boiler_telemetry_logs and fault_codes datasets')" style="flex: 1; min-width: 190px; background: rgba(217, 102, 43, 0.1); border: 1px solid rgba(217, 102, 43, 0.3); border-radius: 8px; padding: 8px 12px; cursor: pointer; transition: all 0.2s ease;" onmouseover="this.style.borderColor='var(--accent-orange)'; this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='rgba(217, 102, 43, 0.3)'; this.style.transform='none'">
                     <div style="font-size: 10.5px; font-weight: 700; color: var(--accent-orange); display: flex; align-items: center; justify-content: space-between;">
                         <span>🛠️ SCENARIO 1</span>
-                        <span style="font-size: 8.5px; background: var(--accent-orange); color: #fff; padding: 2px 5px; border-radius: 4px; font-weight: 700;">Azure & Databricks</span>
+                        <span style="font-size: 8.5px; background: var(--accent-orange); color: #ffffff; padding: 2px 5px; border-radius: 4px; font-weight: 700;">Azure & Databricks</span>
                     </div>
-                    <div style="font-size: 11.5px; font-weight: 600; color: #fff; margin-top: 3px;">Boiler Telemetry Diagnostics</div>
+                    <div style="font-size: 11.5px; font-weight: 600; color: var(--text-primary); margin-top: 3px;">Boiler Telemetry Diagnostics</div>
                     <div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">boiler_telemetry_logs & fault_codes</div>
                 </div>
 
@@ -1897,7 +2006,7 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
                         <span>👤 SCENARIO 2</span>
                         <span style="font-size: 8.5px; background: #c084fc; color: #000; padding: 2px 5px; border-radius: 4px; font-weight: 700;">Salesforce & SAP</span>
                     </div>
-                    <div style="font-size: 11.5px; font-weight: 600; color: #fff; margin-top: 3px;">SME & Customer Lineage</div>
+                    <div style="font-size: 11.5px; font-weight: 600; color: var(--text-primary); margin-top: 3px;">SME & Customer Lineage</div>
                     <div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">customer_master & van_stock</div>
                 </div>
 
@@ -1906,7 +2015,7 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
                         <span>🔐 SCENARIO 3</span>
                         <span style="font-size: 8.5px; background: #22c55e; color: #000; padding: 2px 5px; border-radius: 4px; font-weight: 700;">Workday & SQL</span>
                     </div>
-                    <div style="font-size: 11.5px; font-weight: 600; color: #fff; margin-top: 3px;">Automated Access Request</div>
+                    <div style="font-size: 11.5px; font-weight: 600; color: var(--text-primary); margin-top: 3px;">Automated Access Request</div>
                     <div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">engineer_shifts & repair_history</div>
                 </div>
             </div>
@@ -1927,9 +2036,9 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
         <!-- Domain Intelligence Sub-System Metrics Tab -->
         <div id="tab-harnessing" class="tab-content" style="padding: 20px 28px; overflow: hidden; height: 100%; box-sizing: border-box; flex-direction: column; gap: 16px;">
             <!-- Sub-Navigation Bar Header -->
-            <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 12px; flex-shrink: 0;">
+            <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-subtle); padding-bottom: 12px; flex-shrink: 0;">
 
-                <div style="display: flex; gap: 6px; background: rgba(10,10,10,0.8); border: 1px solid rgba(255,255,255,0.08); padding: 4px; border-radius: 20px;">
+                <div style="display: flex; gap: 6px; background: var(--panel-bg); border: 1px solid var(--border-subtle); padding: 4px; border-radius: 20px;">
                     <button class="view-toggle-btn active" onclick="switchHarnessingSubTab(this, 'sub-info')">📊 Information</button>
                     <button class="view-toggle-btn" onclick="switchHarnessingSubTab(this, 'sub-knowledge')"><i class="fa-solid fa-network-wired"></i> Knowledge</button>
                     <button class="view-toggle-btn" onclick="switchHarnessingSubTab(this, 'sub-inference')">⚡ Inference</button>
@@ -2021,8 +2130,8 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
             </div>
             
             <!-- Bottom Half: Full Width Chart -->
-            <div style="flex: 1; display: flex; flex-direction: column; background: rgba(20, 20, 20, 0.8); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 10px; padding: 12px; min-height: 0;">
-                <h4 style="font-size: 11px; color: #fff; text-transform: uppercase; margin-bottom: 8px; margin-top: 0; flex-shrink: 0;">Ingestion Volume (Last 7 Days)</h4>
+            <div style="flex: 1; display: flex; flex-direction: column; background: var(--bg-lighter); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 12px; min-height: 0;">
+                <h4 style="font-size: 11px; color: var(--text-primary); text-transform: uppercase; margin-bottom: 8px; margin-top: 0; flex-shrink: 0;">Ingestion Volume (Last 7 Days)</h4>
                 <div style="position: relative; flex: 1; width: 100%; min-height: 0;">
                     <canvas id="chart-info"></canvas>
                 </div>
@@ -2095,8 +2204,8 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
             </div>
             
             <!-- Bottom Half: Full Width Chart -->
-            <div style="flex: 1; display: flex; flex-direction: column; background: rgba(20, 20, 20, 0.8); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 10px; padding: 12px; min-height: 0;">
-                <h4 style="font-size: 11px; color: #fff; text-transform: uppercase; margin-bottom: 8px; margin-top: 0; flex-shrink: 0;">Graph Entities Growth</h4>
+            <div style="flex: 1; display: flex; flex-direction: column; background: var(--bg-lighter); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 12px; min-height: 0;">
+                <h4 style="font-size: 11px; color: var(--text-primary); text-transform: uppercase; margin-bottom: 8px; margin-top: 0; flex-shrink: 0;">Graph Entities Growth</h4>
                 <div style="position: relative; flex: 1; width: 100%; min-height: 0;">
                     <canvas id="chart-knowledge"></canvas>
                 </div>
@@ -2169,8 +2278,8 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
             </div>
             
             <!-- Bottom Half: Full Width Chart -->
-            <div style="flex: 1; display: flex; flex-direction: column; background: rgba(20, 20, 20, 0.8); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 10px; padding: 12px; min-height: 0;">
-                <h4 style="font-size: 11px; color: #fff; text-transform: uppercase; margin-bottom: 8px; margin-top: 0; flex-shrink: 0;">Query Latency (ms)</h4>
+            <div style="flex: 1; display: flex; flex-direction: column; background: var(--bg-lighter); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 12px; min-height: 0;">
+                <h4 style="font-size: 11px; color: var(--text-primary); text-transform: uppercase; margin-bottom: 8px; margin-top: 0; flex-shrink: 0;">Query Latency (ms)</h4>
                 <div style="position: relative; flex: 1; width: 100%; min-height: 0;">
                     <canvas id="chart-inference"></canvas>
                 </div>
@@ -2243,8 +2352,8 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
             </div>
             
             <!-- Bottom Half: Full Width Chart -->
-            <div style="flex: 1; display: flex; flex-direction: column; background: rgba(20, 20, 20, 0.8); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 10px; padding: 12px; min-height: 0;">
-                <h4 style="font-size: 11px; color: #fff; text-transform: uppercase; margin-bottom: 8px; margin-top: 0; flex-shrink: 0;">Automated Resolutions vs Escalations</h4>
+            <div style="flex: 1; display: flex; flex-direction: column; background: var(--bg-lighter); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 12px; min-height: 0;">
+                <h4 style="font-size: 11px; color: var(--text-primary); text-transform: uppercase; margin-bottom: 8px; margin-top: 0; flex-shrink: 0;">Automated Resolutions vs Escalations</h4>
                 <div style="position: relative; flex: 1; width: 100%; min-height: 0;">
                     <canvas id="chart-outcome"></canvas>
                 </div>
@@ -2317,8 +2426,8 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
             </div>
             
             <!-- Bottom Half: Full Width Chart -->
-            <div style="flex: 1; display: flex; flex-direction: column; background: rgba(20, 20, 20, 0.8); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 10px; padding: 12px; min-height: 0;">
-                <h4 style="font-size: 11px; color: #fff; text-transform: uppercase; margin-bottom: 8px; margin-top: 0; flex-shrink: 0;">F1 Score Trend</h4>
+            <div style="flex: 1; display: flex; flex-direction: column; background: var(--bg-lighter); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 12px; min-height: 0;">
+                <h4 style="font-size: 11px; color: var(--text-primary); text-transform: uppercase; margin-bottom: 8px; margin-top: 0; flex-shrink: 0;">F1 Score Trend</h4>
                 <div style="position: relative; flex: 1; width: 100%; min-height: 0;">
                     <canvas id="chart-benchmarking"></canvas>
                 </div> <!-- End chart-benchmarking wrapper -->
@@ -2335,7 +2444,7 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
                     </div>
                     <div>
-                        <h4 style="margin: 0; font-size: 13.5px; color: #fff;">Enterprise Multi-Cloud Storage Hub & Governance Matrix</h4>
+                        <h4 style="margin: 0; font-size: 13.5px; color: var(--text-primary);">Enterprise Multi-Cloud Storage Hub & Governance Matrix</h4>
                         <p style="margin: 3px 0 0 0; font-size: 11.5px; color: var(--text-muted);">Unified Enterprise Storage Layer: Databricks UC database, OneLake, Salesforce, Workday, SAP, Data Lake, Azure Container, SQL Server, AWS S3.</p>
                     </div>
                 </div>
@@ -2348,22 +2457,22 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
             <div class="dashboard-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 16px; flex-shrink: 0;">
                 <div class="metric-card" style="border-left: 3px solid #FF3621;">
                     <div class="metric-title">Total Data Storage Volume</div>
-                    <div class="metric-value" style="font-size: 20px; color: #fff;">389.7 TB</div>
+                    <div class="metric-value" style="font-size: 20px; color: var(--text-primary);">389.7 TB</div>
                     <div class="metric-change" style="color: #22c55e;">Multi-Cloud Object & Lakes</div>
                 </div>
                 <div class="metric-card" style="border-left: 3px solid #008080;">
                     <div class="metric-title">Total Ingested Records</div>
-                    <div class="metric-value" style="font-size: 20px; color: #fff;">1.01 Billion</div>
+                    <div class="metric-value" style="font-size: 20px; color: var(--text-primary);">1.01 Billion</div>
                     <div class="metric-change" style="color: #22c55e;">Synced & Indexed</div>
                 </div>
                 <div class="metric-card" style="border-left: 3px solid #00A1E0;">
                     <div class="metric-title">Storage Connectors</div>
-                    <div class="metric-value" style="font-size: 20px; color: #fff;">9 Systems</div>
+                    <div class="metric-value" style="font-size: 20px; color: var(--text-primary);">9 Systems</div>
                     <div class="metric-change" style="color: #22c55e;">100% Operational</div>
                 </div>
                 <div class="metric-card" style="border-left: 3px solid #A855F7;">
                     <div class="metric-title">Governance & Lineage</div>
-                    <div class="metric-value" style="font-size: 20px; color: #fff;">Purview & Entra</div>
+                    <div class="metric-value" style="font-size: 20px; color: var(--text-primary);">Purview & Entra</div>
                     <div class="metric-change" style="color: #22c55e;">Policy Governed</div>
                 </div>
             </div>
@@ -2663,9 +2772,9 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
             </div>
 
             <!-- Bottom Section: Storage Volume Comparison Chart -->
-            <div style="background: rgba(20, 20, 20, 0.85); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 10px; padding: 14px; margin-top: 4px; flex-shrink: 0;">
+            <div style="background: var(--bg-lighter); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 14px; margin-top: 4px; flex-shrink: 0;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                    <h4 style="font-size: 11.5px; color: #fff; text-transform: uppercase; margin: 0; font-family: 'Outfit', sans-serif;">Storage Providers Capacity Utilization (TB)</h4>
+                    <h4 style="font-size: 11.5px; color: var(--text-primary); text-transform: uppercase; margin: 0; font-family: 'Outfit', sans-serif;">Storage Providers Capacity Utilization (TB)</h4>
                     <span style="font-size: 10.5px; color: var(--text-muted);">Real-Time Storage Telemetry</span>
                 </div>
                 <div style="position: relative; height: 160px; width: 100%;">
@@ -2910,10 +3019,10 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
 
         <!-- Dataset Snippet Preview Modal Overlay -->
         <div id="datasetSnippetModal" class="modal-overlay" onclick="closeDatasetSnippetModalFromBackdrop(event)" style="z-index: 10005;">
-            <div class="relation-modal" style="width: 840px; max-width: 95vw; max-height: 80vh; display: flex; flex-direction: column; background: #111; border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; padding: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.8);">
-                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 12px; margin-bottom: 14px;">
+            <div class="relation-modal" style="width: 840px; max-width: 95vw; max-height: 80vh; display: flex; flex-direction: column; background: var(--panel-bg); border: 1px solid var(--border-strong); border-radius: 12px; padding: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.8);">
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-subtle); padding-bottom: 12px; margin-bottom: 14px;">
                     <div>
-                        <h3 id="snippetModalTitle" style="font-size: 16px; font-weight: 600; color: #fff; margin: 0; display: flex; align-items: center; gap: 8px;">
+                        <h3 id="snippetModalTitle" style="font-size: 16px; font-weight: 600; color: var(--text-primary); margin: 0; display: flex; align-items: center; gap: 8px;">
                             <i class="fa-solid fa-table-cells" style="color: var(--accent-orange);"></i> Dataset Snippet Preview
                         </h3>
                         <p id="snippetModalSubtitle" style="font-size: 11px; color: var(--text-muted); margin: 4px 0 0 0;">First 5 sample rows retrieved from enterprise storage provider</p>
@@ -2922,7 +3031,7 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
                         <i class="fa-solid fa-xmark"></i>
                     </button>
                 </div>
-                <div id="snippetModalBody" style="flex: 1; overflow: auto; background: rgba(15, 15, 15, 0.9); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; padding: 12px;">
+                <div id="snippetModalBody" style="flex: 1; overflow: auto; background: var(--panel-bg); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 12px;">
                     <div style="text-align: center; color: var(--text-muted); padding: 30px;">Loading dataset snippet...</div>
                 </div>
             </div>
@@ -3175,7 +3284,7 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
 
             if (sender === 'agent' && responseGraph && responseGraph.nodes && responseGraph.nodes.length > 0) {
                 const graphBox = document.createElement('div');
-                graphBox.style.cssText = 'margin-top: 10px; padding: 8px 12px; background: rgba(22, 22, 22, 0.8); border: 1px solid rgba(217, 102, 43, 0.28); border-radius: 8px; display: flex; align-items: center; justify-content: space-between; gap: 12px;';
+                graphBox.style.cssText = 'margin-top: 10px; padding: 8px 12px; background: var(--bg-lighter); border: 1px solid rgba(217, 102, 43, 0.28); border-radius: 8px; display: flex; align-items: center; justify-content: space-between; gap: 12px;';
                 
                 window.lastResponseGraphs = window.lastResponseGraphs || {};
                 const graphId = 'graph_' + Math.random().toString(36).substr(2, 9);
@@ -3185,9 +3294,9 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
                     <div style="display: flex; align-items: center; gap: 8px; overflow: hidden;">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#D9662B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
                         <span style="font-size: 11px; font-weight: 600; color: #D9662B; white-space: nowrap;">Grounding Lineage</span>
-                        <span style="font-size: 10px; background: rgba(217, 102, 43, 0.14); color: #e2a37e; padding: 2px 6px; border-radius: 4px; font-weight: 600; white-space: nowrap;">${responseGraph.nodes.length} nodes • ${responseGraph.edges.length} edges</span>
+                        <span style="font-size: 10px; background: rgba(217, 102, 43, 0.14); color: var(--text-primary); padding: 2px 6px; border-radius: 4px; font-weight: 600; white-space: nowrap;">${responseGraph.nodes.length} nodes • ${responseGraph.edges.length} edges</span>
                     </div>
-                    <button class="ticket-btn" style="background: rgba(217, 102, 43, 0.18); border: 1px solid rgba(217, 102, 43, 0.35); color: #e2a37e; padding: 4px 10px; font-size: 11px; white-space: nowrap; flex-shrink: 0; display: inline-flex; align-items: center; gap: 4px;" onclick="showReplyGraphModal('${graphId}')">
+                    <button class="ticket-btn" style="background: rgba(217, 102, 43, 0.18); border: 1px solid rgba(217, 102, 43, 0.35); color: var(--text-primary); padding: 4px 10px; font-size: 11px; white-space: nowrap; flex-shrink: 0; display: inline-flex; align-items: center; gap: 4px;" onclick="showReplyGraphModal('${graphId}')">
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Inspect Lineage
                     </button>
                 `;
@@ -3295,7 +3404,7 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
                             </div>
                             <span class="stage-status" style="font-size: 9.5px; color: ${isDone ? '#4ade80' : 'var(--text-muted)'};">${statusText}</span>
                         </div>
-                        ${isDone && logText ? `<div style="font-size: 9px; color: #94a3b8; line-height: 1.3; padding-left: 20px; font-family: monospace; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${logText}">${logText}</div>` : ''}
+                        ${isDone && logText ? `<div style="font-size: 9px; color: var(--text-primary); line-height: 1.3; padding-left: 20px; font-family: monospace; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${logText}">${logText}</div>` : ''}
                     </div>
                 `;
             });
@@ -3711,6 +3820,7 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
             }
 
             function draw() {
+                const isLightMode = document.documentElement.getAttribute('data-theme') === 'light';
                 if (!isGraphModalOpen) return;
                 ctx.clearRect(0, 0, width, height);
 
@@ -3727,7 +3837,7 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
                         ctx.fillStyle = 'rgba(0,0,0,0.25)';
                         ctx.fillRect(colW, 0, colW, height);
 
-                        ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+                        ctx.strokeStyle = 'var(--border-subtle)';
                         ctx.setLineDash([4, 4]);
                         ctx.beginPath();
                         ctx.moveTo(colW, 0);
@@ -3754,10 +3864,10 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
                         for (let lvl = 0; lvl < 4; lvl++) {
                             const laneX = lvl * colW;
                             ctx.save();
-                            ctx.fillStyle = lvl % 2 === 0 ? 'rgba(255,255,255,0.012)' : 'rgba(0,0,0,0.25)';
+                            ctx.fillStyle = lvl % 2 === 0 ? (isLightMode ? 'rgba(0,0,0,0.03)' : 'rgba(255,255,255,0.012)') : (isLightMode ? 'rgba(0,0,0,0.06)' : 'rgba(0,0,0,0.25)');
                             ctx.fillRect(laneX, 0, colW, height);
                             if (lvl > 0) {
-                                ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+                                ctx.strokeStyle = 'var(--border-subtle)';
                                 ctx.setLineDash([4, 4]);
                                 ctx.beginPath();
                                 ctx.moveTo(laneX, 0);
@@ -3809,7 +3919,7 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
                             ctx.shadowColor = 'rgba(34, 197, 94, 0.7)';
                             ctx.shadowBlur = isConnected ? 14 : 7;
                         } else {
-                            ctx.strokeStyle = isConnected ? '#D9662B' : (selectedNode ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.14)');
+                            ctx.strokeStyle = isConnected ? '#D9662B' : (selectedNode ? 'var(--border-subtle)' : 'var(--border-strong)');
                             ctx.lineWidth = isConnected ? 2.8 : 1.1;
                         }
                         ctx.stroke();
@@ -3875,7 +3985,7 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
                         
                         ctx.font = (isEndConn || isViaEdge || isManualRelation) ? '700 9px Inter, sans-serif' : '8px Inter, sans-serif';
                         const textW = ctx.measureText(displayRelation).width + 10;
-                        ctx.fillStyle = isEndConn ? 'rgba(28,4,8,0.97)' : (isManualRelation ? 'rgba(5, 24, 13, 0.97)' : (isViaEdge ? 'rgba(20, 10, 4, 0.95)' : 'rgba(6,6,6,0.94)'));
+                        ctx.fillStyle = isEndConn ? (isLightMode ? '#fee2e2' : 'rgba(28,4,8,0.97)') : (isManualRelation ? (isLightMode ? '#dcfce7' : 'rgba(5, 24, 13, 0.97)') : (isViaEdge ? (isLightMode ? '#ffedd5' : 'rgba(20, 10, 4, 0.95)') : (isLightMode ? '#f8fafc' : 'rgba(6,6,6,0.94)')));
                         ctx.fillRect(midX - textW / 2, midY - 7, textW, 14);
                         if (isEndConn) {
                             ctx.strokeStyle = 'rgba(255,34,68,0.75)';
@@ -3920,9 +4030,9 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
                     if (ctx.roundRect) ctx.roundRect(rx, ry, pillW, pillH, 12);
                     else ctx.rect(rx, ry, pillW, pillH);
 
-                    ctx.fillStyle = isSelected ? 'rgba(32,32,32,0.98)' : (inPath ? 'rgba(22,22,22,0.96)' : 'rgba(14,14,14,0.93)');
+                    ctx.fillStyle = isSelected ? (isLightMode ? '#f1f5f9' : 'rgba(32,32,32,0.98)') : (inPath ? (isLightMode ? '#f8fafc' : 'rgba(22,22,22,0.96)') : (isLightMode ? '#ffffff' : 'rgba(14,14,14,0.93)'));
                     ctx.fill();
-                    ctx.strokeStyle = isSelected ? n.cfg.color : (inPath ? n.cfg.color : (selectedNode ? 'rgba(255,255,255,0.12)' : n.cfg.color));
+                    ctx.strokeStyle = isSelected ? n.cfg.color : (inPath ? n.cfg.color : (selectedNode ? 'var(--border-strong)' : n.cfg.color));
                     ctx.lineWidth = isSelected ? 3 : (inPath ? 2 : 1.4);
                     ctx.stroke();
                     if (isSelected || inPath) {
@@ -3930,7 +4040,7 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
                         ctx.shadowBlur = isSelected ? 16 : 8;
                         ctx.stroke();
                     }
-                    ctx.fillStyle = (isSelected || inPath || !selectedNode) ? '#f8fafc' : '#6b7280';
+                    ctx.fillStyle = (isSelected || inPath || !selectedNode) ? (isLightMode ? '#0f172a' : '#f8fafc') : '#94a3b8';
                     ctx.textAlign = 'center';
                     ctx.fillText(`${iconStr} ${displayLabel}`, n.x, n.y + 4);
                     ctx.restore();
@@ -4018,13 +4128,13 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
             <i class="fa-solid fa-network-wired"></i>
         </div>
         <div>
-            <div style="font-size: 13px; font-weight: 700; color: #fff;">Knowledge graph built</div>
+            <div style="font-size: 13px; font-weight: 700; color: var(--text-primary);">Knowledge graph built</div>
             <div style="font-size: 11px; color: var(--text-muted);">Entities and relationships linked</div>
         </div>
     </div>
 
     <!-- Graph Tooltip -->
-    <div id="graphTooltip" style="position: fixed; display: none; background: rgba(14,14,14,0.95); color: #fff; padding: 6px 12px; border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; font-family: Inter, sans-serif; font-size: 11px; font-weight: 600; z-index: 10050; pointer-events: none; box-shadow: 0 4px 12px rgba(0,0,0,0.5); max-width: 350px; word-wrap: break-word;"></div>
+    <div id="graphTooltip" style="position: fixed; display: none; background: var(--bg-darker); color: var(--text-primary); padding: 6px 12px; border: 1px solid var(--border-strong); border-radius: 6px; font-family: Inter, sans-serif; font-size: 11px; font-weight: 600; z-index: 10050; pointer-events: none; box-shadow: 0 4px 12px rgba(0,0,0,0.5); max-width: 350px; word-wrap: break-word;"></div>
 
     <!-- Executive Knowledge Graph Visualizer Modal -->
     <div class="graph-modal-overlay" id="graphModal" style="display: none;">
@@ -4033,14 +4143,14 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
                 <div style="display: flex; align-items: center; gap: 12px;">
                     <div class="brand-icon" style="background: var(--accent-orange);"><i class="fa-solid fa-network-wired"></i></div>
                     <div>
-                        <h3 style="font-family: 'Outfit', sans-serif; font-size: 18px; color: #fff;">Executive Knowledge Graph Explorer</h3>
-                        <p style="font-size: 12px; color: #94a3b8;">Domain Clusters • Data Lineage • SME Ownership • Fault Remedies</p>
+                        <h3 style="font-family: 'Outfit', sans-serif; font-size: 18px; color: var(--text-primary);">Executive Knowledge Graph Explorer</h3>
+                        <p style="font-size: 12px; color: var(--text-primary);">Domain Clusters • Data Lineage • SME Ownership • Fault Remedies</p>
                     </div>
                 </div>
                 <div style="display: flex; align-items: center; gap: 14px;">
                     <span class="perm-status allow" id="graphNodeCount">0 Nodes</span>
                     <span class="perm-status allow" style="background: var(--accent-orange-soft); color: var(--accent-orange);" id="graphEdgeCount">0 Edges</span>
-                    <button onclick="toggleGraphModal()" style="background: none; border: none; color: #94a3b8; font-size: 20px; cursor: pointer; padding: 4px 8px;">✕</button>
+                    <button onclick="toggleGraphModal()" style="background: none; border: none; color: var(--text-primary); font-size: 20px; cursor: pointer; padding: 4px 8px;">✕</button>
                 </div>
             </div>
 
@@ -4062,8 +4172,8 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
 
                 <div class="graph-inspector-panel" id="graphInspector">
                     <div style="font-size: 11px; font-weight: 700; color: var(--accent-orange); text-transform: uppercase;">Entity Inspector &amp; Lineage Explorer</div>
-                    <div style="font-size: 14px; font-weight: 600; color: #fff; margin-top: 4px;" id="inspectorNodeName">Click any graph node to inspect decision tree relationships &amp; attributes</div>
-                    <div style="font-size: 12px; color: #94a3b8; margin-top: 4px;" id="inspectorNodeDesc">Select a node from the decision tree canvas above to explore lineage, SMEs, and diagnostic paths.</div>
+                    <div style="font-size: 14px; font-weight: 600; color: var(--text-primary); margin-top: 4px;" id="inspectorNodeName">Click any graph node to inspect decision tree relationships &amp; attributes</div>
+                    <div style="font-size: 12px; color: var(--text-primary); margin-top: 4px;" id="inspectorNodeDesc">Select a node from the decision tree canvas above to explore lineage, SMEs, and diagnostic paths.</div>
                 </div>
             </div>
         </div>
@@ -4081,7 +4191,7 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
         scales: {
             y: {
                 beginAtZero: true,
-                grid: { color: 'rgba(255,255,255,0.05)' },
+                grid: { color: 'var(--border-subtle)' },
                 ticks: { color: '#a1a1aa', font: { size: 10 } }
             },
             x: {
@@ -4165,7 +4275,7 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
                     ...chartOptions,
                     scales: {
                         x: { stacked: true, grid: { display: false }, ticks: { color: '#a1a1aa', font: { size: 10 } } },
-                        y: { stacked: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#a1a1aa', font: { size: 10 } } }
+                        y: { stacked: true, grid: { color: 'var(--border-subtle)' }, ticks: { color: '#a1a1aa', font: { size: 10 } } }
                     }
                 }
             });
@@ -4403,11 +4513,11 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
 
                 let colHtml = '';
                 data.columns.forEach(col => {
-                    colHtml += `<span style="font-size: 10px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 4px; color: #e5e5e5;">${col}</span>`;
+                    colHtml += `<span style="font-size: 10px; background: var(--border-subtle); border: 1px solid var(--border-subtle); padding: 2px 8px; border-radius: 4px; color: #e5e5e5;">${col}</span>`;
                 });
                 document.getElementById('inspectorColTags').innerHTML = colHtml;
 
-                let tableHead = '<tr style="background: rgba(30,30,30,0.9); border-bottom: 1px solid rgba(255,255,255,0.15);">';
+                let tableHead = '<tr style="background: var(--panel-bg); border-bottom: 1px solid var(--border-strong);">';
                 data.columns.forEach(col => {
                     tableHead += `<th style="padding: 10px 12px; color: var(--accent-orange); text-transform: uppercase; font-size: 10px; font-weight: 700;">${col}</th>`;
                 });
@@ -4415,7 +4525,7 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
 
                 let tableRows = '';
                 data.records.forEach((row, idx) => {
-                    tableRows += `<tr style="border-bottom: 1px solid rgba(255,255,255,0.04); background: ${idx % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.015)'}">`;
+                    tableRows += `<tr style="border-bottom: 1px solid var(--border-subtle); background: ${idx % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.015)'}">`;
                     data.columns.forEach(col => {
                         let val = row[col] !== undefined ? row[col] : '';
                         tableRows += `<td style="padding: 8px 12px; color: #d4d4d8; font-size: 11.5px; white-space: nowrap;">${val}</td>`;
@@ -4443,7 +4553,7 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
                     </div>
                     <div>
-                        <h3 id="inspectorTitle" style="margin: 0; font-size: 16px; color: #fff;">DHS Excel Inspector</h3>
+                        <h3 id="inspectorTitle" style="margin: 0; font-size: 16px; color: var(--text-primary);">DHS Excel Inspector</h3>
                         <p id="inspectorSub" style="margin: 2px 0 0 0; font-size: 11px; color: var(--text-muted);"></p>
                     </div>
                 </div>
@@ -4455,7 +4565,7 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
                     <span style="font-size: 11px; color: var(--text-muted);">Schema Columns:</span>
                     <div id="inspectorColTags" style="display: flex; gap: 6px; flex-wrap: wrap;"></div>
                 </div>
-                <div style="background: #090909; border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; overflow-x: auto; max-height: 420px;">
+                <div style="background: #090909; border: 1px solid var(--border-subtle); border-radius: 8px; overflow-x: auto; max-height: 420px;">
                     <table id="inspectorTable" style="width: 100%; border-collapse: collapse; font-size: 12px; text-align: left;">
                         <!-- Dynamically generated -->
                     </table>
@@ -4577,19 +4687,19 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
             let tableHtml = `
                 <div style="margin-bottom: 10px; font-size: 11px; color: #4ade80; font-weight: 600; display: flex; justify-content: space-between; align-items: center;">
                     <span><i class="fa-solid fa-check-circle"></i> Loaded ${data.total_preview_rows || rows.length} Sample Records (${columns.length} Fields)</span>
-                    <span style="background: rgba(255,255,255,0.06); padding: 3px 8px; border-radius: 4px; color: var(--text-muted); font-size: 10px;">Source: ${data.filename || datasetName}</span>
+                    <span style="background: var(--border-subtle); padding: 3px 8px; border-radius: 4px; color: var(--text-muted); font-size: 10px;">Source: ${data.filename || datasetName}</span>
                 </div>
-                <div style="overflow-x: auto; border: 1px solid rgba(255,255,255,0.08); border-radius: 6px;">
+                <div style="overflow-x: auto; border: 1px solid var(--border-subtle); border-radius: 6px;">
                     <table style="width: 100%; border-collapse: collapse; font-size: 11.5px; text-align: left;">
                         <thead>
-                            <tr style="background: rgba(30, 30, 30, 0.95); border-bottom: 1px solid rgba(255,255,255,0.12);">
-                                ${columns.map(col => `<th style="padding: 10px 12px; font-weight: 600; color: var(--accent-orange); text-transform: uppercase; font-size: 10.5px; letter-spacing: 0.05em; border-right: 1px solid rgba(255,255,255,0.04);">${col}</th>`).join('')}
+                            <tr style="background: var(--panel-bg); border-bottom: 1px solid var(--border-strong);">
+                                ${columns.map(col => `<th style="padding: 10px 12px; font-weight: 600; color: var(--accent-orange); text-transform: uppercase; font-size: 10.5px; letter-spacing: 0.05em; border-right: 1px solid var(--border-subtle);">${col}</th>`).join('')}
                             </tr>
                         </thead>
                         <tbody>
                             ${rows.map((row, idx) => `
-                                <tr style="background: ${idx % 2 === 0 ? 'rgba(20, 20, 20, 0.6)' : 'rgba(12, 12, 12, 0.8)'}; border-bottom: 1px solid rgba(255,255,255,0.04); transition: background 0.15s ease;" onmouseover="this.style.background='rgba(217, 102, 43, 0.12)'" onmouseout="this.style.background='${idx % 2 === 0 ? 'rgba(20, 20, 20, 0.6)' : 'rgba(12, 12, 12, 0.8)'}'">
-                                    ${columns.map(col => `<td style="padding: 8px 12px; color: #e2e8f0; border-right: 1px solid rgba(255,255,255,0.03); white-space: nowrap;">${row[col] !== undefined && row[col] !== null ? row[col] : '-'}</td>`).join('')}
+                                <tr style="background: ${idx % 2 === 0 ? 'var(--bg-lighter)' : 'var(--bg-dark)'}; border-bottom: 1px solid var(--border-subtle); transition: background 0.15s ease;" onmouseover="this.style.background='rgba(217, 102, 43, 0.12)'" onmouseout="this.style.background='${idx % 2 === 0 ? 'var(--bg-lighter)' : 'var(--bg-dark)'}'">
+                                    ${columns.map(col => `<td style="padding: 8px 12px; color: var(--text-primary); border-right: 1px solid var(--border-subtle); white-space: nowrap;">${row[col] !== undefined && row[col] !== null ? row[col] : '-'}</td>`).join('')}
                                 </tr>
                             `).join('')}
                         </tbody>
@@ -4699,7 +4809,14 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
         relationFieldEditVersion += 1;
     }
 
-    function setRelationSuggestionStatus(message, color = '#94a3b8') {
+        function setRelationSuggestionStatus(message, color = 'var(--text-muted)') {
+        const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+        if (isLight) {
+            if (color === '#4ade80') color = '#16a34a'; // darker green
+            if (color === '#fbbf24') color = '#b45309'; // darker amber
+            if (color === '#ef4444') color = '#dc2626'; // darker red
+            if (color === '#94a3b8') color = 'var(--text-muted)';
+        }
         const status = document.getElementById('relationSuggestionStatus');
         status.style.color = color;
         status.textContent = message;
@@ -5078,15 +5195,41 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
                     scales: {
                         x: {
                             ticks: { color: '#94a3b8', font: { size: 10 } },
-                            grid: { color: 'rgba(255, 255, 255, 0.05)' }
+                            grid: { color: 'var(--border-subtle)' }
                         },
                         y: {
                             ticks: { color: '#94a3b8', font: { size: 10 } },
-                            grid: { color: 'rgba(255, 255, 255, 0.05)' }
+                            grid: { color: 'var(--border-subtle)' }
                         }
                     }
                 }
             });
+        }
+    });
+
+    // Theme Toggle Logic
+    const themeBtn = document.getElementById('themeToggleBtn');
+    const themeIcon = themeBtn.querySelector('i');
+
+    function toggleTheme() {
+        const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+        if (currentTheme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'light');
+            themeIcon.className = 'fa-solid fa-sun';
+            localStorage.setItem('theme', 'light');
+        } else {
+            document.documentElement.removeAttribute('data-theme');
+            themeIcon.className = 'fa-solid fa-moon';
+            localStorage.setItem('theme', 'dark');
+        }
+    }
+
+    // Initialize theme from localStorage on load
+    document.addEventListener("DOMContentLoaded", () => {
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'light') {
+            document.documentElement.setAttribute('data-theme', 'light');
+            themeIcon.className = 'fa-solid fa-sun';
         }
     });
 </script>
