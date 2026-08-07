@@ -1,4 +1,0 @@
-rule_id,rule_name,description
-R1,Warranty SLA,Repairs under warranty must be attended within 24 hours
-R2,Service Eligibility,Annual service required to maintain warranty
-R3,Standard SLA,Standard repairs must be attended within 48 hours
