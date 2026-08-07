@@ -4034,23 +4034,27 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
                         
                         ctx.font = (isEndConn || isViaEdge || isManualRelation) ? '700 9px Inter, sans-serif' : '8px Inter, sans-serif';
                         const textW = ctx.measureText(displayRelation).width + 10;
-                        ctx.fillStyle = isEndConn ? (isLightMode ? '#fee2e2' : 'rgba(28,4,8,0.97)') : (isManualRelation ? (isLightMode ? '#dcfce7' : 'rgba(5, 24, 13, 0.97)') : (isViaEdge ? (isLightMode ? '#ffedd5' : 'rgba(20, 10, 4, 0.95)') : (isLightMode ? '#f8fafc' : 'rgba(6,6,6,0.94)')));
+                        
+                        const notConnected = selectedNode && !isConnected;
+
+                        ctx.fillStyle = notConnected ? (isLightMode ? '#f8fafc' : 'rgba(6,6,6,0.94)') : (isEndConn ? (isLightMode ? '#fee2e2' : 'rgba(28,4,8,0.97)') : (isManualRelation ? (isLightMode ? '#dcfce7' : 'rgba(5, 24, 13, 0.97)') : (isViaEdge ? (isLightMode ? '#ffedd5' : 'rgba(20, 10, 4, 0.95)') : (isLightMode ? '#f8fafc' : 'rgba(6,6,6,0.94)'))));
                         ctx.fillRect(midX - textW / 2, midY - 7, textW, 14);
+                        
                         if (isEndConn) {
-                            ctx.strokeStyle = 'rgba(255,34,68,0.75)';
+                            ctx.strokeStyle = notConnected ? borderStrong : 'rgba(255,34,68,0.75)';
                             ctx.lineWidth = 1;
                             ctx.strokeRect(midX - textW / 2, midY - 7, textW, 14);
-                            ctx.fillStyle = '#ff4466';
+                            ctx.fillStyle = notConnected ? '#94a3b8' : '#ff4466';
                         } else if (isManualRelation) {
-                            ctx.strokeStyle = '#22c55e';
+                            ctx.strokeStyle = notConnected ? borderStrong : '#22c55e';
                             ctx.lineWidth = 1;
                             ctx.strokeRect(midX - textW / 2, midY - 7, textW, 14);
-                            ctx.fillStyle = '#86efac';
+                            ctx.fillStyle = notConnected ? '#94a3b8' : '#86efac';
                         } else if (isViaEdge) {
-                            ctx.strokeStyle = '#D9662B';
+                            ctx.strokeStyle = notConnected ? borderStrong : '#D9662B';
                             ctx.lineWidth = 1;
                             ctx.strokeRect(midX - textW / 2, midY - 7, textW, 14);
-                            ctx.fillStyle = '#f97316';
+                            ctx.fillStyle = notConnected ? '#94a3b8' : '#f97316';
                         } else {
                             ctx.fillStyle = isConnected ? '#D9662B' : '#4b5563';
                         }
@@ -4075,6 +4079,8 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
                     const rx = n.x - pillW / 2;
                     const ry = n.y - pillH / 2;
 
+                    const notConnected = selectedNode && !inPath && !isSelected;
+                    
                     ctx.save();
                     ctx.beginPath();
                     if (ctx.roundRect) ctx.roundRect(rx, ry, pillW, pillH, 12);
@@ -4082,15 +4088,18 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
 
                     ctx.fillStyle = isSelected ? (isLightMode ? '#f1f5f9' : 'rgba(32,32,32,0.98)') : (inPath ? (isLightMode ? '#f8fafc' : 'rgba(22,22,22,0.96)') : (isLightMode ? '#ffffff' : 'rgba(14,14,14,0.93)'));
                     ctx.fill();
-                    ctx.strokeStyle = isSelected ? cfg.color : (inPath ? cfg.color : (selectedNode ? borderStrong : cfg.color));
+                    
+                    ctx.strokeStyle = notConnected ? (isLightMode ? '#e2e8f0' : '#334155') : cfg.color;
                     ctx.lineWidth = isSelected ? 3 : (inPath ? 2 : 1.4);
                     ctx.stroke();
+                    
                     if (isSelected || inPath) {
                         ctx.shadowColor = cfg.color;
                         ctx.shadowBlur = isSelected ? 16 : 8;
                         ctx.stroke();
                     }
-                    ctx.fillStyle = (isSelected || inPath || !selectedNode) ? (isLightMode ? '#0f172a' : '#f8fafc') : '#94a3b8';
+                    
+                    ctx.fillStyle = notConnected ? (isLightMode ? '#94a3b8' : '#64748b') : (isLightMode ? '#0f172a' : '#f8fafc');
                     ctx.textAlign = 'center';
                     ctx.fillText(`${iconStr} ${displayLabel}`, n.x, n.y + 4);
                     ctx.restore();
