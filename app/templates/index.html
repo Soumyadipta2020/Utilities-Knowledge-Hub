@@ -3539,6 +3539,27 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
         let selectedNode = null;
         // Each initCanvasGraph() spins up its own rAF loop; only the newest may paint.
         let graphRenderGeneration = 0;
+        // Track whether the modal is showing the full KB graph or a response lineage
+        let graphModalMode = 'full'; // 'full' | 'response'
+
+        function updateGraphModalHeader(mode, nodeCount, edgeCount, queryText) {
+            const titleEl = document.getElementById('graphModalTitle');
+            const subtitleEl = document.getElementById('graphModalSubtitle');
+            const nodeCountEl = document.getElementById('graphNodeCount');
+            const edgeCountEl = document.getElementById('graphEdgeCount');
+
+            if (mode === 'response') {
+                if (titleEl) titleEl.innerText = 'Response Lineage Graph';
+                if (subtitleEl) subtitleEl.innerText = 'Query-Specific Grounding • Traversed Entities • Data Lineage';
+                if (nodeCountEl) nodeCountEl.innerText = `${nodeCount} Grounding Nodes`;
+                if (edgeCountEl) edgeCountEl.innerText = `${edgeCount} Traversed Edges`;
+            } else {
+                if (titleEl) titleEl.innerText = 'Executive Knowledge Graph Explorer';
+                if (subtitleEl) subtitleEl.innerText = 'Domain Clusters \u2022 Data Lineage \u2022 SME Ownership \u2022 Fault Remedies';
+                if (nodeCountEl) nodeCountEl.innerText = `${nodeCount} Nodes`;
+                if (edgeCountEl) edgeCountEl.innerText = `${edgeCount} Edges`;
+            }
+        }
 
         async function showReplyGraphModal(graphId) {
             const subGraph = window.lastResponseGraphs ? window.lastResponseGraphs[graphId] : null;
@@ -3549,6 +3570,7 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
 
             modal.style.display = 'flex';
             isGraphModalOpen = true;
+            graphModalMode = 'response';
 
             graphData = subGraph;
             // The reply lineage is a fresh graph — drop any filter/selection carried
@@ -3558,8 +3580,8 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
             document.querySelectorAll('.filter-pill').forEach(btn => {
                 btn.classList.toggle('active', btn.getAttribute('data-cat') === 'All');
             });
-            document.getElementById('graphNodeCount').innerText = `${subGraph.nodes.length} Grounding Nodes`;
-            document.getElementById('graphEdgeCount').innerText = `${subGraph.edges.length} Traversed Edges`;
+
+            updateGraphModalHeader('response', subGraph.nodes.length, subGraph.edges.length, subGraph.query);
 
             requestAnimationFrame(() => requestAnimationFrame(() => initCanvasGraph()));
 
@@ -3576,7 +3598,13 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
             if (modal.style.display === 'none' || !modal.style.display) {
                 modal.style.display = 'flex';
                 isGraphModalOpen = true;
+                graphModalMode = 'full';
                 await loadGraphData();
+                // Reset inspector to default for full graph
+                const nameEl = document.getElementById('inspectorNodeName');
+                const descEl = document.getElementById('inspectorNodeDesc');
+                if (nameEl) nameEl.innerText = 'Click any graph node to inspect decision tree relationships & attributes';
+                if (descEl) descEl.innerText = 'Select a node from the decision tree canvas above to explore lineage, SMEs, and diagnostic paths.';
                 // Defer so the browser lays out the flex container first
                 requestAnimationFrame(() => requestAnimationFrame(() => initCanvasGraph()));
             } else {
@@ -3591,8 +3619,7 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
                 const data = await res.json();
                 if (data.success) {
                     graphData = data;
-                    document.getElementById('graphNodeCount').innerText = `${data.total_nodes} Nodes`;
-                    document.getElementById('graphEdgeCount').innerText = `${data.total_edges} Edges`;
+                    updateGraphModalHeader('full', data.total_nodes, data.total_edges);
                 }
             } catch (e) {
                 console.error("Failed to fetch graph data:", e);
@@ -4166,8 +4193,8 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
                 <div style="display: flex; align-items: center; gap: 12px;">
                     <div class="brand-icon" style="background: var(--accent-orange);"><i class="fa-solid fa-network-wired"></i></div>
                     <div>
-                        <h3 style="font-family: 'Outfit', sans-serif; font-size: 18px; color: var(--text-primary);">Executive Knowledge Graph Explorer</h3>
-                        <p style="font-size: 12px; color: var(--text-primary);">Domain Clusters • Data Lineage • SME Ownership • Fault Remedies</p>
+                        <h3 id="graphModalTitle" style="font-family: 'Outfit', sans-serif; font-size: 18px; color: var(--text-primary);">Executive Knowledge Graph Explorer</h3>
+                        <p id="graphModalSubtitle" style="font-size: 12px; color: var(--text-primary);">Domain Clusters • Data Lineage • SME Ownership • Fault Remedies</p>
                     </div>
                 </div>
                 <div style="display: flex; align-items: center; gap: 14px;">

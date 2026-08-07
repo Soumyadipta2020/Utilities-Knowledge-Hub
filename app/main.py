@@ -46,6 +46,15 @@ app.config.update(
     MAX_CONTENT_LENGTH=1024 * 1024,
 )
 
+# Ensure datasets are generated locally
+if not (DATA_DIR / "customer_master.csv").exists():
+    print("Local datasets not found. Generating...")
+    try:
+        from scripts.generate_datasets import generate_all_datasets
+        generate_all_datasets(str(DATA_DIR))
+    except Exception as e:
+        print(f"Failed to generate datasets: {e}")
+
 # Initialize Services & Inject dependencies into tools
 graph_service = KnowledgeGraphService(DATA_DIR)
 data_service = DataService(DATA_DIR)

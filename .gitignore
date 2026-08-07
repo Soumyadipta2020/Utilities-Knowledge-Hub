@@ -218,3 +218,8 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Ignore generated datasets
+data/*.csv
+!data/dataset_ownership.csv
+!data/knowledge_base.csv
