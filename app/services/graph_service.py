@@ -812,13 +812,20 @@ class KnowledgeGraphService:
         sub_nodes = set()
         sub_edges = []
         
+        tree_metadata = self.get_decision_tree_metadata()
+
         header_text = query[:40] if len(query) <= 40 else query[:37] + "..."
         query_node_id = f"Query: {header_text}"
         nodes_list = [{
             "id": query_node_id,
             "label": query_node_id,
             "category": "Query",
-            "description": f"User query: {query}"
+            "icon": "",
+            "description": f"User query: {query}",
+            "tree_level": 0,
+            "node_type": "root",
+            "parents": [],
+            "children": []
         }]
 
         search_text = f"{query}\n{response}" if response else query
@@ -864,12 +871,21 @@ class KnowledgeGraphService:
             elif n.startswith("Shared Entity: "): category = "Key Info Link"
             elif n.startswith("Metric: "): category = "Business Metric"
             elif "category" in attrs: category = attrs["category"]
-            
+
+            # Carry the decision-tree hierarchy through so the visualiser can lay
+            # the reply lineage out across its tier columns instead of piling
+            # every grounding node into Tier 0.
+            meta = tree_metadata.get(str(n), {})
+
             nodes_list.append({
                 "id": str(n),
                 "label": str(n).replace("Domain: ", "").replace("Dataset: ", "").replace("Shared Entity: ", "").replace("Metric: ", ""),
                 "category": category,
-                "description": attrs.get("details", "")
+                "description": attrs.get("details", ""),
+                "tree_level": meta.get("tree_level", 3),
+                "node_type": meta.get("node_type", "remedy_action"),
+                "parents": meta.get("parents", []),
+                "children": meta.get("children", [])
             })
 
         unique_edges = []
@@ -941,4 +957,3 @@ class KnowledgeGraphService:
     def get_langchain_triples(self) -> List[Tuple[str, str, str]]:
         """Return all LangChain KnowledgeTriples loaded into the NetworkxEntityGraph."""
         return self.langchain_graph.get_triples()
-

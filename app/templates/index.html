@@ -3537,6 +3537,8 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
         let graphData = { nodes: [], edges: [] };
         let isGraphModalOpen = false;
         let selectedNode = null;
+        // Each initCanvasGraph() spins up its own rAF loop; only the newest may paint.
+        let graphRenderGeneration = 0;
 
         async function showReplyGraphModal(graphId) {
             const subGraph = window.lastResponseGraphs ? window.lastResponseGraphs[graphId] : null;
@@ -3549,6 +3551,13 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
             isGraphModalOpen = true;
 
             graphData = subGraph;
+            // The reply lineage is a fresh graph — drop any filter/selection carried
+            // over from a previous full-graph browse, otherwise it renders empty.
+            selectedNode = null;
+            activeCategoryFilter = 'All';
+            document.querySelectorAll('.filter-pill').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('data-cat') === 'All');
+            });
             document.getElementById('graphNodeCount').innerText = `${subGraph.nodes.length} Grounding Nodes`;
             document.getElementById('graphEdgeCount').innerText = `${subGraph.edges.length} Traversed Edges`;
 
@@ -3614,7 +3623,8 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
             if (!canvas) return;
             const wrapper = canvas.parentElement;
             const ctx = canvas.getContext('2d');
-            
+            const renderGeneration = ++graphRenderGeneration;
+
             let nodesToRender = [];
             if (activeCategoryFilter === 'Dataset') {
                 nodesToRender = (graphData.nodes || []).filter(n => n.category === 'Dataset');
@@ -3660,8 +3670,20 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
                 'Dataset':         { color: '#D9662B', bg: 'rgba(217, 102, 43, 0.08)', icon: '\uf1c0', label: 'Datasets' },
                 'Key Info Link':   { color: '#f43f5e', bg: 'rgba(244, 63, 94, 0.08)', icon: '\uf0c1', label: 'Shared Entities' },
                 'Business Metric': { color: '#c084fc', bg: 'rgba(192, 132, 252, 0.08)', icon: '\uf201', label: 'Metrics' },
-                'Entity':          { color: '#facc15', bg: 'rgba(250, 204, 21, 0.08)', icon: '\uf111', label: 'Entity' }
+                'Entity':          { color: '#facc15', bg: 'rgba(250, 204, 21, 0.08)', icon: '\uf111', label: 'Entity' },
+                'Query':           { color: '#38bdf8', bg: 'rgba(56, 189, 248, 0.08)', icon: '\uf059', label: 'Query' },
+                'File':            { color: '#94a3b8', bg: 'rgba(148, 163, 184, 0.08)', icon: '\uf15c', label: 'File' }
             };
+            // Anything we don't have an explicit style for still has to render.
+            const fallbackCfg = categoryConfig['Entity'];
+            const cfgFor = (cat) => categoryConfig[cat] || fallbackCfg;
+
+            // Canvas 2D ignores `var(--x)` colours, so resolve theme tokens up front.
+            const rootStyles = getComputedStyle(document.documentElement);
+            const cssColor = (token, fallback) =>
+                (rootStyles.getPropertyValue(token) || '').trim() || fallback;
+            const borderSubtle = cssColor('--border-subtle', 'rgba(148,163,184,0.25)');
+            const borderStrong = cssColor('--border-strong', 'rgba(148,163,184,0.45)');
 
             const nodeMap = {};
 
@@ -3728,11 +3750,11 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
 
                     const centerX = colWidth * lvl + colWidth / 2;
                     list.forEach((n, idx) => {
-                        const cat = n.category || 'Metric';
+                        const cat = n.category || 'Entity';
                         const y = list.length === 1
                             ? topPadding + availH / 2
                             : topPadding + (idx / Math.max(list.length - 1, 1)) * availH;
-                        nodeMap[n.id] = { ...n, x: centerX, y, cfg: categoryConfig[cat] || categoryConfig['Metric'] };
+                        nodeMap[n.id] = { ...n, x: centerX, y, cfg: cfgFor(cat) };
                     });
                     const colNodes = list.map(n => nodeMap[n.id]).filter(Boolean);
                     colNodes.sort((a, b) => a.y - b.y);
@@ -3821,7 +3843,7 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
 
             function draw() {
                 const isLightMode = document.documentElement.getAttribute('data-theme') === 'light';
-                if (!isGraphModalOpen) return;
+                if (!isGraphModalOpen || renderGeneration !== graphRenderGeneration) return;
                 ctx.clearRect(0, 0, width, height);
 
                 if (activeCategoryFilter === 'Dataset') {
@@ -3837,7 +3859,7 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
                         ctx.fillStyle = 'rgba(0,0,0,0.25)';
                         ctx.fillRect(colW, 0, colW, height);
 
-                        ctx.strokeStyle = 'var(--border-subtle)';
+                        ctx.strokeStyle = borderSubtle;
                         ctx.setLineDash([4, 4]);
                         ctx.beginPath();
                         ctx.moveTo(colW, 0);
@@ -3867,7 +3889,7 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
                             ctx.fillStyle = lvl % 2 === 0 ? (isLightMode ? 'rgba(0,0,0,0.03)' : 'rgba(255,255,255,0.012)') : (isLightMode ? 'rgba(0,0,0,0.06)' : 'rgba(0,0,0,0.25)');
                             ctx.fillRect(laneX, 0, colW, height);
                             if (lvl > 0) {
-                                ctx.strokeStyle = 'var(--border-subtle)';
+                                ctx.strokeStyle = borderSubtle;
                                 ctx.setLineDash([4, 4]);
                                 ctx.beginPath();
                                 ctx.moveTo(laneX, 0);
@@ -3919,7 +3941,7 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
                             ctx.shadowColor = 'rgba(34, 197, 94, 0.7)';
                             ctx.shadowBlur = isConnected ? 14 : 7;
                         } else {
-                            ctx.strokeStyle = isConnected ? '#D9662B' : (selectedNode ? 'var(--border-subtle)' : 'var(--border-strong)');
+                            ctx.strokeStyle = isConnected ? '#D9662B' : (selectedNode ? borderSubtle : borderStrong);
                             ctx.lineWidth = isConnected ? 2.8 : 1.1;
                         }
                         ctx.stroke();
@@ -3965,8 +3987,8 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
 
                         // Dynamically calculate the visual midpoint of the empty space between the nodes
                         ctx.font = '700 10px "Font Awesome 6 Free", Inter, sans-serif';
-                        const srcW = Math.max(ctx.measureText(`${src.icon || src.cfg.icon} ${getShortLabel(src.label)}`).width + 16, 70);
-                        const tgtW = Math.max(ctx.measureText(`${tgt.icon || tgt.cfg.icon} ${getShortLabel(tgt.label)}`).width + 16, 70);
+                        const srcW = Math.max(ctx.measureText(`${src.icon || cfgFor(src.category).icon} ${getShortLabel(src.label)}`).width + 16, 70);
+                        const tgtW = Math.max(ctx.measureText(`${tgt.icon || cfgFor(tgt.category).icon} ${getShortLabel(tgt.label)}`).width + 16, 70);
                         
                         let t = 0.5;
                         if (Math.abs(tgt.x - src.x) > 10) {
@@ -4016,8 +4038,9 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
                     const isSelected = selectedNode === n;
                     const inPath = isNodeInSelectedPath(n.id);
                     const displayLabel = getShortLabel(n.label);
+                    const cfg = n.cfg || cfgFor(n.category);
                     ctx.font = '700 10px "Font Awesome 6 Free", Inter, sans-serif';
-                    const iconStr = n.icon || n.cfg.icon;
+                    const iconStr = n.icon || cfg.icon;
                     const textW = ctx.measureText(`${iconStr} ${displayLabel}`).width;
                     const pillW = Math.max(textW + 16, 70);
                     n.pillW = pillW; // Store for precise click/hover detection
@@ -4032,11 +4055,11 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
 
                     ctx.fillStyle = isSelected ? (isLightMode ? '#f1f5f9' : 'rgba(32,32,32,0.98)') : (inPath ? (isLightMode ? '#f8fafc' : 'rgba(22,22,22,0.96)') : (isLightMode ? '#ffffff' : 'rgba(14,14,14,0.93)'));
                     ctx.fill();
-                    ctx.strokeStyle = isSelected ? n.cfg.color : (inPath ? n.cfg.color : (selectedNode ? 'var(--border-strong)' : n.cfg.color));
+                    ctx.strokeStyle = isSelected ? cfg.color : (inPath ? cfg.color : (selectedNode ? borderStrong : cfg.color));
                     ctx.lineWidth = isSelected ? 3 : (inPath ? 2 : 1.4);
                     ctx.stroke();
                     if (isSelected || inPath) {
-                        ctx.shadowColor = n.cfg.color;
+                        ctx.shadowColor = cfg.color;
                         ctx.shadowBlur = isSelected ? 16 : 8;
                         ctx.stroke();
                     }
@@ -4095,7 +4118,7 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
                     const connectedEdges = (graphData.edges || []).filter(e => e.source === clicked.id || e.target === clicked.id);
                     const relSummary = connectedEdges.map(e => `• ${e.source} --[ ${e.relation} ]--> ${e.target}`).join('\n');
                     const tierName = clicked.tree_level !== undefined ? `Tier ${clicked.tree_level}` : 'Domain Entity';
-                    nameEl.innerText = `${clicked.icon || clicked.cfg.icon} [${tierName} • ${clicked.category}] ${clicked.label}`;
+                    nameEl.innerText = `${clicked.icon || cfgFor(clicked.category).icon} [${tierName} • ${clicked.category}] ${clicked.label}`;
                     descEl.innerText = `${clicked.description || 'Enterprise Knowledge Graph Node'}\n\nDecision Path Connections (${connectedEdges.length}):\n${relSummary || 'None'}`;
                 } else {
                     nameEl.innerText = 'Click any graph node to inspect decision tree relationships & attributes';
@@ -5222,6 +5245,8 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
             themeIcon.className = 'fa-solid fa-moon';
             localStorage.setItem('theme', 'dark');
         }
+        // Canvas colours are resolved from CSS tokens at init, so re-render the graph.
+        if (typeof isGraphModalOpen !== 'undefined' && isGraphModalOpen) initCanvasGraph();
     }
 
     // Initialize theme from localStorage on load
