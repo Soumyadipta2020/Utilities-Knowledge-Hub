@@ -190,6 +190,16 @@ def build_agent_executor(
             "model": model,
             "temperature": 0.1,
             "base_url": url,
+            # Gateways return transient 429/503 under load. Without retries a
+            # single blip aborts the whole agent run and discards the tool work
+            # already done, dropping the answer to the deterministic fallback.
+            "max_retries": int(os.getenv("LLM_MAX_RETRIES", "5")),
+            "timeout": float(os.getenv("LLM_TIMEOUT_SECONDS", "90")),
+            # Gateways reserve credit against max_tokens, not actual usage. Left
+            # unset this defaults to the model's full window (64k+), which makes
+            # a limited key return "402 - requires more credits" even when the
+            # answer needs a fraction of it. Answers here run well under 4k.
+            "max_tokens": int(os.getenv("LLM_MAX_TOKENS", "4096")),
         }
         if "openrouter.ai" in url:
             kwargs["default_headers"] = {
@@ -804,73 +814,30 @@ def process_chat_message(
     user_email: str,
     executor: Any = None,
     chat_history: Sequence[dict[str, str]] | None = None,
+    runtime: Any = None,
 ) -> str:
-    """Process a chat message with automated IT access request assistance."""
-    verified_evidence = run_deterministic_agent_fallback(user_input, user_email, chat_history)
-    
-    # Check for empty executor first
+    """
+    Process a chat message and return the final answer.
+
+    The agent decides how to answer. `run_deterministic_agent_fallback` is used
+    only when no model is configured or when the agent loop fails - it is no
+    longer pre-computed and injected into the prompt, which previously reduced
+    the model to rewriting a keyword-matched answer.
+    """
+    if runtime is not None:
+        return runtime.run(user_input, user_email, chat_history)
+
     if executor is None:
-        return "⚠️ **Debug:** `executor` is `None`! The LLM API key is missing or invalid in your environment.\n\n" + (_history_fallback(user_input, chat_history) or verified_evidence)
+        return (
+            _history_fallback(user_input, chat_history)
+            or run_deterministic_agent_fallback(user_input, user_email, chat_history)
+        )
 
-    try:
-        from langgraph.prebuilt import create_react_agent
-        from app.agent.tools import get_all_tools
+    # Legacy callers that pass a raw LLM get a runtime built on demand.
+    from app.agent.agent_runtime import AgentRuntime
+    from app.agent.tools import get_all_tools
+    from app.config import DATA_DIR
 
-        agent_executor = create_react_agent(executor, tools=get_all_tools())
-
-        # Dynamically inject dataset schemas so the LLM knows exact column names for pandas queries
-        import glob
-        import pandas as pd
-        from app.config import DATA_DIR
-        schema_lines = []
-        for file in DATA_DIR.glob("*.csv"):
-            name = file.name
-            try:
-                cols = pd.read_csv(file, nrows=0).columns.tolist()
-                schema_lines.append(f"- {name}: {', '.join(cols)}")
-            except Exception:
-                pass
-        dataset_schemas = "\n".join(schema_lines)
-
-        messages: list[Any] = [
-            SystemMessage(content=(
-                "You are a helpful utilities-company AI Data Agent. "
-                "You have access to tools that can query knowledge graphs, live metrics, and execute pandas scripts on CSV datasets. "
-                f"Available datasets and their exact columns:\n{dataset_schemas}\n"
-                "To answer data queries (e.g. counts, sums, groupings, averages), always use execute_pandas_query on the relevant dataset! "
-                "Write correct python pandas code using the exact column names provided. "
-                "If a dataset lacks necessary columns, try to answer based on available data or explain the limitation. "
-                "Do NOT state that access is denied or required unless the user explicitly asks to check access. "
-                f"Verified evidence from deterministic fallback:\n{verified_evidence}"
-            ))
-        ]
-        
-        for turn in (chat_history or [])[-6:]:
-            content = turn.get("content", "").strip()
-            if not content:
-                continue
-            if turn.get("role") == "assistant":
-                messages.append(AIMessage(content=content[:700]))
-            else:
-                messages.append(HumanMessage(content=content[:700]))
-
-        messages.append(HumanMessage(content=(
-            f"User question: {user_input}\nUser email: {user_email}"
-        )))
-        
-        response = agent_executor.invoke({"messages": messages})
-        content = response["messages"][-1].content
-        
-        if not (isinstance(content, str) and content.strip()):
-            for m in reversed(response["messages"]):
-                if m.type == "tool":
-                    content = f"My analysis engine generated this raw output:\n\n```text\n{m.content}\n```"
-                    break
-
-        if isinstance(content, str) and content.strip():
-            return content
-        else:
-            return f"⚠️ **Agent Error:** I attempted to query the dataset, but my analysis engine returned an empty response.\n\nFallback Evidence:\n{verified_evidence}"
-    except Exception as error:
-        print(f"[AgentExecutor] API response failed; returning verified local answer: {error}")
-        return f"⚠️ **Agent Error:** My reasoning engine encountered an issue: {error}\n\nFallback Evidence:\n{verified_evidence}"
+    return AgentRuntime(executor, get_all_tools(), DATA_DIR).run(
+        user_input, user_email, chat_history
+    )

@@ -5,5 +5,7 @@ networkx
 langchain
 langchain-community
 langchain-openai
+langgraph
 python-dotenv
 gunicorn
+duckdb

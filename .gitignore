@@ -223,3 +223,6 @@ __marimo__/
 data/*.csv
 !data/dataset_ownership.csv
 !data/knowledge_base.csv
+
+# Runtime state for Watchtower findings, actions and decision memory
+data/hub_state.db

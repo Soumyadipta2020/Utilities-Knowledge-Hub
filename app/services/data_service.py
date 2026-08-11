@@ -1,23 +1,105 @@
 """Pandas access layer for the local CSV datasets."""
 
+from collections import OrderedDict
 from pathlib import Path
+from threading import Lock
 from typing import Any
+import os
 import re
 
 import pandas as pd
+
+# Full data by default: no row limit. Set AGENT_MAX_ROWS to a positive number
+# only if a machine cannot hold the frames.
+MAX_QUERY_ROWS = int(os.getenv("AGENT_MAX_ROWS", "0"))
+
+# Loaded frames are cached, but a single dataset can occupy ~3 GB in pandas, so
+# the cache is bounded by memory rather than by frame count - otherwise holding
+# three of the large datasets would exhaust the machine.
+FRAME_CACHE_BUDGET_BYTES = int(float(os.getenv("AGENT_FRAME_CACHE_GB", "4")) * 1024**3)
 
 
 class DataService:
     """Read CSV datasets for the chatbot."""
 
-    def __init__(self, data_dir: Path) -> None:
+    def __init__(self, data_dir: Path, sql_service: Any = None) -> None:
         self.data_dir = data_dir
+        if sql_service is None:
+            from app.services.sql_service import get_sql_service
+
+            sql_service = get_sql_service(data_dir)
+        self.sql_service = sql_service
+        self._frame_cache: OrderedDict[str, tuple[pd.DataFrame, bool]] = OrderedDict()
+        self._frame_sizes: dict[str, int] = {}
+        self._cache_lock = Lock()
 
     def _read_csv_safe(self, filename: str) -> pd.DataFrame:
         path = self.data_dir / filename
         if not path.exists():
             return pd.DataFrame()
         return pd.read_csv(path)
+
+    def _read_head(self, filename: str, rows: int) -> pd.DataFrame:
+        """Read only the leading rows of a dataset without loading the whole file."""
+        path = self.data_dir / filename
+        if not path.exists():
+            return pd.DataFrame()
+        try:
+            return pd.read_csv(path, nrows=rows)
+        except Exception:  # noqa: BLE001 - a malformed CSV should just be skipped
+            return pd.DataFrame()
+
+    def load_frame(self, filename: str) -> tuple[pd.DataFrame, bool]:
+        """
+        Return (dataframe, truncated) for a dataset, caching recent frames.
+
+        `truncated` is True when the row cap kicked in, so callers can tell the
+        agent that aggregate figures cover only the leading rows.
+        """
+        name = Path(str(filename)).name
+        if not name.endswith(".csv"):
+            name += ".csv"
+
+        with self._cache_lock:
+            cached = self._frame_cache.get(name)
+            if cached is not None:
+                self._frame_cache.move_to_end(name)
+                return cached
+
+        path = self.data_dir / name
+        if not path.exists():
+            return pd.DataFrame(), False
+
+        if MAX_QUERY_ROWS > 0:
+            # Read one extra row so a full-length result is detectable as truncated.
+            frame = pd.read_csv(path, nrows=MAX_QUERY_ROWS + 1)
+            truncated = len(frame) > MAX_QUERY_ROWS
+            if truncated:
+                frame = frame.head(MAX_QUERY_ROWS)
+        else:
+            frame = pd.read_csv(path)
+            truncated = False
+
+        try:
+            frame_bytes = int(frame.memory_usage(deep=True).sum())
+        except Exception:  # noqa: BLE001 - sizing must never fail a read
+            frame_bytes = 0
+
+        with self._cache_lock:
+            self._frame_cache[name] = (frame, truncated)
+            self._frame_sizes[name] = frame_bytes
+            self._frame_cache.move_to_end(name)
+            # Evict least-recently-used frames until the cache fits its budget.
+            # A single frame larger than the budget is kept (we just loaded it)
+            # but nothing else is retained alongside it.
+            while (
+                len(self._frame_cache) > 1
+                and sum(self._frame_sizes.values()) > FRAME_CACHE_BUDGET_BYTES
+            ):
+                evicted, _ = self._frame_cache.popitem(last=False)
+                self._frame_sizes.pop(evicted, None)
+
+        return frame, truncated
 
     def check_access_permission(self, user_role: str, data_source: str) -> dict[str, Any]:
         """Return the metadata-backed permission decision for one data source."""
@@ -48,9 +130,9 @@ class DataService:
         query_terms = set(query.casefold().replace("_", " ").split())
         
         for csv_file in csv_files:
-            df = self._read_csv_safe(csv_file.name)
+            df = self._read_head(csv_file.name, 100)
             if df.empty: continue
-            for record in df.head(100).to_dict(orient="records"):
+            for record in df.to_dict(orient="records"):
                 searchable = " ".join(str(value) for value in record.values()).casefold().replace("_", " ")
                 if query_terms.intersection(searchable.split()) or any(term in searchable for term in query_terms if len(term) > 2):
                     matches.append({"dataset": csv_file.stem, **record})
@@ -61,10 +143,57 @@ class DataService:
                     
         if not matches:
             # Fall back to returning top sample records from first available dataset
-            first_df = self._read_csv_safe("customer_master.csv")
+            first_df = self._read_head("customer_master.csv", 5)
             matches = [{"dataset": "customer_master", **record} for record in first_df.head(5).to_dict(orient="records")] if not first_df.empty else []
             
         return {"success": True, "count": len(matches), "records": matches}
+
+    def _search_records_sql(self, id_tokens: set[str], limit: int = 20) -> list[dict[str, Any]] | None:
+        """Find records matching any ID token across all datasets, full scan.
+
+        Returns None if the SQL engine errors, so the caller can fall back.
+        """
+        service = self.sql_service
+        literals = ", ".join("'" + token.replace("'", "''") + "'" for token in id_tokens)
+        matches: list[dict[str, Any]] = []
+
+        for view in service.datasets:
+            if view in {"dataset_ownership", "business_rules"}:
+                continue
+            # Identifiers are text, so numeric and date columns cannot match.
+            # Skipping them avoids casting every column of every row.
+            text_cols = [
+                name
+                for name, dtype in service.columns_with_types(view)
+                if "CHAR" in dtype.upper() or "TEXT" in dtype.upper()
+            ]
+            if not text_cols:
+                continue
+
+            predicate = " OR ".join(
+                f'upper(trim("{col}")) IN ({literals})' for col in text_cols
+            )
+            try:
+                res = service.query(
+                    f'SELECT * FROM "{view}" WHERE {predicate} LIMIT {limit - len(matches)}',
+                    max_rows=limit,
+                )
+            except Exception:  # noqa: BLE001 - fall back to the pandas scan
+                return None
+
+            if not res.get("success"):
+                continue
+            for row in res["rows"]:
+                record = {
+                    key: value
+                    for key, value in zip(res["columns"], row)
+                    if value is not None and str(value) != "nan"
+                }
+                matches.append({"_dataset": view, **record})
+            if len(matches) >= limit:
+                break
+
+        return matches
 
     def search_records(self, query: str) -> dict[str, Any]:
         """Search all CSV datasets in data_dir for exact or token matches (e.g. CUST00003, CUST00001, ENG-44)."""
@@ -73,21 +202,41 @@ class DataService:
 
         id_tokens = set([m.upper() for m in re.findall(r"\b[A-Z]{3,8}[-\_]?\d{1,10}\b", query, flags=re.IGNORECASE)])
 
+        if not id_tokens:
+            return {"success": False, "count": 0, "results": []}
+
+        # Prefer the SQL engine: it scans every row of every dataset without
+        # loading them, so record lookups are complete rather than sampled.
+        if self.sql_service is not None and self.sql_service.available:
+            sql_matches = self._search_records_sql(id_tokens)
+            if sql_matches is not None:
+                return {"success": bool(sql_matches), "count": len(sql_matches), "results": sql_matches}
+
         for csv_file in csv_files:
             if csv_file.name in ["dataset_ownership.csv", "business_rules.csv"]:
                 continue
-            df = self._read_csv_safe(csv_file.name)
+            df, _ = self.load_frame(csv_file.name)
             if df.empty:
                 continue
 
-            for record in df.to_dict(orient="records"):
-                row_values_upper = set([str(v).strip().upper() for v in record.values() if pd.notnull(v)])
+            # Vectorized ID match. Row-by-row to_dict over a 400 MB frame took
+            # minutes and gigabytes; this scans the object columns in one pass.
+            candidates = df.select_dtypes(include=["object", "string"])
+            if candidates.empty:
+                continue
 
-                if id_tokens and id_tokens.intersection(row_values_upper):
-                    cleaned_rec = {k: v for k, v in record.items() if pd.notnull(v) and str(v) != "nan"}
-                    matches.append({"_dataset": csv_file.stem, **cleaned_rec})
-                    if len(matches) >= 20:
-                        break
+            mask = pd.Series(False, index=df.index)
+            for column in candidates.columns:
+                upper = candidates[column].astype("string").str.strip().str.upper()
+                mask |= upper.isin(id_tokens)
+                if mask.sum() >= 20:
+                    break
+
+            hits = df[mask].head(20 - len(matches))
+            for record in hits.to_dict(orient="records"):
+                cleaned_rec = {k: v for k, v in record.items() if pd.notnull(v) and str(v) != "nan"}
+                matches.append({"_dataset": csv_file.stem, **cleaned_rec})
+
             if len(matches) >= 20:
                 break
 

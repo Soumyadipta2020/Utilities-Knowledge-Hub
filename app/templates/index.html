@@ -706,6 +706,294 @@
             50% { box-shadow: 0 0 14px var(--accent-emerald); }
         }
 
+        /* Agent Reasoning Trace */
+        .conversation-split {
+            flex: 1;
+            display: flex;
+            min-height: 0;
+            overflow: hidden;
+        }
+
+        .trace-panel {
+            width: 340px;
+            flex-shrink: 0;
+            border-left: 1px solid var(--border-subtle);
+            background: var(--bg-darker);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: width 0.25s ease;
+        }
+
+        .trace-panel.collapsed {
+            width: 44px;
+        }
+
+        .trace-panel.collapsed .trace-body,
+        .trace-panel.collapsed .trace-title-text,
+        .trace-panel.collapsed .trace-summary {
+            display: none;
+        }
+
+        .trace-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border-subtle);
+            flex-shrink: 0;
+        }
+
+        .trace-title-text {
+            font-size: 11.5px;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: var(--accent-orange);
+            white-space: nowrap;
+        }
+
+        .trace-toggle {
+            background: transparent;
+            border: 1px solid var(--border-subtle);
+            color: var(--text-muted);
+            border-radius: 6px;
+            cursor: pointer;
+            padding: 3px 7px;
+            font-size: 12px;
+            line-height: 1;
+        }
+
+        .trace-toggle:hover { color: var(--accent-orange); border-color: var(--accent-orange); }
+
+        .trace-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .trace-summary:empty { display: none; }
+
+        .trace-summary {
+            padding: 7px 12px;
+            border-top: 1px solid var(--border-subtle);
+            font-size: 10.5px;
+            color: var(--text-muted);
+            flex-shrink: 0;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .trace-step {
+            border: 1px solid var(--border-subtle);
+            border-left: 2px solid var(--text-muted);
+            border-radius: 6px;
+            padding: 7px 9px;
+            background: var(--bg-lighter);
+            animation: traceIn 0.22s ease;
+        }
+
+        @keyframes traceIn {
+            from { opacity: 0; transform: translateY(-4px); }
+            to { opacity: 1; transform: none; }
+        }
+
+        .trace-step.running { border-left-color: var(--accent-orange); }
+        .trace-step.ok { border-left-color: var(--accent-emerald); }
+        .trace-step.failed { border-left-color: var(--accent-rose); }
+        .trace-step.note { border-left-color: var(--accent-orange); background: transparent; }
+
+        .trace-step-head {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11.5px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .trace-spinner {
+            width: 9px;
+            height: 9px;
+            border: 1.5px solid var(--accent-orange);
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: traceSpin 0.7s linear infinite;
+            flex-shrink: 0;
+        }
+
+        @keyframes traceSpin { to { transform: rotate(360deg); } }
+
+        .trace-dot { flex-shrink: 0; font-size: 10px; line-height: 1; }
+
+        .trace-detail {
+            font-family: 'JetBrains Mono', ui-monospace, monospace;
+            font-size: 10px;
+            color: var(--text-muted);
+            margin-top: 4px;
+            word-break: break-word;
+            line-height: 1.45;
+        }
+
+        .trace-meta {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-top: 5px;
+        }
+
+        .trace-chip {
+            font-size: 9.5px;
+            font-weight: 600;
+            padding: 1px 5px;
+            border-radius: 4px;
+            background: var(--accent-orange-soft);
+            color: var(--accent-orange);
+        }
+
+        .trace-chip.time { background: rgba(127, 127, 127, 0.14); color: var(--text-muted); }
+        .trace-chip.retry { background: rgba(244, 63, 94, 0.16); color: var(--accent-rose); }
+
+        .trace-empty {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-align: center;
+            padding: 24px 8px;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 1100px) {
+            .trace-panel { width: 44px; }
+            .trace-panel .trace-body,
+            .trace-panel .trace-title-text,
+            .trace-panel .trace-summary { display: none; }
+            .trace-panel.expanded { width: 300px; }
+            .trace-panel.expanded .trace-body,
+            .trace-panel.expanded .trace-title-text,
+            .trace-panel.expanded .trace-summary { display: flex; }
+            .trace-panel.expanded .trace-body { flex-direction: column; }
+        }
+
+        /* Agent vs Chatbot Comparison */
+        .compare-head { flex-shrink: 0; margin-bottom: 14px; }
+        .compare-head h3 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 19px; color: var(--text-primary); margin: 0 0 4px 0;
+        }
+        .compare-head p { font-size: 12.5px; color: var(--text-muted); margin: 0; line-height: 1.55; }
+
+        .compare-scenarios {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 10px; margin-bottom: 12px; flex-shrink: 0;
+        }
+        .compare-scenario {
+            border: 1px solid var(--border-subtle); border-radius: 8px; padding: 9px 12px;
+            background: var(--bg-lighter); cursor: pointer; transition: all 0.18s ease;
+        }
+        .compare-scenario:hover { border-color: var(--accent-orange); transform: translateY(-2px); }
+        .compare-scenario .cs-title {
+            font-size: 12px; font-weight: 700; color: var(--accent-orange); margin-bottom: 3px;
+        }
+        .compare-scenario .cs-why { font-size: 10.5px; color: var(--text-muted); line-height: 1.45; }
+
+        .compare-input-row { display: flex; gap: 10px; margin-bottom: 16px; flex-shrink: 0; }
+
+        .compare-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px;
+            align-items: start;
+        }
+        @media (max-width: 900px) { .compare-grid { grid-template-columns: 1fr; } }
+
+        .compare-panel {
+            border: 1px solid var(--border-subtle); border-radius: 10px;
+            background: var(--bg-lighter); display: flex; flex-direction: column; overflow: hidden;
+        }
+        .compare-panel.agent { border-color: rgba(217, 102, 43, 0.45); }
+
+        .compare-panel-head {
+            padding: 10px 14px; border-bottom: 1px solid var(--border-subtle);
+            display: flex; align-items: center; justify-content: space-between; gap: 8px;
+        }
+        .compare-panel-title { font-size: 13px; font-weight: 700; color: var(--text-primary); }
+        .compare-panel-sub { font-size: 10.5px; color: var(--text-muted); margin-top: 2px; }
+        .compare-badge {
+            font-size: 9.5px; font-weight: 700; padding: 3px 7px; border-radius: 4px;
+            text-transform: uppercase; letter-spacing: 0.04em; white-space: nowrap;
+        }
+        .compare-badge.plain { background: rgba(127,127,127,0.18); color: var(--text-muted); }
+        .compare-badge.grounded { background: var(--accent-orange); color: #fff; }
+
+        .compare-body {
+            padding: 12px 14px; font-size: 12.5px; line-height: 1.6; color: var(--text-primary);
+            overflow-y: auto; max-height: 460px; min-height: 130px;
+        }
+        .compare-body table { border-collapse: collapse; width: 100%; margin: 8px 0; font-size: 11.5px; }
+        .compare-body th, .compare-body td {
+            border: 1px solid var(--border-subtle); padding: 4px 7px; text-align: left;
+        }
+        .compare-body th { background: var(--accent-orange-soft); }
+        .compare-placeholder { color: var(--text-muted); font-style: italic; font-size: 12px; }
+
+        .compare-trace {
+            border-top: 1px solid var(--border-subtle); padding: 8px 14px;
+            max-height: 190px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px;
+        }
+        .compare-trace:empty { display: none; }
+
+        .scorecard { border: 1px solid var(--border-subtle); border-radius: 10px; overflow: hidden; }
+        .scorecard-verdict {
+            padding: 12px 16px; background: var(--accent-orange-soft);
+            border-bottom: 1px solid var(--border-subtle);
+            font-size: 13px; font-weight: 600; color: var(--text-primary); line-height: 1.55;
+        }
+        .scorecard table { width: 100%; border-collapse: collapse; }
+        .scorecard th {
+            font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.05em;
+            color: var(--text-muted); padding: 9px 14px; text-align: left; font-weight: 700;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+        .scorecard td {
+            padding: 9px 14px; font-size: 12.5px; color: var(--text-primary);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+        .scorecard tr:last-child td { border-bottom: none; }
+        .scorecard .sc-metric { font-weight: 600; }
+        .scorecard .sc-detail { font-size: 10.5px; color: var(--text-muted); margin-top: 2px; }
+        .scorecard .sc-baseline { color: var(--text-muted); font-variant-numeric: tabular-nums; font-weight: 700; }
+        .scorecard .sc-agent { color: var(--accent-orange); font-variant-numeric: tabular-nums; font-weight: 700; }
+
+        /* Shared: agent handoff rows, verification badges, approval buttons */
+        .agent-muted { color: var(--text-muted); font-size: 11.5px; }
+        .action-btns { display: flex; gap: 8px; margin-top: 9px; }
+        .btn-approve, .btn-reject {
+            font-size: 11px; font-weight: 600; padding: 4px 12px; border-radius: 6px; cursor: pointer;
+            border: 1px solid transparent;
+        }
+        .btn-approve { background: var(--accent-emerald); color: #fff; }
+        .btn-reject { background: transparent; border-color: var(--border-strong); color: var(--text-muted); }
+        .action-result {
+            margin-top: 8px; font-size: 11px; color: var(--accent-emerald);
+            background: rgba(34,197,94,0.1); padding: 6px 9px; border-radius: 5px;
+        }
+        .action-result.rejected { color: var(--text-muted); background: rgba(127,127,127,0.12); }
+        .verify-badge {
+            display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 700;
+            padding: 3px 8px; border-radius: 10px; margin-top: 8px;
+        }
+        .verify-badge.verified { background: rgba(34,197,94,0.16); color: var(--accent-emerald); }
+        .verify-badge.partial { background: var(--accent-orange-soft); color: var(--accent-orange); }
+        .verify-badge.disputed { background: rgba(244,63,94,0.16); color: var(--accent-rose); }
+        .handoff-row {
+            display: flex; align-items: center; gap: 7px; font-size: 11.5px;
+            padding: 7px 9px; border-radius: 6px; background: var(--accent-orange-soft);
+            border-left: 2px solid var(--accent-orange); margin-bottom: 7px;
+        }
+
         /* Chat Messages Window */
         .chat-messages {
             flex: 1;
@@ -1956,6 +2244,7 @@
         <header class="chat-header" style="padding: 0 24px; border-bottom: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; background: var(--bg-darker); backdrop-filter: blur(16px); flex-shrink: 0;">
             <div class="nav-tabs" style="padding: 0; background: transparent; border-bottom: none; margin: 0;">
                 <div class="nav-tab active" onclick="switchMainTab(this, 'tab-conversation')">Conversation</div>
+                <div class="nav-tab" onclick="switchMainTab(this, 'tab-compare')">Agent vs Standard Chatbot</div>
                 <div class="nav-tab" onclick="switchMainTab(this, 'tab-harnessing')">Domain Intelligence Sub-System Metrics</div>
                 <div class="nav-tab" onclick="switchMainTab(this, 'tab-storage')">Storage & Governance</div>
                 <div class="nav-tab" onclick="switchMainTab(this, 'tab-trust')">Trust Center</div>
@@ -1973,6 +2262,7 @@
 
 
         <div id="tab-conversation" class="tab-content active">
+        <div class="conversation-split">
         <!-- Message Window -->
         <div class="chat-messages" id="chatMessages">
             <div class="message-row agent">
@@ -1988,37 +2278,31 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
             </div>
         </div>
 
+        <!-- Live Agent Reasoning Trace -->
+        <aside class="trace-panel" id="tracePanel">
+            <div class="trace-header">
+                <span class="trace-title-text">Agent Trace</span>
+                <button class="trace-toggle" id="traceToggle" onclick="toggleTracePanel()" title="Collapse trace">&#8250;&#8250;</button>
+            </div>
+            <div class="trace-body" id="traceBody">
+                <div class="trace-empty" id="traceEmpty">
+                    Ask a question to watch the agent plan,<br>call tools and correct itself in real time.
+                </div>
+            </div>
+            <div class="trace-summary" id="traceSummary"></div>
+        </aside>
+        </div> <!-- End conversation-split -->
+
         <!-- Input Area -->
         <div class="chat-input-area">
             <!-- 1-Click Executive Demo Scenario Cards Bar -->
-            <div id="scenarioCardsBar" style="padding-bottom: 12px; display: flex; gap: 10px; flex-shrink: 0; overflow-x: auto; transition: all 0.3s ease;">
-                <div onclick="runDemoScenario('Check telemetry metrics for boiler_telemetry_logs and fault_codes datasets')" style="flex: 1; min-width: 190px; background: rgba(217, 102, 43, 0.1); border: 1px solid rgba(217, 102, 43, 0.3); border-radius: 8px; padding: 8px 12px; cursor: pointer; transition: all 0.2s ease;" onmouseover="this.style.borderColor='var(--accent-orange)'; this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='rgba(217, 102, 43, 0.3)'; this.style.transform='none'">
-                    <div style="font-size: 10.5px; font-weight: 700; color: var(--accent-orange); display: flex; align-items: center; justify-content: space-between;">
-                        <span>🛠️ SCENARIO 1</span>
-                        <span style="font-size: 8.5px; background: var(--accent-orange); color: #ffffff; padding: 2px 5px; border-radius: 4px; font-weight: 700;">Azure & Databricks</span>
-                    </div>
-                    <div style="font-size: 11.5px; font-weight: 600; color: var(--text-primary); margin-top: 3px;">Boiler Telemetry Diagnostics</div>
-                    <div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">boiler_telemetry_logs & fault_codes</div>
-                </div>
+            <!-- Business scenario cards. Each opens with a KPI question and offers
+                 the follow-up a leader actually asks next, which is where the
+                 knowledge graph and multi-dataset reasoning earn their keep. -->
+            <div id="scenarioCardsBar" style="padding-bottom: 12px; display: flex; gap: 10px; flex-shrink: 0; overflow-x: auto; transition: all 0.3s ease;"></div>
 
-                <div onclick="runDemoScenario('Who is the SME data owner and data lineage for customer_master and inventory_and_van_stock datasets?')" style="flex: 1; min-width: 190px; background: rgba(192, 132, 252, 0.1); border: 1px solid rgba(192, 132, 252, 0.3); border-radius: 8px; padding: 8px 12px; cursor: pointer; transition: all 0.2s ease;" onmouseover="this.style.borderColor='#c084fc'; this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='rgba(192, 132, 252, 0.3)'; this.style.transform='none'">
-                    <div style="font-size: 10.5px; font-weight: 700; color: #c084fc; display: flex; align-items: center; justify-content: space-between;">
-                        <span>👤 SCENARIO 2</span>
-                        <span style="font-size: 8.5px; background: #c084fc; color: #000; padding: 2px 5px; border-radius: 4px; font-weight: 700;">Salesforce & SAP</span>
-                    </div>
-                    <div style="font-size: 11.5px; font-weight: 600; color: var(--text-primary); margin-top: 3px;">SME & Customer Lineage</div>
-                    <div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">customer_master & van_stock</div>
-                </div>
-
-                <div onclick="runDemoScenario('Please raise an IT access request ticket for engineer_availability_and_shifts and repair_history datasets')" style="flex: 1; min-width: 190px; background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.3); border-radius: 8px; padding: 8px 12px; cursor: pointer; transition: all 0.2s ease;" onmouseover="this.style.borderColor='#22c55e'; this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='rgba(34, 197, 94, 0.3)'; this.style.transform='none'">
-                    <div style="font-size: 10.5px; font-weight: 700; color: #22c55e; display: flex; align-items: center; justify-content: space-between;">
-                        <span>🔐 SCENARIO 3</span>
-                        <span style="font-size: 8.5px; background: #22c55e; color: #000; padding: 2px 5px; border-radius: 4px; font-weight: 700;">Workday & SQL</span>
-                    </div>
-                    <div style="font-size: 11.5px; font-weight: 600; color: var(--text-primary); margin-top: 3px;">Automated Access Request</div>
-                    <div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">engineer_shifts & repair_history</div>
-                </div>
-            </div>
+            <!-- Populated after a scenario answer lands -->
+            <div id="followUpBar" style="display: none; padding-bottom: 10px; flex-shrink: 0; align-items: center; gap: 8px; flex-wrap: wrap;"></div>
 
 
 
@@ -2030,6 +2314,80 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
             </form>
         </div>
         </div> <!-- End tab-conversation -->
+
+
+        <!-- Agent vs Standard Chatbot comparison -->
+        <div id="tab-compare" class="tab-content" style="padding: 18px 24px; overflow-y: auto; flex-direction: column; height: 100%; box-sizing: border-box;">
+            <div class="compare-head">
+                <h3>Why the Knowledge Graph and Agent Mode matter</h3>
+                <p>
+                    The same question, answered twice by the <strong>same language model</strong>. On the left it runs as a standard
+                    chatbot with no data access. On the right it runs as the agentic Knowledge Hub, with the knowledge graph and
+                    live enterprise datasets. Holding the model constant means any difference you see comes from the graph and the
+                    agent &mdash; not from a smarter model.
+                </p>
+            </div>
+
+            <div class="compare-scenarios" id="compareScenarios"></div>
+
+            <form class="compare-input-row" onsubmit="runComparison(event)">
+                <input type="text" id="compareInput" class="input-field" style="flex:1;"
+                       placeholder="Ask a business question, then ask a follow-up such as 'why did that week dip?'" required autocomplete="off">
+                <button type="submit" class="send-btn" id="compareBtn"><span>Compare</span></button>
+                <button type="button" class="send-btn" id="compareResetBtn" onclick="resetComparison()"
+                        style="background: transparent; border: 1px solid var(--border-strong); color: var(--text-muted);">
+                    <span>New thread</span>
+                </button>
+            </form>
+
+            <div id="compareTurnBar" style="display:none; font-size: 11.5px; color: var(--text-muted); margin: -6px 0 12px 0;">
+                <strong id="compareTurnLabel"></strong>
+                &mdash; both sides keep their own conversation memory, so follow-ups resolve against the answer that side gave.
+            </div>
+
+            <div class="compare-grid">
+                <div class="compare-panel">
+                    <div class="compare-panel-head">
+                        <div>
+                            <div class="compare-panel-title">Standard AI Chatbot</div>
+                            <div class="compare-panel-sub">Language model only &mdash; no data, no graph, no tools</div>
+                        </div>
+                        <span class="compare-badge plain" id="baselineBadge">Ungrounded</span>
+                    </div>
+                    <div class="compare-body" id="baselineBody">
+                        <span class="compare-placeholder">Pick a scenario above or ask a question to run both side by side.</span>
+                    </div>
+                </div>
+
+                <div class="compare-panel agent">
+                    <div class="compare-panel-head">
+                        <div>
+                            <div class="compare-panel-title">Agentic Knowledge Hub</div>
+                            <div class="compare-panel-sub">Knowledge graph + full enterprise data + tool-using agent</div>
+                        </div>
+                        <span class="compare-badge grounded" id="agentBadge">Grounded</span>
+                    </div>
+                    <div class="compare-body" id="agentBody">
+                        <span class="compare-placeholder">The agent's reasoning steps will appear below as it works.</span>
+                    </div>
+                    <div class="compare-trace" id="compareTrace"></div>
+                </div>
+            </div>
+
+            <div class="scorecard" id="compareScorecard" style="display:none;">
+                <div class="scorecard-verdict" id="scorecardVerdict"></div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width:46%;">Evidence behind the answer</th>
+                            <th style="width:27%;">Standard chatbot</th>
+                            <th style="width:27%;">Agentic Knowledge Hub</th>
+                        </tr>
+                    </thead>
+                    <tbody id="scorecardBody"></tbody>
+                </table>
+            </div>
+        </div> <!-- End tab-compare -->
 
 
 
@@ -3074,6 +3432,7 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
                 if (target) target.classList.add('active');
             }
             if (tabId === 'tab-trust') loadTrustCenter();
+            if (tabId === 'tab-compare') loadCompareScenarios();
         }
 
 
@@ -3190,7 +3549,33 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
             let inList = false;
             let formatted = [];
 
-            for (let line of lines) {
+            // Minimal GFM table support. The agent answers with tables, and this
+            // fallback runs whenever the marked.js CDN is unreachable - without
+            // it those answers would render as raw pipe characters.
+            const isTableRow = (s) => s.trim().startsWith('|') && s.trim().endsWith('|');
+            const isTableDivider = (s) => /^\|[\s:|-]+\|$/.test(s.trim());
+            const splitCells = (s) => s.trim().slice(1, -1).split('|').map(c => c.trim());
+
+            for (let i = 0; i < lines.length; i++) {
+                if (isTableRow(lines[i]) && i + 1 < lines.length && isTableDivider(lines[i + 1])) {
+                    if (inList) { formatted.push('</ul>'); inList = false; }
+                    const header = splitCells(lines[i]);
+                    let rows = [];
+                    let j = i + 2;
+                    while (j < lines.length && isTableRow(lines[j])) {
+                        rows.push(splitCells(lines[j]));
+                        j++;
+                    }
+                    const th = header.map(h => `<th style="border:1px solid rgba(127,127,127,0.3);padding:4px 7px;text-align:left;">${h}</th>`).join('');
+                    const tb = rows.map(r =>
+                        '<tr>' + r.map(c => `<td style="border:1px solid rgba(127,127,127,0.3);padding:4px 7px;">${c}</td>`).join('') + '</tr>'
+                    ).join('');
+                    formatted.push(`<table style="border-collapse:collapse;width:100%;margin:8px 0;font-size:11.5px;"><thead><tr>${th}</tr></thead><tbody>${tb}</tbody></table>`);
+                    i = j - 1;
+                    continue;
+                }
+
+                let line = lines[i];
                 let trimmed = line.trim();
                 if (trimmed.startsWith('• ') || trimmed.startsWith('* ') || trimmed.startsWith('- ')) {
                     let content = trimmed.substring(2).trim();
@@ -3318,6 +3703,419 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
             row.appendChild(contentCol);
             container.appendChild(row);
             container.scrollTop = container.scrollHeight;
+
+            // Verification badges and approval cards attach to the latest answer,
+            // which arrives before those events do.
+            if (sender === 'agent') window.lastAgentBubble = bubble;
+        }
+
+        /* ---------------- Live Agent Reasoning Trace ---------------- */
+
+        const traceState = { steps: new Map(), toolCalls: 0 };
+
+        function toggleTracePanel() {
+            const panel = document.getElementById('tracePanel');
+            const btn = document.getElementById('traceToggle');
+            const narrow = window.matchMedia('(max-width: 1100px)').matches;
+            if (narrow) {
+                panel.classList.toggle('expanded');
+                btn.innerHTML = panel.classList.contains('expanded') ? '&#8250;&#8250;' : '&#8249;&#8249;';
+            } else {
+                panel.classList.toggle('collapsed');
+                btn.innerHTML = panel.classList.contains('collapsed') ? '&#8249;&#8249;' : '&#8250;&#8250;';
+            }
+        }
+
+        function resetTrace() {
+            traceState.steps.clear();
+            traceState.toolCalls = 0;
+            const body = document.getElementById('traceBody');
+            body.innerHTML = '';
+            document.getElementById('traceSummary').innerHTML = '';
+        }
+
+        function traceScroll() {
+            const body = document.getElementById('traceBody');
+            body.scrollTop = body.scrollHeight;
+        }
+
+        function escapeHtml(value) {
+            return String(value == null ? '' : value)
+                .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        }
+
+        function addTraceNote(text) {
+            const body = document.getElementById('traceBody');
+            const el = document.createElement('div');
+            el.className = 'trace-step note';
+            el.innerHTML = `<div class="trace-step-head"><span class="trace-dot" style="color: var(--accent-orange);">&#9679;</span><span>${escapeHtml(text)}</span></div>`;
+            body.appendChild(el);
+            traceScroll();
+        }
+
+        function addTraceToolCall(event) {
+            const body = document.getElementById('traceBody');
+            const el = document.createElement('div');
+            el.className = 'trace-step running';
+
+            const chips = [];
+            (event.datasets || []).forEach(ds => chips.push(`<span class="trace-chip">${escapeHtml(ds)}</span>`));
+            if (event.attempt > 1) {
+                chips.push(`<span class="trace-chip retry">self-correction · attempt ${event.attempt}</span>`);
+            }
+
+            el.innerHTML = `
+                <div class="trace-step-head">
+                    <span class="trace-spinner"></span>
+                    <span>${escapeHtml(event.label || event.tool)}</span>
+                </div>
+                ${event.detail ? `<div class="trace-detail">${escapeHtml(event.detail)}</div>` : ''}
+                ${chips.length ? `<div class="trace-meta">${chips.join('')}</div>` : ''}
+            `;
+            body.appendChild(el);
+            traceState.steps.set(event.id, el);
+            traceState.toolCalls += 1;
+            traceScroll();
+        }
+
+        function resolveTraceToolCall(event) {
+            const el = traceState.steps.get(event.id);
+            if (!el) return;
+
+            el.classList.remove('running');
+            el.classList.add(event.ok ? 'ok' : 'failed');
+
+            const spinner = el.querySelector('.trace-spinner');
+            if (spinner) {
+                const dot = document.createElement('span');
+                dot.className = 'trace-dot';
+                dot.style.color = event.ok ? 'var(--accent-emerald)' : 'var(--accent-rose)';
+                dot.innerHTML = event.ok ? '&#10003;' : '&#10007;';
+                spinner.replaceWith(dot);
+            }
+
+            let meta = el.querySelector('.trace-meta');
+            if (!meta) {
+                meta = document.createElement('div');
+                meta.className = 'trace-meta';
+                el.appendChild(meta);
+            }
+            const timeChip = document.createElement('span');
+            timeChip.className = 'trace-chip time';
+            timeChip.textContent = `${event.ms} ms`;
+            meta.appendChild(timeChip);
+
+            if (!event.ok && event.preview) {
+                const err = document.createElement('div');
+                err.className = 'trace-detail';
+                err.style.color = 'var(--accent-rose)';
+                err.textContent = event.preview;
+                el.appendChild(err);
+            }
+            traceScroll();
+        }
+
+        function finishTrace(event) {
+            const engine = event.engine === 'agent' ? 'Agent loop' : 'Deterministic router';
+            document.getElementById('traceSummary').innerHTML = `
+                <span>${escapeHtml(engine)}</span>
+                <span>${event.steps} step${event.steps === 1 ? '' : 's'}</span>
+                <span>${event.tool_calls} tool call${event.tool_calls === 1 ? '' : 's'}</span>
+                <span>${(event.elapsed_ms / 1000).toFixed(1)}s</span>
+            `;
+        }
+
+        function addTraceHandoff(event) {
+            const body = document.getElementById('traceBody');
+            const el = document.createElement('div');
+            el.className = 'handoff-row';
+            el.innerHTML = `<span>${escapeHtml(event.icon || '👤')}</span>`
+                + `<span><strong>${escapeHtml(event.name)}</strong> took the question`
+                + `<div class="agent-muted" style="font-size:10px;">${escapeHtml(event.remit)}</div></span>`;
+            body.appendChild(el);
+            traceScroll();
+        }
+
+        function renderVerification(report) {
+            const el = window.lastAgentBubble;
+            if (!el || !report || !report.checked) return;
+            const label = { verified: 'Independently verified',
+                            partial: 'Partly verified',
+                            disputed: 'Disputed by verifier' }[report.confidence] || 'Unchecked';
+            const icon = { verified: '✓', partial: '≈', disputed: '✕' }[report.confidence] || '?';
+            const badge = document.createElement('div');
+            badge.className = `verify-badge ${report.confidence}`;
+            badge.textContent = `${icon} ${label} · ${report.checked} claim${report.checked === 1 ? '' : 's'} re-derived`;
+            badge.title = (report.results || [])
+                .map(r => `${r.verdict}: ${r.detail}`).join('\n');
+            el.appendChild(badge);
+        }
+
+        function renderPendingActions(payload) {
+            const el = window.lastAgentBubble;
+            const actions = (payload && payload.actions) || [];
+            if (!el || !actions.length) return;
+
+            // Rendered only after verification, so the recommendation can carry the
+            // confidence of the figures it rests on.
+            const confidence = (payload && payload.confidence) || 'unchecked';
+            const caution = confidence === 'disputed'
+                ? '<div style="font-size:10.5px; color:var(--accent-rose); margin-top:4px;">'
+                  + 'The verifier disputed a figure behind this &mdash; review the evidence before approving.</div>'
+                : '';
+
+            const box = document.createElement('div');
+            box.style.cssText = 'margin-top:12px; padding:10px 12px; border-radius:8px;'
+                + 'background: var(--accent-orange-soft); border:1px solid rgba(217,102,43,0.35);';
+            box.innerHTML =
+                '<div style="font-size:11px; font-weight:700; color:var(--accent-orange); letter-spacing:0.03em;">'
+                + `RECOMMENDED ACTION${actions.length > 1 ? 'S' : ''} &middot; AWAITING YOUR APPROVAL</div>`
+                + caution
+                + actions.map(a => `
+                    <div style="margin-top:9px; padding-top:9px; border-top:1px dashed rgba(217,102,43,0.28);">
+                        <div style="font-size:12.5px; font-weight:600;">${escapeHtml(a.title)}</div>
+                        ${a.detail ? `<div class="agent-muted" style="margin-top:3px;">${escapeHtml(a.detail)}</div>` : ''}
+                        ${a.expected_impact ? `
+                            <div style="margin-top:6px; font-size:11.5px; line-height:1.5;">
+                                <span style="font-weight:700; color:var(--accent-emerald);">Expected impact:</span>
+                                ${escapeHtml(a.expected_impact)}
+                            </div>` : ''}
+                        <div class="action-btns">
+                            <button class="btn-approve" onclick="decideActionInline('${a.id}', true, this)">Approve</button>
+                            <button class="btn-reject" onclick="decideActionInline('${a.id}', false, this)">Reject</button>
+                        </div>
+                    </div>`).join('');
+            el.appendChild(box);
+            document.getElementById('chatMessages').scrollTop = 1e9;
+        }
+
+        async function decideActionInline(actionId, approved, btn) {
+            const container = btn.closest('div').parentElement;
+            btn.closest('.action-btns').innerHTML = '<span class="agent-muted">Recording…</span>';
+            const email = document.getElementById('userEmail').value || 'leadership@abc.com';
+            try {
+                const res = await fetch(`/api/actions/${actionId}/decide`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ approved: approved, decided_by: email })
+                });
+                const data = await res.json();
+                container.innerHTML = `<div class="action-result ${approved ? '' : 'rejected'}">`
+                    + escapeHtml(data.success ? (data.action.result || '') : (data.error || 'Failed')) + '</div>';
+            } catch (err) {
+                container.innerHTML = `<div class="action-result rejected">${escapeHtml(err.message)}</div>`;
+            }
+        }
+
+        function handleTraceEvent(event) {
+            switch (event.type) {
+                case 'status': addTraceNote(event.text); break;
+                case 'handoff': addTraceHandoff(event); break;
+                case 'tool_call': addTraceToolCall(event); break;
+                case 'tool_result': resolveTraceToolCall(event); break;
+                case 'verification': renderVerification(event); break;
+                case 'actions': renderPendingActions(event); break;
+                case 'done': finishTrace(event); break;
+                case 'error': addTraceNote(event.text); break;
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+        /* ---------------- Agent vs Standard Chatbot ---------------- */
+
+        let compareScenariosLoaded = false;
+
+        async function loadCompareScenarios() {
+            if (compareScenariosLoaded) return;
+            compareScenariosLoaded = true;
+            try {
+                const res = await fetch('/api/compare/scenarios');
+                const data = await res.json();
+                const host = document.getElementById('compareScenarios');
+                host.innerHTML = '';
+                (data.scenarios || []).forEach(s => {
+                    const card = document.createElement('div');
+                    card.className = 'compare-scenario';
+                    const step = s.step
+                        ? `<span style="font-size:9px;font-weight:700;background:var(--accent-orange);color:#fff;padding:1px 5px;border-radius:3px;margin-right:6px;">STEP ${s.step}</span>`
+                        : '';
+                    card.innerHTML = `
+                        <div class="cs-title">${step}${escapeHtml(s.title)}</div>
+                        <div class="cs-why">${escapeHtml(s.why)}</div>
+                    `;
+                    card.onclick = () => {
+                        document.getElementById('compareInput').value = s.question;
+                        // Step 1 starts a fresh thread; later steps build on it.
+                        runComparison(null, s.step === 1);
+                    };
+                    host.appendChild(card);
+                });
+            } catch (err) {
+                compareScenariosLoaded = false;
+            }
+        }
+
+        function renderScorecard(scorecard) {
+            const body = document.getElementById('scorecardBody');
+            body.innerHTML = '';
+            scorecard.rows.forEach(row => {
+                const tr = document.createElement('tr');
+                const baseline = row.is_text ? row.baseline : Number(row.baseline).toLocaleString();
+                const agent = row.is_text ? row.agent : Number(row.agent).toLocaleString();
+                tr.innerHTML = `
+                    <td>
+                        <div class="sc-metric">${escapeHtml(row.label)}</div>
+                        ${row.detail ? `<div class="sc-detail">${escapeHtml(row.detail)}</div>` : ''}
+                    </td>
+                    <td class="sc-baseline">${escapeHtml(baseline)}</td>
+                    <td class="sc-agent">${escapeHtml(agent)}</td>
+                `;
+                body.appendChild(tr);
+            });
+            document.getElementById('scorecardVerdict').textContent = scorecard.verdict.headline;
+            document.getElementById('compareScorecard').style.display = 'block';
+        }
+
+        function addCompareTrace(event) {
+            const host = document.getElementById('compareTrace');
+            if (event.type === 'tool_call') {
+                const el = document.createElement('div');
+                el.className = 'trace-step running';
+                el.dataset.callId = event.id;
+                const chips = (event.datasets || [])
+                    .map(d => `<span class="trace-chip">${escapeHtml(d)}</span>`).join('');
+                el.innerHTML = `
+                    <div class="trace-step-head">
+                        <span class="trace-spinner"></span>
+                        <span>${escapeHtml(event.label || event.tool)}</span>
+                    </div>
+                    ${event.detail ? `<div class="trace-detail">${escapeHtml(event.detail)}</div>` : ''}
+                    ${chips ? `<div class="trace-meta">${chips}</div>` : ''}
+                `;
+                host.appendChild(el);
+            } else if (event.type === 'tool_result') {
+                const el = host.querySelector(`[data-call-id="${CSS.escape(String(event.id))}"]`);
+                if (!el) return;
+                el.classList.remove('running');
+                el.classList.add(event.ok ? 'ok' : 'failed');
+                const spinner = el.querySelector('.trace-spinner');
+                if (spinner) {
+                    const dot = document.createElement('span');
+                    dot.className = 'trace-dot';
+                    dot.style.color = event.ok ? 'var(--accent-emerald)' : 'var(--accent-rose)';
+                    dot.innerHTML = event.ok ? '&#10003;' : '&#10007;';
+                    spinner.replaceWith(dot);
+                }
+                let meta = el.querySelector('.trace-meta');
+                if (!meta) {
+                    meta = document.createElement('div');
+                    meta.className = 'trace-meta';
+                    el.appendChild(meta);
+                }
+                const chip = document.createElement('span');
+                chip.className = 'trace-chip time';
+                chip.textContent = `${event.ms} ms`;
+                meta.appendChild(chip);
+            }
+            host.scrollTop = host.scrollHeight;
+        }
+
+        function resetComparison() {
+            compareThreadStarted = false;
+            document.getElementById('compareTurnBar').style.display = 'none';
+            document.getElementById('compareInput').value = '';
+            document.getElementById('baselineBody').innerHTML =
+                '<span class="compare-placeholder">New thread. Pick step 1 above or ask your own question.</span>';
+            document.getElementById('agentBody').innerHTML =
+                '<span class="compare-placeholder">The agent\'s reasoning steps will appear below as it works.</span>';
+            document.getElementById('compareTrace').innerHTML = '';
+            document.getElementById('compareScorecard').style.display = 'none';
+        }
+
+        let compareThreadStarted = false;
+
+        async function runComparison(event, forceReset) {
+            if (event) event.preventDefault();
+            const input = document.getElementById('compareInput');
+            const question = input.value.trim();
+            if (!question) return;
+
+            const reset = forceReset === true || !compareThreadStarted;
+            compareThreadStarted = true;
+
+            const email = document.getElementById('userEmail').value || 'project.lead@abc.com';
+            const btn = document.getElementById('compareBtn');
+            const baselineBody = document.getElementById('baselineBody');
+            const agentBody = document.getElementById('agentBody');
+
+            btn.disabled = true;
+            btn.innerHTML = '<span>Running both...</span>';
+            baselineBody.innerHTML = '<span class="compare-placeholder">Standard chatbot is answering...</span>';
+            agentBody.innerHTML = '<span class="compare-placeholder">Agent is planning and querying live data...</span>';
+            document.getElementById('compareTrace').innerHTML = '';
+            document.getElementById('compareScorecard').style.display = 'none';
+
+            try {
+                const response = await fetch('/api/compare/stream', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: question, user_email: email, reset: reset })
+                });
+                if (!response.ok || !response.body) throw new Error(`HTTP ${response.status}`);
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let buffer = '';
+
+                while (true) {
+                    const { value, done } = await reader.read();
+                    if (done) break;
+                    buffer += decoder.decode(value, { stream: true });
+
+                    let boundary;
+                    while ((boundary = buffer.indexOf('\n\n')) !== -1) {
+                        const frame = buffer.slice(0, boundary);
+                        buffer = buffer.slice(boundary + 2);
+                        if (!frame.startsWith('data:')) continue;
+
+                        let ev;
+                        try { ev = JSON.parse(frame.slice(5).trim()); } catch (e) { continue; }
+
+                        if (ev.type === 'start') {
+                            const bar = document.getElementById('compareTurnBar');
+                            document.getElementById('compareTurnLabel').textContent =
+                                ev.turn > 1 ? `Follow-up ${ev.turn - 1} in this thread` : 'Turn 1 of this thread';
+                            bar.style.display = 'block';
+                        } else if (ev.type === 'scorecard') {
+                            renderScorecard(ev.scorecard);
+                        } else if (ev.type === 'answer' && ev.side === 'baseline') {
+                            baselineBody.innerHTML = parseMarkdown(ev.text);
+                        } else if (ev.type === 'answer' && ev.side === 'agent') {
+                            agentBody.innerHTML = parseMarkdown(ev.text);
+                        } else if (ev.side === 'agent') {
+                            addCompareTrace(ev);
+                        } else if (ev.type === 'error') {
+                            agentBody.innerHTML = `<span class="compare-placeholder">${escapeHtml(ev.text)}</span>`;
+                        }
+                    }
+                }
+            } catch (err) {
+                agentBody.innerHTML = `<span class="compare-placeholder">Comparison failed: ${escapeHtml(err.message)}</span>`;
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<span>Compare</span>';
+            }
         }
 
         async function handleSend(event) {
@@ -3331,27 +4129,90 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
             appendMessage('user', text);
             inputEl.value = '';
             toggleScenarioCards();
+            resetTrace();
 
             const sendBtn = document.getElementById('sendBtn');
             sendBtn.disabled = true;
             sendBtn.innerText = 'Thinking...';
 
+            let answered = false;
             try {
-                const response = await fetch('/api/chat', {
+                const response = await fetch('/api/chat/stream', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        message: text,
-                        user_email: email
-                    })
+                    body: JSON.stringify({ message: text, user_email: email })
                 });
 
-                const data = await response.json();
-                const showCTA = data.access_required || (data.response && (data.response.includes('Dataset Access Required') || data.response.includes('Access Denied')));
-                appendMessage('agent', data.response, showCTA, data.graph);
+                if (!response.ok || !response.body) {
+                    throw new Error(`Stream unavailable (HTTP ${response.status})`);
+                }
 
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let buffer = '';
+
+                while (true) {
+                    const { value, done } = await reader.read();
+                    if (done) break;
+                    buffer += decoder.decode(value, { stream: true });
+
+                    // SSE frames are separated by a blank line.
+                    let boundary;
+                    while ((boundary = buffer.indexOf('\n\n')) !== -1) {
+                        const frame = buffer.slice(0, boundary);
+                        buffer = buffer.slice(boundary + 2);
+                        if (!frame.startsWith('data:')) continue;
+
+                        let payload;
+                        try {
+                            payload = JSON.parse(frame.slice(5).trim());
+                        } catch (parseErr) {
+                            continue;
+                        }
+
+                        if (payload.type === 'answer') {
+                            const showCTA = payload.access_required
+                                || (payload.text && (payload.text.includes('Dataset Access Required') || payload.text.includes('Access Denied')));
+                            appendMessage('agent', payload.text, showCTA, payload.graph);
+                            answered = true;
+                            if (window.activeScenarioIndex !== null && window.activeScenarioIndex !== undefined) {
+                                showFollowUps(window.activeScenarioIndex);
+                            }
+                        } else {
+                            handleTraceEvent(payload);
+                        }
+                    }
+                }
+
+                if (!answered) {
+                    throw new Error('Stream closed before an answer was produced');
+                }
             } catch (err) {
-                appendMessage('agent', `⚠️ Network Error: Unable to communicate with server backend. (${err.message})`);
+                // The answer already rendered - a late stream error must not
+                // trigger a second (billed, duplicated) round trip.
+                if (answered) {
+                    addTraceNote(`Stream ended early: ${err.message}`);
+                    sendBtn.disabled = false;
+                    sendBtn.innerHTML = '<span>Send Query</span>';
+                    return;
+                }
+                // Fall back to the non-streaming endpoint so a proxy that buffers
+                // SSE cannot break the demo.
+                try {
+                    const response = await fetch('/api/chat', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ message: text, user_email: email })
+                    });
+                    const data = await response.json();
+                    const showCTA = data.access_required || (data.response && (data.response.includes('Dataset Access Required') || data.response.includes('Access Denied')));
+                    appendMessage('agent', data.response, showCTA, data.graph);
+                    if (window.activeScenarioIndex !== null && window.activeScenarioIndex !== undefined) {
+                        showFollowUps(window.activeScenarioIndex);
+                    }
+                } catch (fallbackErr) {
+                    appendMessage('agent', `⚠️ Network Error: Unable to communicate with server backend. (${fallbackErr.message})`);
+                }
             } finally {
                 sendBtn.disabled = false;
                 sendBtn.innerHTML = '<span>Send Query</span>';
@@ -4167,6 +5028,11 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
         document.addEventListener('DOMContentLoaded', () => {
             renderStepper(PIPELINE_STAGES.length);
 
+            // Scenario cards are built in JS, so they must be rendered on load -
+            // previously they only appeared once toggleScenarioCards ran, which
+            // left the bar empty when the app first opened.
+            renderScenarioCards();
+
             const welcomeBubble = document.getElementById('welcomeBubble');
             if (welcomeBubble) {
                 const initialText = `Welcome to the **Enterprise Agentic Knowledge Hub**! ⚡
@@ -4508,16 +5374,117 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
     }
 
     
+    // Business demo scenarios. Each is an opening KPI question plus the follow-ups
+    // a leader asks next - the follow-ups are the point, because root-cause work
+    // needs several datasets joined and cannot be answered from model memory.
+    const DEMO_SCENARIOS = [
+        {
+            tag: 'COMMERCIAL',
+            accent: '#D9662B',
+            source: 'installation_history & quotes_and_sales',
+            title: 'Leads, net sales & conversion',
+            question: 'Show me weekly total leads, net sales and sales conversion rate for the past 3 months. Present it as a table and call out any week that breaks the pattern.',
+            followUps: [
+                'What is causing the dip in net sales that week? Investigate the root cause.',
+                'How much revenue did that dip cost us, and what should we change to stop it recurring?'
+            ]
+        },
+        {
+            tag: 'ASSET RELIABILITY',
+            accent: '#c084fc',
+            source: 'repair_history, fault_codes & weather',
+            title: 'Boiler fault types & weather link',
+            question: 'What types of boiler issues have we seen in the past 3 months, and which fault types have the highest occurrence? Use the fault descriptions, not just the codes.',
+            followUps: [
+                'Is there any relationship between those fault types and the weather? Quantify it.',
+                'Which regions were worst affected, and what should we pre-position to prepare for the next cold snap?'
+            ]
+        },
+        {
+            tag: 'CAPACITY PLANNING',
+            accent: '#22c55e',
+            source: 'regional_capacity_forecast & regional_demand_forecast',
+            title: 'Available vs demand hours',
+            question: 'How much imbalance do we have between available engineer hours and planned demand hours by region for the next 3 months? Show the surplus or deficit per region.',
+            followUps: [
+                'How can we improve the plan to reduce that imbalance? Be specific about which regions to move capacity between.',
+                'Which skill types are short in the deficit regions?'
+            ]
+        }
+    ];
+
+    function renderScenarioCards() {
+        const bar = document.getElementById('scenarioCardsBar');
+        if (!bar || bar.dataset.rendered === 'true') return;
+        bar.dataset.rendered = 'true';
+        bar.innerHTML = '';
+        DEMO_SCENARIOS.forEach((s, idx) => {
+            const card = document.createElement('div');
+            card.style.cssText = `flex: 1; min-width: 190px; background: ${s.accent}1a; border: 1px solid ${s.accent}4d;`
+                + 'border-radius: 8px; padding: 8px 12px; cursor: pointer; transition: all 0.2s ease;';
+            card.onmouseover = () => { card.style.borderColor = s.accent; card.style.transform = 'translateY(-2px)'; };
+            card.onmouseout = () => { card.style.borderColor = `${s.accent}4d`; card.style.transform = 'none'; };
+            card.innerHTML = `
+                <div style="font-size: 10.5px; font-weight: 700; color: ${s.accent}; display: flex; align-items: center; justify-content: space-between; gap: 6px;">
+                    <span>SCENARIO ${idx + 1}</span>
+                    <span style="font-size: 8.5px; background: ${s.accent}; color: #fff; padding: 2px 5px; border-radius: 4px; font-weight: 700; white-space: nowrap;">${s.tag}</span>
+                </div>
+                <div style="font-size: 11.5px; font-weight: 600; color: var(--text-primary); margin-top: 3px;">${s.title}</div>
+                <div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">${s.source}</div>
+            `;
+            card.onclick = () => runDemoScenario(s.question, idx);
+            bar.appendChild(card);
+        });
+    }
+
+    // Follow-ups already asked in this thread, so the bar advances through the
+    // scenario instead of re-offering a question that was just answered.
+    window.usedFollowUps = new Set();
+
+    function showFollowUps(scenarioIndex) {
+        const bar = document.getElementById('followUpBar');
+        if (!bar) return;
+        const scenario = DEMO_SCENARIOS[scenarioIndex];
+        if (!scenario) { bar.style.display = 'none'; return; }
+
+        const remaining = scenario.followUps.filter(
+            t => !window.usedFollowUps.has(`${scenarioIndex}::${t}`)
+        );
+        if (remaining.length === 0) {
+            bar.innerHTML = '<span style="font-size: 10.5px; color: var(--text-muted);">'
+                + 'Scenario complete &mdash; ask your own follow-up, or pick another scenario below.</span>';
+            bar.style.display = 'flex';
+            // Bring the scenario cards back so the next one is one click away.
+            const cardsBar = document.getElementById('scenarioCardsBar');
+            if (cardsBar) cardsBar.style.display = 'flex';
+            return;
+        }
+
+        bar.innerHTML = '<span style="font-size: 10.5px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em;">Ask next</span>';
+        remaining.forEach(text => {
+            const chip = document.createElement('button');
+            chip.type = 'button';
+            chip.style.cssText = 'font-size: 11px; padding: 5px 11px; border-radius: 14px; cursor: pointer;'
+                + `background: ${scenario.accent}1a; border: 1px solid ${scenario.accent}59; color: var(--text-primary); text-align: left;`;
+            chip.textContent = text.length > 74 ? text.slice(0, 71) + '...' : text;
+            chip.title = text;
+            chip.onclick = () => {
+                window.usedFollowUps.add(`${scenarioIndex}::${text}`);
+                document.getElementById('userInput').value = text;
+                handleSend();
+            };
+            bar.appendChild(chip);
+        });
+        bar.style.display = 'flex';
+    }
+
     // Helper to toggle Scenario Cards visibility based on user input
     function toggleScenarioCards() {
         const input = document.getElementById('userInput');
         const cardsBar = document.getElementById('scenarioCardsBar');
         if (!cardsBar || !input) return;
-        if (input.value.trim().length > 0) {
-            cardsBar.style.display = 'none';
-        } else {
-            cardsBar.style.display = 'flex';
-        }
+        renderScenarioCards();
+        cardsBar.style.display = input.value.trim().length > 0 ? 'none' : 'flex';
     }
 
     // Helper for Domain Harnessing Hub Sub-Tabs
@@ -4538,11 +5505,23 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
     }
 
     // Helper for 1-Click Executive Demo Scenarios
-    function runDemoScenario(promptText) {
+    function runDemoScenario(promptText, scenarioIndex) {
         // Switch to conversation tab if not active
         const convTabBtn = document.querySelectorAll('.nav-tab')[0];
         switchMainTab(convTabBtn, 'tab-conversation');
-        
+
+        // Remember which scenario is running so its follow-ups can be offered
+        // once the answer lands.
+        if (typeof scenarioIndex === 'number') {
+            // Starting a scenario fresh: re-offer all of its follow-ups.
+            window.activeScenarioIndex = scenarioIndex;
+            DEMO_SCENARIOS[scenarioIndex].followUps.forEach(
+                t => window.usedFollowUps.delete(`${scenarioIndex}::${t}`)
+            );
+        } else {
+            window.activeScenarioIndex = null;
+        }
+
         const input = document.getElementById('userInput');
         input.value = promptText;
         toggleScenarioCards();

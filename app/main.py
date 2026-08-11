@@ -2,12 +2,15 @@
 Main Entry Point for Utilities Knowledge Hub Flask Web Application.
 """
 
-from flask import Flask, jsonify, render_template, request, session
+from flask import Flask, Response, jsonify, render_template, request, session, stream_with_context
 import pandas as pd
 from collections import deque
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta, timezone
 import hashlib
 import hmac
+import json
+import os
 from pathlib import Path
 import sys
 import threading
@@ -29,8 +32,16 @@ from app.config import (
 )
 from app.services.graph_service import KnowledgeGraphService
 from app.services.data_service import DataService
+from app.services.sql_service import SqlService
 from app.services.pipeline_service import KnowledgeHarnessingPipeline
-from app.agent.tools import register_services
+from app.services.store import HubStore
+from app.services.watchtower import Watchtower
+from app.agent.tools import register_services, get_all_tools
+from app.agent.agent_runtime import AgentRuntime
+from app.agent.baseline import run_baseline_chat
+from app.agent import briefing as briefing_module
+from app.agent import specialists as specialists_module
+from app.agent import verifier as verifier_module
 from app.agent.agent_builder import (
     build_agent_executor,
     process_chat_message,
@@ -57,12 +68,76 @@ if not (DATA_DIR / "customer_master.csv").exists():
 
 # Initialize Services & Inject dependencies into tools
 graph_service = KnowledgeGraphService(DATA_DIR)
-data_service = DataService(DATA_DIR)
-pipeline_engine = KnowledgeHarnessingPipeline(DATA_DIR, graph_service, data_service)
-register_services(graph_service, data_service)
+sql_service = SqlService(DATA_DIR)
+data_service = DataService(DATA_DIR, sql_service=sql_service)
+pipeline_engine = KnowledgeHarnessingPipeline(DATA_DIR, graph_service, data_service, sql_service)
+hub_store = HubStore(DATA_DIR / "hub_state.db")
+watchtower = Watchtower(sql_service, hub_store)
+register_services(graph_service, data_service, sql_service, hub_store)
 
 # Build LangChain executor (if OpenRouter API key exists)
 agent_executor = build_agent_executor(OPENROUTER_API_KEY, OPENROUTER_MODEL_NAME, OPENROUTER_BASE_URL)
+
+# Compile the agent graph and cache dataset schemas once, at boot.
+agent_runtime = AgentRuntime(
+    agent_executor, get_all_tools(), DATA_DIR, sql_service=sql_service, store=hub_store
+)
+
+# Conversation history lives server-side so the streaming endpoint can append to
+# it after the response has already started (Flask sessions cannot be written
+# from inside a streamed generator).
+CONVERSATIONS: dict[str, list[dict[str, str]]] = {}
+CONVERSATIONS_LOCK = threading.Lock()
+MAX_HISTORY_TURNS = 12
+
+
+# The comparison keeps a SEPARATE history per arm. Feeding the agent's grounded
+# answer into the baseline's context would let the plain chatbot quote figures it
+# never had access to, which would invalidate the whole comparison.
+COMPARE_CONVERSATIONS: dict[str, dict[str, list[dict[str, str]]]] = {}
+COMPARE_LOCK = threading.Lock()
+
+
+def _conversation_key(user_email: str) -> str:
+    return user_email.strip().casefold() or "anonymous"
+
+
+def _compare_history(user_email: str, side: str) -> list[dict[str, str]]:
+    with COMPARE_LOCK:
+        return list(COMPARE_CONVERSATIONS.get(_conversation_key(user_email), {}).get(side, []))
+
+
+def _append_compare_history(user_email: str, side: str, question: str, answer: str) -> None:
+    key = _conversation_key(user_email)
+    with COMPARE_LOCK:
+        thread = COMPARE_CONVERSATIONS.setdefault(key, {"baseline": [], "agent": []})
+        history = thread.setdefault(side, [])
+        history.extend([
+            {"role": "user", "content": question[:1200]},
+            {"role": "assistant", "content": answer[:1200]},
+        ])
+        del history[:-8]
+
+
+def _reset_compare_history(user_email: str) -> None:
+    with COMPARE_LOCK:
+        COMPARE_CONVERSATIONS.pop(_conversation_key(user_email), None)
+
+
+def _get_history(user_email: str) -> list[dict[str, str]]:
+    with CONVERSATIONS_LOCK:
+        return list(CONVERSATIONS.get(_conversation_key(user_email), []))
+
+
+def _append_history(user_email: str, user_message: str, agent_response: str) -> None:
+    key = _conversation_key(user_email)
+    with CONVERSATIONS_LOCK:
+        history = CONVERSATIONS.setdefault(key, [])
+        history.extend([
+            {"role": "user", "content": user_message[:1200]},
+            {"role": "assistant", "content": agent_response[:1200]},
+        ])
+        del history[:-MAX_HISTORY_TURNS]
 
 # Privacy-safe, runtime-only security telemetry. Raw email addresses and query
 # text are intentionally excluded. Production should replace this with an
@@ -268,6 +343,68 @@ def _access_activity_summary() -> dict:
     }
 
 
+# Verification doubles the model calls on a chat turn, so it can be switched off.
+VERIFY_ANSWERS = os.getenv("AGENT_VERIFY", "1") not in ("0", "false", "False")
+
+# Topic keywords used to file a decision so it can be recalled later.
+_MEMORY_TOPICS = (
+    ("capacity", ("capacity", "hours", "engineer", "shift", "workforce", "imbalance", "staffing")),
+    ("commercial", ("lead", "sale", "conversion", "quote", "revenue", "pricing", "funnel")),
+    ("reliability", ("fault", "repair", "boiler", "breakdown", "weather", "part")),
+    ("governance", ("owner", "sme", "lineage", "governance", "access", "steward")),
+)
+
+
+def _classify_topic(text: str) -> str:
+    lowered = text.casefold()
+    for topic, terms in _MEMORY_TOPICS:
+        if any(term in lowered for term in terms):
+            return topic
+    return "general"
+
+
+def _remember_decision(user_email: str, question: str, answer: str) -> None:
+    """File an analysis so a later session can say what changed since.
+
+    Only substantive, quantified answers are kept - filing greetings and
+    one-liners would make recall noisy and useless.
+    """
+    if len(answer) < 400 or not any(ch.isdigit() for ch in answer):
+        return
+    try:
+        headline = next(
+            (line.strip() for line in answer.splitlines()
+             if line.strip() and not line.strip().startswith("#")),
+            answer[:240],
+        )
+        recommendation = ""
+        for line in answer.splitlines():
+            stripped = line.strip().lstrip("-*• ")
+            if any(word in stripped.casefold() for word in ("recommend", "should", "propose")):
+                recommendation = stripped[:300]
+                break
+        hub_store.record_decision({
+            "user_email": user_email.strip().casefold(),
+            "topic": _classify_topic(f"{question} {answer[:400]}"),
+            "question": question,
+            "finding": headline,
+            "recommendation": recommendation,
+        })
+    except Exception as error:  # noqa: BLE001 - memory must never break a chat
+        print(f"[Memory] Failed to record decision: {error}")
+
+
+def _access_required(agent_response: str) -> bool:
+    """Detect whether an answer surfaced a dataset entitlement gate."""
+    markers = (
+        "Dataset Access & Entitlement Check",
+        "Access Escalation Procedure Initiated",
+        "Dataset Access Required",
+        "Access Denied",
+    )
+    return any(marker in agent_response for marker in markers)
+
+
 @app.route("/")
 def index():
     """Render main enterprise chat interface."""
@@ -293,27 +430,20 @@ def chat_api():
         if not user_message:
             return jsonify({"error": "Message payload cannot be empty."}), 400
 
-        conversation_scope = f"{user_email.casefold()}"
-        if session.get("conversation_scope") != conversation_scope:
-            session["conversation_scope"] = conversation_scope
-            session["chat_history"] = []
-        chat_history = session.get("chat_history", [])
+        session["conversation_scope"] = user_email.casefold()
+        chat_history = _get_history(user_email)
 
-        # Run the dataset access router and grounded LLM response.
+        # Run the agent loop; the deterministic router answers only as fallback.
         agent_response = process_chat_message(
             user_input=user_message,
             user_email=user_email,
-            executor=agent_executor,
             chat_history=chat_history,
+            runtime=agent_runtime,
         )
 
-        chat_history.extend([
-            {"role": "user", "content": user_message[:700]},
-            {"role": "assistant", "content": agent_response[:700]},
-        ])
-        session["chat_history"] = chat_history[-6:]
+        _append_history(user_email, user_message, agent_response)
 
-        access_required_flag = "Dataset Access & Entitlement Check" in agent_response or "Access Escalation Procedure Initiated" in agent_response or "Dataset Access Required" in agent_response or "Access Denied" in agent_response
+        access_required_flag = _access_required(agent_response)
         response_graph = graph_service.extract_subgraph_for_query(user_message, response=agent_response)
         _record_data_access_activity(
             user_email,
@@ -337,6 +467,418 @@ def chat_api():
             "success": False,
             "error": f"Internal server error: {str(e)}"
         }), 500
+
+
+@app.route("/api/chat/stream", methods=["POST"])
+def chat_stream_api():
+    """
+    Streaming chat endpoint. Emits the agent's reasoning trace as Server-Sent
+    Events while it works, then the answer and the grounding lineage graph.
+
+    Event payloads mirror AgentRuntime.stream, plus a final `graph` event.
+    """
+    data = request.get_json() or {}
+    user_message = data.get("message", "").strip()
+    user_email = data.get("user_email", "user@abc.com").strip() or "user@abc.com"
+
+    if not user_message:
+        return jsonify({"error": "Message payload cannot be empty."}), 400
+
+    # Read everything the generator needs before the response starts streaming.
+    session["conversation_scope"] = user_email.casefold()
+    chat_history = _get_history(user_email)
+
+    def generate():
+        def sse(event: dict) -> str:
+            return f"data: {json.dumps(event, default=str)}\n\n"
+
+        answer = ""
+        proposed_ids: list[str] = []
+        try:
+            for event in agent_runtime.stream(user_message, user_email, chat_history):
+                if event.get("type") == "done":
+                    proposed_ids = (event.get("evidence") or {}).get("proposed_action_ids", [])
+                if event.get("type") == "answer":
+                    answer = event.get("text", "")
+                    access_required = _access_required(answer)
+                    response_graph = graph_service.extract_subgraph_for_query(
+                        user_message, response=answer
+                    )
+                    _record_data_access_activity(
+                        user_email, user_message, answer, response_graph, access_required
+                    )
+                    _append_history(user_email, user_message, answer)
+                    _remember_decision(user_email, user_message, answer)
+                    yield sse({
+                        "type": "answer",
+                        "text": answer,
+                        "access_required": access_required,
+                        "graph": response_graph,
+                    })
+                    continue
+                yield sse(event)
+
+            # Independent second derivation of the load-bearing numbers. Runs
+            # after the answer is already on screen so it never delays it.
+            verification = {"checked": 0, "confidence": "unchecked", "results": []}
+            if answer and VERIFY_ANSWERS and agent_runtime.available:
+                yield sse({"type": "status", "state": "verifying",
+                           "text": "Independently re-deriving the headline figures"})
+                verification = verifier_module.verify_answer(agent_executor, agent_runtime, answer)
+                yield sse({"type": "verification", **verification})
+
+            # Recommendations are surfaced only AFTER verification, and only the
+            # ones this answer actually proposed - showing every still-pending
+            # action stacked up unrelated suggestions from earlier questions.
+            proposed = [a for a in (hub_store.get_action(i) for i in proposed_ids) if a]
+            if proposed:
+                yield sse({
+                    "type": "actions",
+                    "actions": proposed,
+                    "confidence": verification.get("confidence", "unchecked"),
+                })
+        except Exception as error:  # noqa: BLE001 - stream must close cleanly
+            print(f"[Chat Stream Error]: {error}")
+            yield sse({"type": "error", "text": f"Stream failed: {error}"})
+
+    return Response(
+        stream_with_context(generate()),
+        mimetype="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no",
+        },
+    )
+
+
+# Ordered as a demo narrative. Steps 1 and 2 are the headline: a routine KPI
+# question, then the follow-up a leader actually asks next. The follow-up is the
+# real proof point - root-cause analysis needs several datasets joined together,
+# which is precisely what a chatbot without data cannot do.
+# ---------------------------------------------------------------- Watchtower
+
+@app.route("/api/watchtower/scan", methods=["POST"])
+def watchtower_scan_api():
+    """Sweep the KPIs for anomalies and have the agent root-cause the worst."""
+    try:
+        payload = request.get_json(silent=True) or {}
+        explain = bool(payload.get("explain", True))
+        if explain:
+            findings = watchtower.scan_and_explain(agent_runtime, max_explanations=int(payload.get("max_explanations", 2)))
+        else:
+            findings = watchtower.scan()
+        return jsonify({
+            "success": True,
+            "scanned_kpis": [k.key for k in watchtower.kpis],
+            "count": len(findings),
+            "findings": watchtower.store.list_findings(),
+        })
+    except Exception as error:  # noqa: BLE001
+        print(f"[Watchtower API Error]: {error}")
+        return jsonify({"success": False, "error": str(error)}), 500
+
+
+@app.route("/api/watchtower/findings", methods=["GET"])
+def watchtower_findings_api():
+    """Findings already detected, without re-running the sweep."""
+    return jsonify({"success": True, "findings": hub_store.list_findings()})
+
+
+# ------------------------------------------------------- approval-gated actions
+
+@app.route("/api/actions", methods=["GET"])
+def list_actions_api():
+    status = request.args.get("status")
+    return jsonify({
+        "success": True,
+        "actions": hub_store.list_actions(status=status),
+        "pending_count": len(hub_store.list_actions(status="pending")),
+    })
+
+
+@app.route("/api/actions/<action_id>/decide", methods=["POST"])
+def decide_action_api(action_id: str):
+    """Approve or reject a queued action.
+
+    Execution is simulated and recorded - the point of the gate is that nothing
+    happens until a human says so, and that the decision is auditable afterwards.
+    """
+    try:
+        payload = request.get_json() or {}
+        approved = bool(payload.get("approved"))
+        decided_by = str(payload.get("decided_by") or "leadership@abc.com")
+
+        action = hub_store.get_action(action_id)
+        if action is None:
+            return jsonify({"success": False, "error": "Unknown action."}), 404
+        if action["status"] != "pending":
+            return jsonify({
+                "success": False,
+                "error": f"Action was already {action['status']}.",
+            }), 409
+
+        if approved:
+            reference = f"CHG-{action_id[:6].upper()}"
+            result = (
+                f"Approved by {decided_by}. Change record {reference} raised and routed to the "
+                f"owning team. (Demo build: the downstream system call is recorded, not sent.)"
+            )
+        else:
+            result = f"Rejected by {decided_by}. No change was made."
+
+        updated = hub_store.decide_action(action_id, approved, decided_by, result)
+        if updated is None:
+            return jsonify({"success": False, "error": "Action was decided concurrently."}), 409
+        return jsonify({"success": True, "action": updated})
+    except Exception as error:  # noqa: BLE001
+        print(f"[Action Decision Error]: {error}")
+        return jsonify({"success": False, "error": str(error)}), 500
+
+
+# ------------------------------------------------------------------ briefings
+
+@app.route("/api/briefing/generate", methods=["POST"])
+def generate_briefing_api():
+    """Turn a conversation thread, or the open findings, into a one-page brief."""
+    try:
+        payload = request.get_json() or {}
+        source = payload.get("source", "thread")
+        user_email = str(payload.get("user_email") or "user@abc.com")
+        audience = str(payload.get("audience") or "Executive leadership")
+
+        if source == "findings":
+            findings = hub_store.list_findings(limit=6)
+            material = briefing_module.material_from_findings(findings)
+            title = "Operational Exception Briefing"
+        else:
+            material = briefing_module.material_from_thread(_get_history(user_email))
+            title = str(payload.get("title") or "Analysis Briefing")
+
+        text = briefing_module.generate_briefing(agent_executor, title, material, audience)
+        return jsonify({"success": True, "briefing": text, "source": source})
+    except Exception as error:  # noqa: BLE001
+        print(f"[Briefing API Error]: {error}")
+        return jsonify({"success": False, "error": str(error)}), 500
+
+
+# ------------------------------------------------------------ decision memory
+
+@app.route("/api/memory", methods=["GET"])
+def memory_api():
+    user_email = request.args.get("user_email")
+    return jsonify({"success": True, "decisions": hub_store.recent_decisions(user_email, limit=15)})
+
+
+@app.route("/api/specialists", methods=["GET"])
+def specialists_api():
+    return jsonify({"success": True, "specialists": specialists_module.roster()})
+
+
+COMPARISON_SCENARIOS = [
+    {
+        "step": 1,
+        "title": "Weekly net appointments, last 3 months",
+        "question": "Show me the trend of total weekly net appointments for the past 3 months. Net excludes cancellations and no-access visits.",
+        "why": "A routine KPI question. The chatbot cannot produce a single real number.",
+    },
+    {
+        "step": 2,
+        "title": "Follow up: why the sudden dip?",
+        "question": "There is a sharp dip in one of those weeks. Why did it happen? Investigate the root cause and tell me which regions were affected.",
+        "why": "The proof point: root cause needs appointments, weather, engineer shifts and regions joined together.",
+    },
+    {
+        "step": 3,
+        "title": "Follow up: what did it cost us?",
+        "question": "How many appointments did we lose that week compared with a normal week, and what should we change so it does not happen again?",
+        "why": "Quantified impact plus a recommendation, grounded in the actual shortfall rather than a generic answer.",
+    },
+    {
+        "step": 4,
+        "title": "Data ownership & lineage",
+        "question": "Who is the SME data owner for customer_master, which platform hosts it, and what is its governance tier?",
+        "why": "Governance questions answerable only from the knowledge graph and ownership register.",
+    },
+]
+
+
+@app.route("/api/compare/scenarios", methods=["GET"])
+def compare_scenarios_api():
+    """Curated questions that make the capability gap obvious to a business audience."""
+    return jsonify({"success": True, "scenarios": COMPARISON_SCENARIOS})
+
+
+@app.route("/api/compare/stream", methods=["POST"])
+def compare_stream_api():
+    """
+    Answer one question two ways and stream both.
+
+    Arm A ("baseline") is the same model with no tools, no knowledge graph and
+    no data access - a normal chatbot. Arm B ("agent") is the full agentic
+    knowledge hub. Holding the model constant means the difference shown is
+    attributable to the graph and the agent loop, not to a better model.
+    """
+    data = request.get_json() or {}
+    user_message = data.get("message", "").strip()
+    user_email = data.get("user_email", "user@abc.com").strip() or "user@abc.com"
+
+    if not user_message:
+        return jsonify({"error": "Message payload cannot be empty."}), 400
+
+    if data.get("reset"):
+        _reset_compare_history(user_email)
+
+    # Each arm remembers only its own prior turns, so a follow-up such as
+    # "why did that week dip?" resolves against the answer that arm gave.
+    baseline_history = _compare_history(user_email, "baseline")
+    agent_history = _compare_history(user_email, "agent")
+    turn_number = len(agent_history) // 2 + 1
+
+    def generate():
+        def sse(event: dict) -> str:
+            return f"data: {json.dumps(event, default=str)}\n\n"
+
+        yield sse({"type": "start", "question": user_message, "turn": turn_number})
+
+        # The baseline is a single short call, so run it alongside the agent and
+        # surface it as soon as it lands rather than serialising the two.
+        pool = ThreadPoolExecutor(max_workers=1)
+        baseline_future = pool.submit(
+            run_baseline_chat, agent_executor, user_message, baseline_history
+        )
+
+        agent_answer = ""
+        agent_summary: dict = {}
+        response_graph: dict = {}
+        baseline_sent = False
+
+        try:
+            for event in agent_runtime.stream(user_message, user_email, agent_history):
+                kind = event.get("type")
+
+                if kind == "answer":
+                    agent_answer = event.get("text", "")
+                    response_graph = graph_service.extract_subgraph_for_query(
+                        user_message, response=agent_answer
+                    )
+                    _append_compare_history(user_email, "agent", user_message, agent_answer)
+                    yield sse({
+                        "side": "agent",
+                        "type": "answer",
+                        "text": agent_answer,
+                        "graph": response_graph,
+                    })
+                    continue
+
+                if kind == "done":
+                    agent_summary = event
+                    continue
+
+                yield sse({"side": "agent", **event})
+
+                if baseline_future.done() and not baseline_sent:
+                    baseline_sent = True
+                    yield sse(_baseline_event(baseline_future.result(), user_email, user_message))
+
+            if not baseline_sent:
+                yield sse(_baseline_event(baseline_future.result(), user_email, user_message))
+
+            yield sse({
+                "type": "scorecard",
+                "scorecard": _build_scorecard(
+                    agent_summary, response_graph, baseline_future.result()
+                ),
+            })
+        except Exception as error:  # noqa: BLE001 - stream must close cleanly
+            print(f"[Compare Stream Error]: {error}")
+            yield sse({"type": "error", "text": f"Comparison failed: {error}"})
+        finally:
+            pool.shutdown(wait=False)
+
+    return Response(
+        stream_with_context(generate()),
+        mimetype="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no",
+        },
+    )
+
+
+def _baseline_event(result: dict, user_email: str = "", question: str = "") -> dict:
+    """Normalize the baseline result onto the same `text` key the agent uses."""
+    if user_email and question:
+        _append_compare_history(user_email, "baseline", question, result.get("answer", ""))
+    return {
+        "side": "baseline",
+        "type": "answer",
+        "text": result.get("answer", ""),
+        "elapsed_ms": result.get("elapsed_ms", 0),
+        "available": result.get("available", False),
+    }
+
+
+def _build_scorecard(agent_summary: dict, response_graph: dict, baseline: dict) -> dict:
+    """Quantify the difference between the two answers."""
+    ev = agent_summary.get("evidence", {}) or {}
+    datasets = ev.get("datasets", [])
+    graph_nodes = len(response_graph.get("nodes", []))
+    graph_edges = len(response_graph.get("edges", []))
+
+    return {
+        "rows": [
+            {
+                "label": "Enterprise datasets queried",
+                "baseline": 0,
+                "agent": len(datasets),
+                "detail": ", ".join(datasets) if datasets else "",
+            },
+            {
+                "label": "Records scanned",
+                "baseline": 0,
+                "agent": ev.get("records_scanned", 0),
+                "detail": "Every row of each dataset referenced",
+            },
+            {
+                "label": "Knowledge graph entities linked",
+                "baseline": 0,
+                "agent": len(ev.get("graph_entities", [])) or graph_nodes,
+                "detail": f"{graph_nodes} nodes / {graph_edges} edges in answer lineage",
+            },
+            {
+                "label": "Live queries executed",
+                "baseline": 0,
+                "agent": ev.get("sql_queries", 0) + ev.get("pandas_queries", 0),
+                "detail": f"{ev.get('sql_queries', 0)} SQL, {ev.get('pandas_queries', 0)} dataframe",
+            },
+            {
+                "label": "Reasoning steps",
+                "baseline": 1,
+                "agent": agent_summary.get("steps", 0),
+                "detail": f"{agent_summary.get('tool_calls', 0)} tool calls",
+            },
+            {
+                "label": "Response time",
+                "baseline": f"{baseline.get('elapsed_ms', 0) / 1000:.1f}s",
+                "agent": f"{agent_summary.get('elapsed_ms', 0) / 1000:.1f}s",
+                "detail": "Agent trades latency for verifiable evidence",
+                "is_text": True,
+            },
+        ],
+        "verdict": {
+            "grounded": bool(datasets or graph_nodes),
+            "headline": (
+                f"The agent grounded its answer in {len(datasets)} dataset"
+                f"{'' if len(datasets) == 1 else 's'} and "
+                f"{ev.get('records_scanned', 0):,} records. "
+                "The standard chatbot answered from model memory with no access to any of it."
+                if datasets or graph_nodes
+                else "The agent answered from governed knowledge; the standard chatbot had no data access."
+            ),
+        },
+    }
 
 
 @app.route("/api/trust/summary", methods=["GET"])
