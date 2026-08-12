@@ -11,31 +11,30 @@ A ContextVar is used so concurrent requests each get their own ledger.
 
 from __future__ import annotations
 
+from contextvars import ContextVar
 from typing import Any
 
-_LEDGER_DICT: dict[str, Any] = {}
-_ACTIVE_LEDGER_ID: str = "default"
+_LEDGER: ContextVar[dict[str, Any] | None] = ContextVar("evidence_ledger", default=None)
 
 
 def start_collection() -> None:
     """Begin a fresh ledger for the current request."""
-    _LEDGER_DICT[_ACTIVE_LEDGER_ID] = {
-        "datasets": set(),
+    _LEDGER.set({
+        "datasets": [],
         "records_scanned": 0,
-        "actions_proposed": 0,
-        "proposed_action_ids": [],
-        "searches": 0,
-        "pandas_queries": 0,
-        "graph_traversals": 0,
         "sql_queries": 0,
+        "pandas_queries": 0,
         "graph_entities": [],
         "graph_lookups": 0,
         "failed_calls": 0,
         "simulations": 0,
-    }
+        "actions_proposed": 0,
+        "proposed_action_ids": [],
+    })
+
 
 def _ledger() -> dict[str, Any] | None:
-    return _LEDGER_DICT.get(_ACTIVE_LEDGER_ID)
+    return _LEDGER.get()
 
 
 def record_datasets(datasets: list[str], records_scanned: int = 0) -> None:

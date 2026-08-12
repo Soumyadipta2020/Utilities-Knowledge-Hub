@@ -29,7 +29,7 @@ CLAIM_EXTRACTION_PROMPT = """You extract checkable numeric claims from an analys
 
 Return JSON only: {"claims": [{"claim": "...", "value": "..."}]}
 
-Include at most 3 claims, choosing the ones a decision would actually rest on -
+Include at most {max_claims} claims, choosing the ones a decision would actually rest on -
 headline totals, rates, rankings. Skip numbers that are merely illustrative.
 If the answer contains no checkable numeric claim, return {"claims": []}.
 """
@@ -44,9 +44,19 @@ Be adversarial. Do not assume the claim is correct. If your figure differs
 materially (more than 2%), say so plainly and give your figure. If the claim is
 too vague to check, say that.
 
+CONFIDENCE is a whole number 0-100: how confident you are that the analyst's
+claim is correct, after your own derivation. A claim you reproduced exactly sits
+near 100; one you could not check at all sits near 50; one your own figure
+contradicts sits low. Do not round everything to 100 or 0 - the number is read
+by a leader deciding how much weight to put on the figure.
+
 Finish with EXACTLY one line in this format:
-VERDICT: CONFIRMED | REFUTED | UNVERIFIABLE — <your figure or reason, under 20 words>
+VERDICT: CONFIRMED | REFUTED | UNVERIFIABLE — CONFIDENCE: <0-100>% — <your figure or reason, under 20 words>
 """
+
+# Used only when the verifier ignores the CONFIDENCE field. Deliberately coarse -
+# these are read off the verdict, not measured, and the UI marks them as such.
+ASSUMED_SCORE = {"CONFIRMED": 90, "UNVERIFIABLE": 50, "REFUTED": 10}
 
 
 def _extract_json(content: Any) -> dict:
@@ -74,8 +84,10 @@ def extract_claims(llm: Any, answer: str, max_claims: int = 2) -> list[dict[str,
     if llm is None or not HAS_MESSAGES or not answer.strip():
         return []
     try:
+        # The cap lives in the prompt as well as the slice below, so the extractor
+        # is never asked for claims that would then be silently dropped.
         response = llm.invoke([
-            SystemMessage(content=CLAIM_EXTRACTION_PROMPT),
+            SystemMessage(content=CLAIM_EXTRACTION_PROMPT.replace("{max_claims}", str(max_claims))),
             HumanMessage(content=f"ANALYST ANSWER:\n{answer[:4000]}"),
         ])
         parsed = _extract_json(getattr(response, "content", response))
@@ -97,15 +109,32 @@ def verify_claim(runtime: Any, claim: dict[str, str]) -> dict[str, Any]:
         text = runtime.run(prompt, "verifier@system", None) or ""
     except Exception as error:  # noqa: BLE001
         print(f"[Verifier] Verification run failed: {error}")
-        return {"claim": statement, "verdict": "UNVERIFIABLE", "detail": str(error)[:200], "text": ""}
+        return {
+            "claim": statement, "verdict": "UNVERIFIABLE", "detail": str(error)[:200],
+            "score": 0, "score_stated": False, "text": "",
+        }
 
-    match = re.search(r"VERDICT:\s*(CONFIRMED|REFUTED|UNVERIFIABLE)\s*[-—:]*\s*(.*)", text, re.IGNORECASE)
+    match = re.search(
+        r"VERDICT:\s*(CONFIRMED|REFUTED|UNVERIFIABLE)\s*[-—:]*\s*"
+        r"(?:CONFIDENCE:\s*(\d{1,3})\s*%?\s*[-—:]*\s*)?(.*)",
+        text,
+        re.IGNORECASE,
+    )
     if match:
         verdict = match.group(1).upper()
-        detail = match.group(2).strip()[:200]
+        detail = match.group(3).strip()[:200]
+        stated = match.group(2)
     else:
-        verdict, detail = "UNVERIFIABLE", "The verifier did not return a parseable verdict."
-    return {"claim": statement, "verdict": verdict, "detail": detail, "text": text}
+        verdict, detail, stated = "UNVERIFIABLE", "The verifier did not return a parseable verdict.", None
+
+    # A stated score is the verifier's own; anything else is read off the verdict
+    # and flagged so the UI never presents a guess as a measured number.
+    score_stated = stated is not None
+    score = min(100, max(0, int(stated))) if score_stated else ASSUMED_SCORE.get(verdict, 50)
+    return {
+        "claim": statement, "verdict": verdict, "detail": detail,
+        "score": score, "score_stated": score_stated, "text": text,
+    }
 
 
 def verify_answer(llm: Any, runtime: Any, answer: str, max_claims: int = 2) -> dict[str, Any]:

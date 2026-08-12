@@ -525,6 +525,15 @@ def chat_stream_api():
                 yield sse({"type": "status", "state": "verifying",
                            "text": "Independently re-deriving the headline figures"})
                 verification = verifier_module.verify_answer(agent_executor, agent_runtime, answer)
+                # Persisted before it is streamed so each claim carries an id the
+                # accept/discard buttons can decide against.
+                if verification.get("results"):
+                    verification["results"] = hub_store.record_claim_reviews(
+                        user_email=user_email,
+                        question=user_message,
+                        confidence=verification.get("confidence", "unchecked"),
+                        results=verification["results"],
+                    )
                 yield sse({"type": "verification", **verification})
 
             # Recommendations are surfaced only AFTER verification, and only the
@@ -633,6 +642,55 @@ def decide_action_api(action_id: str):
         return jsonify({"success": True, "action": updated})
     except Exception as error:  # noqa: BLE001
         print(f"[Action Decision Error]: {error}")
+        return jsonify({"success": False, "error": str(error)}), 500
+
+
+# ------------------------------------------------- verified-claim sign-off
+
+@app.route("/api/verification/claims", methods=["GET"])
+def list_claim_reviews_api():
+    """Re-derived claims and whether a human has stood behind them yet."""
+    status = request.args.get("status")
+    return jsonify({
+        "success": True,
+        "claims": hub_store.list_claim_reviews(status=status),
+        "pending_count": len(hub_store.list_claim_reviews(status="pending")),
+    })
+
+
+@app.route("/api/verification/claims/<review_id>/decide", methods=["POST"])
+def decide_claim_review_api(review_id: str):
+    """Accept a re-derived figure into the record, or discard it.
+
+    Accepting is not a claim that the figure is correct - it is a named person
+    saying they are willing to rely on it, which is the part an audit needs.
+    """
+    try:
+        payload = request.get_json() or {}
+        accepted = bool(payload.get("accepted"))
+        reviewed_by = str(payload.get("reviewed_by") or "leadership@abc.com")
+        note = str(payload.get("note") or "")
+
+        review = hub_store.get_claim_review(review_id)
+        if review is None:
+            return jsonify({"success": False, "error": "Unknown claim."}), 404
+        if review["status"] != "pending":
+            return jsonify({
+                "success": False,
+                "error": f"Claim was already {review['status']}.",
+            }), 409
+
+        updated = hub_store.decide_claim_review(review_id, accepted, reviewed_by, note)
+        if updated is None:
+            return jsonify({"success": False, "error": "Claim was decided concurrently."}), 409
+
+        if accepted:
+            summary = f"Accepted by {reviewed_by}. This figure is cleared for reporting."
+        else:
+            summary = f"Discarded by {reviewed_by}. This figure will not be relied on."
+        return jsonify({"success": True, "claim": updated, "summary": summary})
+    except Exception as error:  # noqa: BLE001
+        print(f"[Claim Review Error]: {error}")
         return jsonify({"success": False, "error": str(error)}), 500
 
 

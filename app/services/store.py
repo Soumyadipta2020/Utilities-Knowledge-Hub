@@ -63,9 +63,27 @@ CREATE TABLE IF NOT EXISTS decisions (
     metrics TEXT
 );
 
+CREATE TABLE IF NOT EXISTS claim_reviews (
+    id TEXT PRIMARY KEY,
+    created_at TEXT NOT NULL,
+    reviewed_at TEXT,
+    user_email TEXT NOT NULL,
+    question TEXT NOT NULL,
+    claim TEXT NOT NULL,
+    verdict TEXT NOT NULL,
+    detail TEXT,
+    score INTEGER,
+    score_stated INTEGER NOT NULL DEFAULT 0,
+    confidence TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'pending',
+    reviewed_by TEXT,
+    note TEXT
+);
+
 CREATE INDEX IF NOT EXISTS idx_findings_period ON findings(kpi, period);
 CREATE INDEX IF NOT EXISTS idx_actions_status ON actions(status);
 CREATE INDEX IF NOT EXISTS idx_decisions_user ON decisions(user_email, created_at);
+CREATE INDEX IF NOT EXISTS idx_claim_reviews_status ON claim_reviews(status, created_at);
 """
 
 
@@ -92,6 +110,14 @@ class HubStore:
         existing = {row["name"] for row in self._con.execute("PRAGMA table_info(actions)")}
         if "expected_impact" not in existing:
             self._con.execute("ALTER TABLE actions ADD COLUMN expected_impact TEXT")
+
+        claim_cols = {row["name"] for row in self._con.execute("PRAGMA table_info(claim_reviews)")}
+        if "score" not in claim_cols:
+            self._con.execute("ALTER TABLE claim_reviews ADD COLUMN score INTEGER")
+        if "score_stated" not in claim_cols:
+            self._con.execute(
+                "ALTER TABLE claim_reviews ADD COLUMN score_stated INTEGER NOT NULL DEFAULT 0"
+            )
 
     # ---------------------------------------------------------------- findings
 
@@ -221,6 +247,86 @@ class HubStore:
         except json.JSONDecodeError:
             item["payload"] = {}
         return item
+
+    # ---------------------------------------------------------- claim reviews
+
+    def record_claim_reviews(
+        self,
+        *,
+        user_email: str,
+        question: str,
+        confidence: str,
+        results: list[dict[str, Any]],
+    ) -> list[dict[str, Any]]:
+        """Log each re-derived claim as awaiting a human accept/discard.
+
+        The verifier's opinion is not the last word - a leader still has to say
+        whether they are willing to stand behind the figure. Persisting the claim
+        is what makes that decision auditable later.
+        """
+        stored: list[dict[str, Any]] = []
+        with self._lock:
+            for result in results:
+                review_id = uuid.uuid4().hex[:12]
+                self._con.execute(
+                    """INSERT INTO claim_reviews (id, created_at, user_email, question,
+                                                  claim, verdict, detail, score, score_stated,
+                                                  confidence, status)
+                       VALUES (?,?,?,?,?,?,?,?,?,?,'pending')""",
+                    (
+                        review_id, _now(), (user_email or "").strip().casefold(),
+                        str(question)[:600], str(result.get("claim", ""))[:1200],
+                        str(result.get("verdict", "UNVERIFIABLE")).upper(),
+                        str(result.get("detail", ""))[:600],
+                        int(result.get("score") or 0),
+                        1 if result.get("score_stated") else 0,
+                        confidence,
+                    ),
+                )
+                stored.append({**result, "id": review_id, "status": "pending"})
+            self._con.commit()
+        return stored
+
+    def get_claim_review(self, review_id: str) -> dict[str, Any] | None:
+        with self._lock:
+            row = self._con.execute(
+                "SELECT * FROM claim_reviews WHERE id = ?", (review_id,)
+            ).fetchone()
+        return dict(row) if row else None
+
+    def list_claim_reviews(self, status: str | None = None, limit: int = 50) -> list[dict[str, Any]]:
+        query = "SELECT * FROM claim_reviews"
+        params: tuple = ()
+        if status:
+            query += " WHERE status = ?"
+            params = (status,)
+        query += " ORDER BY created_at DESC LIMIT ?"
+        params = params + (limit,)
+        with self._lock:
+            rows = self._con.execute(query, params).fetchall()
+        return [dict(r) for r in rows]
+
+    def decide_claim_review(
+        self, review_id: str, accepted: bool, reviewed_by: str, note: str = ""
+    ) -> dict[str, Any] | None:
+        """Accept or discard one claim. Returns None if it was already decided."""
+        with self._lock:
+            row = self._con.execute(
+                "SELECT status FROM claim_reviews WHERE id = ?", (review_id,)
+            ).fetchone()
+            if row is None or row["status"] != "pending":
+                return None
+            self._con.execute(
+                """UPDATE claim_reviews
+                   SET status = ?, reviewed_at = ?, reviewed_by = ?, note = ?
+                   WHERE id = ?""",
+                (
+                    "accepted" if accepted else "discarded", _now(),
+                    reviewed_by, note[:400], review_id,
+                ),
+            )
+            self._con.commit()
+        return self.get_claim_review(review_id)
 
     # --------------------------------------------------------------- decisions
 
