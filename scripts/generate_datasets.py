@@ -17,14 +17,14 @@ if str(scripts_dir) not in sys.path:
 np.random.seed(42)
 random.seed(42)
 
-# Per-week base counts optimized for ±3 months window and lightweight memory profile
-BASE_LEADS = 1200
-BASE_APPTS = 900
-BASE_SALES = 450
-BASE_INSTALLS = 300
-BASE_REPAIRS = 3500
-BASE_SERVICES = 9000
-NUM_ENGINEERS = 800
+# Per-week base counts optimized for ±3 months window and lightweight memory profile (Render Free 512MB RAM)
+BASE_LEADS = 350
+BASE_APPTS = 250
+BASE_SALES = 120
+BASE_INSTALLS = 80
+BASE_REPAIRS = 900
+BASE_SERVICES = 2500
+NUM_ENGINEERS = 200
 
 NUM_BOILERS_REF = 10
 NUM_FAULTS_REF = 15
@@ -422,9 +422,9 @@ def generate_all_datasets(output_dir='data'):
                     'number_of_jobs': num_jobs, 'jobs_hours': int(num_jobs * random.uniform(1.5, 2.5))
                 })
 
-            gross_h = random.randint(500, 750)
-            npe_h = random.randint(30, 80)
-            ot_h = random.randint(0, 50)
+            gross_h = random.randint(140, 200)
+            npe_h = random.randint(10, 25)
+            ot_h = random.randint(0, 15)
             avail_h = gross_h - npe_h + ot_h
 
             reg_capacity.append({

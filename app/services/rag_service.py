@@ -584,7 +584,12 @@ class RagService:
 
     def warm(self) -> None:
         """Build the index up front so the first comparison is not slowed by it."""
-        self._ensure_index()
+        try:
+            import time
+            time.sleep(2.0)
+            self._ensure_index()
+        except Exception as error:
+            print(f"[RagService] Warmup notice: {error}")
 
 
 _SERVICE: RagService | None = None
