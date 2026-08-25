@@ -51,19 +51,23 @@ metrics:
     sample_questions:
       - "How much are we discounting, and is it winning us any more work?"
       - "How much margin are we giving away on discounts that buy us nothing?"
-      - "Which region is giving away the most through discounting?"
-      - "What negotiation guardrail should the sales team be working to?"
-
   - name: total_sales
     description: Total number of closed sales from leads.
     model: installation_history
     type: sum
-    sql: CASE WHEN sale_happened IN ('true', '1', TRUE, 1) THEN 1 ELSE 0 END
+    sql: CASE WHEN sale_happened THEN 1 ELSE 0 END
     timestamp_column: sale_date
 
   - name: quote_to_sale_conversion_rate
     description: Percentage of quoted leads that resulted in a sale.
     model: installation_history
     type: avg
-    sql: CASE WHEN sale_happened IN ('true', '1', TRUE, 1) THEN 1.0 ELSE 0.0 END
+    sql: CASE WHEN sale_happened THEN 1.0 ELSE 0.0 END
+    timestamp_column: lead_date
+
+  - name: conversion_rate
+    description: Percentage of quoted leads that resulted in a sale (alias for quote_to_sale_conversion_rate).
+    model: installation_history
+    type: avg
+    sql: CASE WHEN sale_happened THEN 1.0 ELSE 0.0 END
     timestamp_column: lead_date
