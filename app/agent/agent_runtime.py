@@ -75,10 +75,8 @@ You answer by investigating with tools, not by guessing. Work through a question
 
 1. Decide which datasets and tools actually answer the question. A multi-part
    question needs multiple tool calls - make all of them before answering.
-2. For ANY numeric or aggregate question (counts, sums, averages, groupings,
-   trends, rankings, comparisons) and for anything spanning two or more
-   datasets, call `query_datasets_sql`. It scans EVERY row of the full datasets
-   and handles joins efficiently. Never state a number you did not compute.
+2. For ANY KPI, business metric, or aggregate business question (e.g. conversion rates, totals, discounts, average values across regions or time), ALWAYS use the `query_business_metric` tool first. This semantic layer handles dimensions, time-grouping, and filtering instantly. 
+3. Only use `query_datasets_sql` for complex ad-hoc queries or cross-dataset joins that the metric catalog cannot answer. It scans EVERY row of the full datasets. Never state a number you did not compute.
    Use `execute_pandas_query` only for single-dataset row-level inspection that
    is awkward in SQL. Both see the complete data - neither samples.
 3. If a tool returns an error, read the error, fix your input and call the tool
@@ -134,6 +132,7 @@ _TOOL_LABELS = {
     "query_live_metrics": "Reading live telemetry",
     "query_business_operations": "Querying business operations",
     "query_metric_definitions": "Looking up metric definition",
+    "query_business_metric": "Computing business metric",
     "query_dataset_sample": "Sampling dataset",
     "forecast_boiler_installations": "Running installation forecast",
     "check_data_access": "Checking entitlements",

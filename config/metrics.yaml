@@ -1,0 +1,55 @@
+metrics:
+  - name: total_visits
+    description: Total number of engineer visits.
+    model: visit_outcome
+    type: count
+    sql: job_id
+    timestamp_column: visit_date
+    sample_questions:
+      - "What does a completed repair actually cost us to deliver?"
+      - "Are our repair prices covering their cost to serve?"
+      - "How much is one point of first-time fix worth in pounds?"
+
+  - name: total_repairs
+    description: Total number of completed repairs.
+    model: repair_history
+    type: count
+    sql: job_id
+    timestamp_column: repair_date
+    sample_questions:
+      - "What should we charge for a boiler repair?"
+      - "How should repairs be priced by fault type?"
+      - "Why are boiler faults rising in cold weather?"
+      - "How many repair and service jobs does the plan expect each week?"
+      - "Is our demand forecast accurate?"
+
+  - name: total_appointments
+    description: Total number of scheduled appointments.
+    model: appointment_schedule
+    type: count
+    sql: job_id
+    timestamp_column: appointment_date
+    sample_questions:
+      - "Do we have enough engineer capacity in the Midlands?"
+      - "When are the productive periods of our business year?"
+      - "What price should we set for annual servicing and installations?"
+
+  - name: total_quotes
+    description: Total number of quotes generated.
+    model: quotes_and_sales
+    type: count
+    sql: lead_id
+    sample_questions:
+      - "What is our quote-to-sale conversion rate, and does discounting improve it?"
+      - "How often do we close above our opening quote, and by how much?"
+
+  - name: total_discount
+    description: Total discount amount across quotes.
+    model: quotes_and_sales
+    type: sum
+    sql: primary_qutation - final_quotation
+    sample_questions:
+      - "How much are we discounting, and is it winning us any more work?"
+      - "How much margin are we giving away on discounts that buy us nothing?"
+      - "Which region is giving away the most through discounting?"
+      - "What negotiation guardrail should the sales team be working to?"

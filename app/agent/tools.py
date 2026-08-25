@@ -23,6 +23,8 @@ except ImportError:
         setattr(func, "invoke", lambda args: func(**args) if isinstance(args, dict) else func(args))
         return func
 
+from mcp_server.engine.metric_engine import metric_engine
+
 
 # Global references to services (injected via register_services)
 _GRAPH_SERVICE = None
@@ -424,6 +426,54 @@ def query_datasets_sql(sql: str) -> str:
         footer += f"; result set is larger than {MAX_SQL_RESULT_ROWS} rows - add an ORDER BY/LIMIT or aggregate further"
     footer += ". The query scanned every row of the underlying data.)"
     return "\n".join(lines) + footer
+
+
+@tool
+def query_business_metric(
+    metric_name: str,
+    dimensions: list = None,
+    time_grain: str = None,
+    filters: dict = None
+) -> str:
+    """
+    Compute a business KPI or metric dynamically (e.g., total_visits, total_repairs, total_quotes, total_discount).
+    This handles SQL generation, dimensional grouping, and time-truncation automatically.
+    Use this for all numeric aggregate questions about KPIs instead of query_datasets_sql.
+    """
+    if _SQL_SERVICE is None or not getattr(_SQL_SERVICE, "available", False):
+        return "Error: SQL service unavailable."
+    
+    try:
+        sql = metric_engine.generate_metric_sql(
+            metric_name=metric_name,
+            dimensions=dimensions,
+            time_grain=time_grain,
+            filters=filters
+        )
+    except Exception as e:
+        evidence.record_failure()
+        return f"Error generating metric SQL: {e}"
+
+    evidence.record_sql_query()
+    referenced = _SQL_SERVICE.views_referenced(sql)
+    evidence.record_datasets(referenced, records_scanned=sum(_SQL_SERVICE.row_count(v) for v in referenced))
+
+    res = _SQL_SERVICE.query(sql, max_rows=100)
+    if not res.get("success"):
+        evidence.record_failure()
+        return f"Error running metric SQL: {res.get('error')}"
+
+    columns = res["columns"]
+    rows = res["rows"]
+    if not rows:
+        return "Query ran successfully but returned no rows."
+
+    lines = ["| " + " | ".join(map(str, columns)) + " |",
+             "|" + "|".join(["---"] * len(columns)) + "|"]
+    for row in rows:
+        lines.append("| " + " | ".join("" if v is None else str(v) for v in row) + " |")
+
+    return "\n".join(lines)
 
 
 @tool
@@ -1343,4 +1393,5 @@ def get_all_tools():
         check_data_access,
         raise_access_request,
         execute_pandas_query,
+        query_business_metric,
     ]

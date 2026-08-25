@@ -2,6 +2,8 @@ import logging
 from fastmcp import FastMCP
 from mcp_server.resources.doc_resources import register_doc_resources
 from mcp_server.tools.analytics_query import register_analytics_query_tool
+from mcp_server.resources.metric_resources import register_metric_resources
+from mcp_server.tools.metric_query import register_metric_query_tool
 from mcp_server.engine.duckdb_engine import duckdb_engine
 
 logging.basicConfig(level=logging.INFO)
@@ -14,9 +16,11 @@ mcp = FastMCP(
 
 # Register Resources
 register_doc_resources(mcp)
+register_metric_resources(mcp)
 
 # Register Tools
 register_analytics_query_tool(mcp)
+register_metric_query_tool(mcp)
 
 def initialize():
     logger.info("Initializing Enterprise MCP Server with DuckDB CSV engine...")
