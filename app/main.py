@@ -88,17 +88,16 @@ register_services(graph_service, data_service, sql_service, hub_store)
 
 
 def _warm_planning_agents() -> None:
-    """Pre-compute the planning agents' expensive scans.
-
-    The forecast run-rate joins three multi-million-row history tables to
-    customer_holdings, which costs 10-20 seconds cold. Paying that on a live chat
-    turn would eat most of the agent's time budget, so it is paid once at boot on
-    a daemon thread and cached from then on.
-    """
-    demand_engine.warm(sql_service)
-    commercial_engine.warm(sql_service)
-    pricing_engine.warm(sql_service)
-    print("[PlanningAgents] Demand, commercial and pricing engines warmed.")
+    """Pre-compute the planning agents' expensive scans."""
+    try:
+        import time
+        time.sleep(1.0)
+        demand_engine.warm(sql_service)
+        commercial_engine.warm(sql_service)
+        pricing_engine.warm(sql_service)
+        print("[PlanningAgents] Demand, commercial and pricing engines warmed.")
+    except Exception as e:
+        print(f"[PlanningAgents] Warmup notice: {e}")
 
 
 threading.Thread(target=_warm_planning_agents, name="planning-warm", daemon=True).start()
