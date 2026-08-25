@@ -1,0 +1,16 @@
+sync_intervals:
+  schema: 3600 # seconds (1 hour)
+  metrics: 86400 # seconds (24 hours)
+  
+catalogs:
+  - name: utilities_prod
+    schemas:
+      - smart_meter_data
+      - billing
+      - crm
+    tables:
+      - meter_reads_raw
+      - daily_usage
+      - customer_profiles
+      - tariff_rates
+
