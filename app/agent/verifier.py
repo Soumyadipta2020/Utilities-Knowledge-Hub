@@ -50,8 +50,15 @@ near 100; one you could not check at all sits near 50; one your own figure
 contradicts sits low. Do not round everything to 100 or 0 - the number is read
 by a leader deciding how much weight to put on the figure.
 
+The final line is shown to a business reader, not to an analyst. Write it as a
+short plain sentence they could act on. Say what you got and whether it backs the
+claim - "I got the same figure", "I got 654,000 hours, about 20% lower", "I could
+not check this without knowing how the shortfall was defined". Do not use
+shorthand, method names or phrases like "pooled result" or "rule absent"; if your
+method differed from theirs, say so in words a non-specialist understands.
+
 Finish with EXACTLY one line in this format:
-VERDICT: CONFIRMED | REFUTED | UNVERIFIABLE — CONFIDENCE: <0-100>% — <your figure or reason, under 20 words>
+VERDICT: CONFIRMED | REFUTED | UNVERIFIABLE — CONFIDENCE: <0-100>% — <plain sentence, under 25 words>
 """
 
 # Used only when the verifier ignores the CONFIDENCE field. Deliberately coarse -
@@ -122,7 +129,7 @@ def verify_claim(runtime: Any, claim: dict[str, str]) -> dict[str, Any]:
     )
     if match:
         verdict = match.group(1).upper()
-        detail = match.group(3).strip()[:200]
+        detail = match.group(3).strip()[:240]
         stated = match.group(2)
     else:
         verdict, detail, stated = "UNVERIFIABLE", "The verifier did not return a parseable verdict.", None

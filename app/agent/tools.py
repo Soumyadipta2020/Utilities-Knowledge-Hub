@@ -6,7 +6,11 @@ import random
 from pathlib import Path
 from typing import Dict, Any, Callable
 
+from app.agent import commercial as commercial_engine
+from app.agent import demand_forecast as demand_engine
 from app.agent import evidence
+from app.agent import pricing as pricing_engine
+from app.agent.analytics import gbp, join_plain, num, signed_pct
 
 try:
     from langchain_core.tools import tool
@@ -146,6 +150,7 @@ def search_knowledge_base_rag(query: str) -> str:
         return "Error: Knowledge Base RAG Service is not initialized."
 
     docs = _GRAPH_SERVICE.rag_search(query, top_k=5)
+    evidence.record_rag_documents(len(docs))
     if not docs:
         return f"No RAG documents retrieved matching '{query}'."
 
@@ -169,6 +174,7 @@ def query_graph_rag(query: str) -> str:
     traversals = res.get("graph_traversals", [])
     langchain_facts = _GRAPH_SERVICE.query_langchain_graph(query)
 
+    evidence.record_rag_documents(len(docs))
     evidence.record_graph_lookup(
         [str(t.get("matched_entity", "")) for t in traversals if t.get("matched_entity")]
     )
@@ -617,11 +623,713 @@ def simulate_weather_scenario(cold_days: int) -> str:
     return "\n".join(lines)
 
 
+# ---------------------------------------------------------------------------
+# Planning agents: demand forecast, commercial and pricing.
+#
+# These tools differ from the query tools above in that the analysis is computed
+# in a Python engine rather than composed by the model. The model chooses WHEN to
+# run one and explains WHY the result matters; it never gets to choose the
+# numbers. That is what makes a forecast correction or a price safe to put in
+# front of a human for approval.
+# ---------------------------------------------------------------------------
+
+# Datasets each engine reads, for the lineage graph and the evidence ledger.
+_ENGINE_DATASETS = {
+    "demand": [
+        "regional_demand_forecast", "regional_capacity_forecast", "service_history",
+        "repair_history", "installation_history", "customer_holdings",
+    ],
+    "drivers": [
+        "service_history", "repair_history", "visit_outcome", "appointment_schedule",
+        "weather", "boiler_master", "customer_holdings",
+    ],
+    "commercial": [
+        "installation_history", "quotes_and_sales", "customer_holdings",
+        "regional_capacity_forecast",
+    ],
+    "pricing": [
+        "quotes_and_sales", "installation_history", "repair_history", "fault_codes",
+        "parts_replaced", "customer_holdings",
+    ],
+}
+
+
+def _record_engine_evidence(kind: str) -> None:
+    """Attribute an engine run to the datasets it scanned."""
+    datasets = _ENGINE_DATASETS.get(kind, [])
+    scanned = 0
+    if _SQL_SERVICE is not None and getattr(_SQL_SERVICE, "available", False):
+        scanned = sum(_SQL_SERVICE.row_count(name) for name in datasets)
+    evidence.record_sql_query()
+    evidence.record_datasets(datasets, records_scanned=scanned)
+
+
+def _engine_error(error: Exception, tool: str) -> str:
+    evidence.record_failure()
+    return f"Error: {tool} could not be computed: {error}"
+
+
+@tool
+def evaluate_demand_forecast(region: str = "", job_type: str = "") -> str:
+    """
+    Grade the PUBLISHED demand forecast against what demand is actually running
+    at, region by region and job type by job type.
+
+    Use this for any question about forecast accuracy, forecast bias, whether the
+    forecast can be trusted, or whether it needs correcting. It returns the bias
+    per series, the corrected jobs-per-day figure, and what the correction does
+    to engineer-hours, engineer-days and the regional capacity balance.
+
+    region: optional single region, e.g. 'Midlands'. Empty means all regions.
+    job_type: optional 'Service', 'Repair' or 'Installation'. Empty means all.
+
+    After presenting this, if a series is materially wrong, call
+    propose_forecast_correction to put the corrected numbers to a human.
+    """
+    try:
+        result = demand_engine.evaluate(_SQL_SERVICE, region=region, job_type=job_type)
+        _record_engine_evidence("demand")
+        return demand_engine.render_evaluation(result)
+    except Exception as error:  # noqa: BLE001 - a broken engine must not abort the run
+        return _engine_error(error, "the forecast evaluation")
+
+
+@tool
+def recommend_improvements() -> str:
+    """
+    Return a ranked, plain-English plan for CLOSING the capacity gap - what to do
+    first, what each step is worth, and what is still left after it.
+
+    This is the answer to "so what do we do about it". Options are ordered the way
+    a manager should reach for them: stop creating the work, move people who are
+    already qualified, stop wasting visits, buy hours with overtime, and only then
+    recruit. Each carries the hours it closes, what it takes to do, how long it
+    takes to bite, and the shortfall still open afterwards.
+
+    Call this on any question about what to do, how to fix it, whether we need to
+    hire, or how to close a shortfall. Never leave a shortfall on the table
+    without it - a finding with no plan is not an answer.
+    """
+    try:
+        result = demand_engine.recommendations(_SQL_SERVICE)
+        _record_engine_evidence("demand")
+        return demand_engine.render_recommendations(result)
+    except Exception as error:  # noqa: BLE001 - a broken engine must not abort the run
+        return _engine_error(error, "the improvement plan")
+
+
+@tool
+def detect_forecast_gaps() -> str:
+    """
+    Find demand the business staffs but does not forecast at all.
+
+    A forecast can be wrong by being ABSENT, which no accuracy measure catches.
+    This checks for job types that have engineer capacity provisioned but no
+    demand line, regions missing from a job type, and calendar days with no
+    forecast row. Use it whenever someone asks whether the forecast is complete,
+    what is missing from it, or why capacity and demand do not reconcile.
+    """
+    try:
+        result = demand_engine.gaps(_SQL_SERVICE)
+        _record_engine_evidence("demand")
+        return demand_engine.render_gaps(result)
+    except Exception as error:  # noqa: BLE001 - a broken engine must not abort the run
+        return _engine_error(error, "the forecast gap check")
+
+
+@tool
+def generate_demand_forecast(job_type: str, weeks: int = 13) -> str:
+    """
+    Build a demand forecast from history for a job type that has none, and
+    return the actual numbers week by week and region by region.
+
+    Use this when detect_forecast_gaps shows a missing job type, or when the user
+    asks for a forecast that does not exist yet. The method is trailing run-rate
+    x month-of-year seasonality x trend, and it is stated with the output so the
+    numbers can be reproduced.
+
+    job_type: 'Installation', 'Service' or 'Repair'.
+    weeks: horizon in weeks, default 13.
+    """
+    try:
+        result = demand_engine.build_forecast(_SQL_SERVICE, job_type, weeks)
+        _record_engine_evidence("demand")
+        return demand_engine.render_forecast(result)
+    except Exception as error:  # noqa: BLE001 - a broken engine must not abort the run
+        return _engine_error(error, "the forecast build")
+
+
+@tool
+def explain_demand_drivers(job_type: str = "") -> str:
+    """
+    Rank the factors that actually move demand, each with its measured effect
+    size - including the factors that were tested and found NOT to matter.
+
+    Use this whenever someone asks what is driving demand, what a forecast should
+    take account of, or why demand changed. Report the immaterial factors too:
+    knowing that weather is worth 1% here is what stops a team building a weather
+    model that earns nothing.
+    """
+    try:
+        result = demand_engine.drivers(_SQL_SERVICE, job_type=job_type)
+        _record_engine_evidence("drivers")
+        return demand_engine.render_drivers(result)
+    except Exception as error:  # noqa: BLE001 - a broken engine must not abort the run
+        return _engine_error(error, "the demand driver analysis")
+
+
+def _planning_consequence(job_type: str) -> str:
+    """One sentence on what this skill's position means for the plan overall.
+
+    Appended to an approval so the decision is framed against the plan a leader
+    is actually managing, not just against the one series being corrected.
+    """
+    try:
+        impact = demand_engine.planning_impact(_SQL_SERVICE)
+    except Exception:  # noqa: BLE001 - the correction stands without this framing
+        return ""
+
+    skill = next((s for s in impact["skills"] if s["job_type"] == job_type), None)
+    if skill is None:
+        return ""
+
+    if skill["balance_after"] >= 0:
+        return (
+            f" Nationally, {job_type.lower()} still has "
+            f"{num(skill['balance_after'])} spare hours after this change, so the plan can "
+            "absorb it without anyone new."
+        )
+
+    # Never leave a shortfall on the table without the cheapest way to close it.
+    best = ""
+    try:
+        plan = demand_engine.recommendations(_SQL_SERVICE)
+        top = next((o for o in plan["options"] if o.get("no_new_people")), None)
+        if top:
+            best = (
+                f" The cheapest way to cover it is not recruitment: \"{top['name']}\" alone is "
+                f"worth about {num(top['hours_closed'])} hours, and "
+                f"{num(plan['closed_without_hiring_pct'], 0)}% of the national shortfall can be "
+                "closed with no new people at all."
+            )
+    except Exception:  # noqa: BLE001 - the correction stands without this framing
+        best = ""
+
+    return (
+        f" Nationally this leaves {job_type.lower()} short by "
+        f"{num(abs(skill['balance_after']))} hours over the next "
+        f"{impact['horizon']['weeks']} weeks — roughly {num(skill['fte_equivalent'], 1)} "
+        f"full-time engineers, or {num(skill['jobs_at_risk'])} jobs we could not get to. "
+        f"There are spare hours in "
+        f"{join_plain([s.lower() for s in impact['surplus_skills']]) or 'no other area'}."
+        + best
+    )
+
+
+def queue_forecast_correction(
+    region: str, job_type: str, reason: str, requested_by: str = ""
+) -> dict[str, Any]:
+    """Compute and queue a forecast correction. Shared by the tool and the API.
+
+    Returns {"ok": bool, "message": str, "action": dict | None, "row": dict | None}.
+    The numbers are always re-derived here so neither caller can supply them.
+    """
+    if _STORE is None:
+        return {"ok": False, "message": "The action store is not available, so no correction "
+                                        "can be queued.", "action": None, "row": None}
+    if not str(reason).strip():
+        return {"ok": False, "message": "A reason is required for a forecast correction.",
+                "action": None, "row": None}
+
+    result = demand_engine.evaluate(_SQL_SERVICE, region=region, job_type=job_type)
+    rows = result.get("rows") or []
+    if not rows:
+        return {
+            "ok": False,
+            "message": f"No forecast series found for region='{region}', job_type='{job_type}'. "
+                       "Use the exact region and job type names the evaluation returns.",
+            "action": None,
+            "row": None,
+        }
+
+    row = rows[0]
+    _record_engine_evidence("demand")
+
+    if not row["material"]:
+        return {
+            "ok": False,
+            "message": (
+                f"{row['region']} {row['job_type']} is only {signed_pct(row['bias_pct'])} out, "
+                f"inside the ±{demand_engine.MATERIAL_BIAS_PCT:.0f}% materiality band. No "
+                "correction was queued - the change is not worth making."
+            ),
+            "action": None,
+            "row": row,
+        }
+
+    # Written for a reader who does not work with forecasts. The technical
+    # build-up is kept in the payload; what a person has to read to decide is
+    # what is happening, what we suggest doing, and what it costs to ignore.
+    gap_per_day = abs(row["actual_jobs_per_day"] - row["forecast_jobs_per_day"])
+    short = row["bias_pct"] < 0
+    direction = "more" if short else "fewer"
+    verb = "Raise" if short else "Lower"
+
+    title = (
+        f"{verb} the {row['region']} {row['job_type'].lower()} plan to "
+        f"{num(row['suggested_jobs_per_day'], 0)} jobs a day "
+        f"(currently {num(row['forecast_jobs_per_day'], 0)})"
+    )
+
+    detail = (
+        f"We are planning for {num(row['forecast_jobs_per_day'], 0)} "
+        f"{row['job_type'].lower()} jobs a day in {row['region']}. We are actually getting "
+        f"{num(row['actual_jobs_per_day'], 0)} — about {num(gap_per_day, 0)} {direction} every "
+        f"day, and it has been that way for the last eight weeks. So the rota is being built "
+        f"for {'less' if short else 'more'} work than turns up.\n\n"
+        f"What we recommend:\n"
+        f"1. Change the {row['region']} {row['job_type'].lower()} plan to "
+        f"{num(row['suggested_jobs_per_day'], 0)} jobs a day — multiply the current numbers by "
+        f"{row['correction_factor']}.\n"
+        f"2. Check the other regions at the same time. Every one of them is out in the same "
+        f"direction, so this is how the forecast is being produced, not a "
+        f"{row['region']} problem.\n"
+        f"3. Before applying it, confirm the last eight weeks were normal — no catch-up on a "
+        f"backlog, no campaign — and that the plan was not deliberately set low because we "
+        f"knew we could not staff it."
+    )
+
+    expected_impact = (
+        f"Getting this right adds {num(abs(row['hours_delta']))} hours of engineer time to the "
+        f"plan for this one series — about {num(abs(row['engineer_days_delta']))} days of work, "
+        f"{gbp(abs(row['cost_delta_gbp']))} at our assumed labour cost."
+        + (
+            f" It also turns {row['region']} from having spare {row['job_type'].lower()} capacity "
+            "into being short of it, which is the point: the spare capacity was never real."
+            if row["balance_after"] < 0 <= row["balance_before"]
+            else f" {row['region']} was already short of {row['job_type'].lower()} cover, and this "
+            "makes it worse."
+            if row["balance_after"] < 0
+            else f" {row['region']} on its own can still absorb that."
+        )
+        + _planning_consequence(row["job_type"])
+        + " If we do nothing, the work does not go away — it turns up as missed appointments, "
+        "longer waits and unplanned overtime, and nobody traces it back to the forecast."
+    )
+
+    action = _STORE.create_action({
+        "requested_by": requested_by or _CURRENT_USER,
+        "action_type": "forecast_correction",
+        "title": title[:200],
+        "detail": detail[:1500],
+        "rationale": str(reason).strip()[:1500],
+        "expected_impact": expected_impact[:800],
+        "payload": {
+            "kind": "forecast_correction",
+            "region": row["region"],
+            "job_type": row["job_type"],
+            "current_jobs_per_day": row["forecast_jobs_per_day"],
+            "corrected_jobs_per_day": row["suggested_jobs_per_day"],
+            "correction_factor": row["correction_factor"],
+            "bias_pct": row["bias_pct"],
+            "hours_delta": row["hours_delta"],
+            "engineer_days_delta": row["engineer_days_delta"],
+            "cost_delta_gbp": row["cost_delta_gbp"],
+            "balance_before": row["balance_before"],
+            "balance_after": row["balance_after"],
+            "horizon_weeks": demand_engine.HORIZON_WEEKS,
+        },
+    })
+    evidence.record_action_proposed(action["id"])
+    return {
+        "ok": True,
+        "message": f"Forecast correction queued for human approval (id {action['id']}).",
+        "action": action,
+        "row": row,
+    }
+
+
+@tool
+def propose_forecast_correction(region: str, job_type: str, reason: str) -> str:
+    """
+    Put a demand-forecast correction in front of a human for approval.
+
+    The corrected number, its effect on hours, engineer-days, cost and the
+    regional capacity balance are all RE-COMPUTED here from the data - you supply
+    only the reason. Nothing is applied to any forecast by calling this; the
+    correction is queued and shown to the user with Approve and Reject.
+
+    region: exact region name, e.g. 'Yorkshire'.
+    job_type: 'Service', 'Repair' or 'Installation'.
+    reason: why this series is biased, in one or two sentences, referencing the
+        driver evidence where you have it.
+    """
+    try:
+        outcome = queue_forecast_correction(region, job_type, reason)
+    except Exception as error:  # noqa: BLE001 - a broken engine must not abort the run
+        return _engine_error(error, "the forecast correction")
+
+    if not outcome["ok"]:
+        return outcome["message"]
+    return (
+        f"{outcome['message']} \"{outcome['action']['title']}\".\n"
+        "Nothing has been applied to the forecast. The user will see the before/after "
+        "numbers and can approve or reject."
+    )
+
+
+@tool
+def weekly_demand_outlook(weeks: int = 13, job_types: str = "Repair,Service") -> str:
+    """
+    Return the WEEK-BY-WEEK number of jobs the published forecast expects, next
+    to what it should say once the known bias is corrected.
+
+    This is the tool for any question asking for weekly, monthly or "next three
+    months" job numbers. Weeks are seven-day buckets from the first forecast day,
+    so no week is short and no total compares six days with seven.
+
+    weeks: how many weeks ahead. 13 is three months.
+    job_types: comma-separated, e.g. 'Repair,Service'. Use 'Repair,Service' unless
+        the question names others. Installation has no published forecast - use
+        generate_demand_forecast for that one.
+    """
+    try:
+        wanted = [part.strip() for part in str(job_types or "").split(",") if part.strip()]
+        result = demand_engine.weekly_outlook(_SQL_SERVICE, weeks=weeks, job_types=wanted or None)
+        _record_engine_evidence("demand")
+        return demand_engine.render_weekly_outlook(result)
+    except Exception as error:  # noqa: BLE001 - a broken engine must not abort the run
+        return _engine_error(error, "the weekly outlook")
+
+
+@tool
+def assess_planning_impact() -> str:
+    """
+    Show what the forecast being wrong means for the PLAN and the forward goals -
+    not just for accuracy.
+
+    Adds up the three sources of work the published plan does not carry: the bias
+    against actual run-rate, job types that are staffed but never forecast, and
+    the return visits implied by jobs that do not complete first time. Reports
+    the result per skill as hours, FTE, jobs at risk, and whether surplus in
+    another skill can cover it.
+
+    Call this whenever someone asks what a forecast finding MEANS, what it does
+    to next quarter, whether the plan is deliverable, what to do about it, or
+    what happens if nothing changes. Always pair a forecast correction with this.
+    """
+    try:
+        result = demand_engine.planning_impact(_SQL_SERVICE)
+        _record_engine_evidence("demand")
+        return demand_engine.render_planning_impact(result)
+    except Exception as error:  # noqa: BLE001 - a broken engine must not abort the run
+        return _engine_error(error, "the planning impact assessment")
+
+
+@tool
+def analyse_cost_to_serve() -> str:
+    """
+    Show what a COMPLETED job actually costs, and where the money goes.
+
+    A job costs more than one visit: visits that end without finishing the work,
+    visits that are cancelled or cannot get access, and the paid hours that never
+    become available for jobs all load onto every completed job. This returns
+    first-time-fix rate, visits per completed job, the true cost per job against
+    the naive single-visit cost, the annual cost of each line, and what each
+    point of operational improvement is worth per year.
+
+    Call this for any question about job costs, cost to serve, why margins are
+    thin, whether a price covers its cost, or where operational money is going.
+    Use it BEFORE recommending a price - a price set on a single visit when the
+    job takes two is a price that loses money on every job.
+    """
+    try:
+        result = pricing_engine.cost_to_serve(_SQL_SERVICE)
+        _record_engine_evidence("pricing")
+        return pricing_engine.render_cost_to_serve(result)
+    except Exception as error:  # noqa: BLE001 - a broken engine must not abort the run
+        return _engine_error(error, "the cost to serve analysis")
+
+
+@tool
+def analyse_commercial_seasonality() -> str:
+    """
+    Show which months are the productive periods of the business year, scored on
+    what converts AND on what the estate can actually deliver.
+
+    Use for questions about the trading season, when to run campaigns, when to
+    push acquisition, when demand is strongest, or when to schedule maintenance
+    work and training. Combines lead volume, conversion, order value and revenue
+    per trading day with the installation capacity provisioned for that month.
+    """
+    try:
+        result = commercial_engine.season(_SQL_SERVICE)
+        _record_engine_evidence("commercial")
+        return commercial_engine.render_season(result)
+    except Exception as error:  # noqa: BLE001 - a broken engine must not abort the run
+        return _engine_error(error, "the seasonality analysis")
+
+
+@tool
+def recommend_negotiation_position(segment: str = "") -> str:
+    """
+    Measure what discounting has actually bought, and set the negotiation
+    guardrail that follows from it.
+
+    Use for questions about discounting, negotiation, quote-to-close, margin
+    leakage, or how hard the sales team should hold price. Bands every quoted
+    lead by the discount from the opening to the final quotation, then compares
+    conversion and revenue per lead across the bands.
+
+    segment: optional region to restrict the analysis to. Empty means national.
+    """
+    try:
+        result = commercial_engine.negotiation(_SQL_SERVICE, segment=segment)
+        _record_engine_evidence("commercial")
+        return commercial_engine.render_negotiation(result)
+    except Exception as error:  # noqa: BLE001 - a broken engine must not abort the run
+        return _engine_error(error, "the negotiation analysis")
+
+
+@tool
+def recommend_service_pricing(service_line: str = "") -> str:
+    """
+    Recommend a price for the services the business sells - Service, Repair and
+    Installation - with the cost build-up, the basis, the confidence and a
+    sensitivity table around the recommendation.
+
+    Use for any pricing question: what should we charge, are we under-priced, what
+    is a repair worth, should installation prices move. Each line is priced from
+    the evidence that exists for it (observed market price for Installation,
+    cost-plus for Repair, labour-only floor for Service) and says which it used.
+
+    service_line: optional 'Service', 'Repair' or 'Installation'. Empty prices all three.
+    """
+    try:
+        result = pricing_engine.price_book(_SQL_SERVICE, service_line=service_line)
+        _record_engine_evidence("pricing")
+        return pricing_engine.render_price_book(result)
+    except Exception as error:  # noqa: BLE001 - a broken engine must not abort the run
+        return _engine_error(error, "the pricing recommendation")
+
+
+@tool
+def price_repairs_by_fault() -> str:
+    """
+    Return a repair price schedule per fault type: volume, part cost, labour,
+    cost base, the cost the estate records for that fault, and a recommended
+    price with its margin.
+
+    Use when someone asks how repairs should be priced by fault, which repairs
+    are loss-making, or wants a repair price list.
+    """
+    try:
+        result = pricing_engine.repair_price_list(_SQL_SERVICE)
+        _record_engine_evidence("pricing")
+        return pricing_engine.render_repair_price_list(result)
+    except Exception as error:  # noqa: BLE001 - a broken engine must not abort the run
+        return _engine_error(error, "the repair price schedule")
+
+
+def _serve_line(service_line: str) -> dict[str, Any] | None:
+    """Cost-to-serve figures for one line, or None if they cannot be computed."""
+    try:
+        return next(
+            (
+                line for line in pricing_engine.cost_to_serve(_SQL_SERVICE)["lines"]
+                if line["service_line"] == service_line
+            ),
+            None,
+        )
+    except Exception:  # noqa: BLE001 - the price stands without this framing
+        return None
+
+
+def _cost_alternative(service_line: str) -> str:
+    """The operational alternative a price change should be weighed against.
+
+    Charging more and costing less improve the same line. Showing the price
+    without the alternative invites approving whichever is easier to decide
+    rather than whichever is worth more - so the biggest lever travels with it.
+    """
+    serve = _serve_line(service_line)
+    if not serve or not serve.get("levers"):
+        return ""
+
+    lever = serve["levers"][0]
+    return (
+        f" There is another way to get the same result, and it does not touch the customer: "
+        f"a {service_line.lower()} job takes {serve['visits_per_completed_job']:.1f} visits "
+        f"because only {serve['first_time_fix_pct']:.0f} in every 100 finish first time. "
+        f"\"{lever['name']}\" would be worth about {gbp(lever['annual_value_gbp'])} a year by "
+        "itself. Both are worth doing — but if only one gets attention this quarter, the "
+        "numbers should choose it, not habit."
+    )
+
+
+def queue_price_change(
+    service_line: str, reason: str, requested_by: str = ""
+) -> dict[str, Any]:
+    """Compute and queue a price change. Shared by the tool and the API."""
+    if _STORE is None:
+        return {"ok": False, "message": "The action store is not available, so no price change "
+                                        "can be queued.", "action": None, "line": None}
+    if not str(reason).strip():
+        return {"ok": False, "message": "A reason is required for a price change.",
+                "action": None, "line": None}
+
+    result = pricing_engine.price_book(_SQL_SERVICE, service_line=service_line)
+    lines = result.get("lines") or []
+    if not lines:
+        return {
+            "ok": False,
+            "message": f"No price could be computed for service line '{service_line}'.",
+            "action": None,
+            "line": None,
+        }
+
+    entry = lines[0]
+    _record_engine_evidence("pricing")
+
+    serve = _serve_line(entry["service_line"])
+    line_name = entry["service_line"].lower()
+
+    if entry["realised_price"]:
+        title = (
+            f"Charge {gbp(entry['recommended_price'], 0)} for {line_name} work, "
+            f"up from {gbp(entry['realised_price'], 0)} today"
+        )
+        detail_body = (
+            f"We currently close {line_name} work at about "
+            f"{gbp(entry['realised_price'], 0)}. Customers who paid nothing off the opening "
+            f"quote bought just as often as customers who got a big discount — so the discount "
+            f"is not winning the work, it is only lowering the bill.\n\n"
+            f"What we recommend:\n"
+            f"1. Hold {line_name} pricing at {gbp(entry['recommended_price'], 0)}.\n"
+            f"2. Give the sales team something other than price to close with — a longer "
+            f"warranty, insurance included, a faster install date.\n"
+            f"3. Test it in one or two regions for a quarter before rolling it out, so we find "
+            f"out cheaply if customers do walk away."
+        )
+        impact = (
+            f"About {gbp(entry['annual_revenue_effect_gbp'])} more revenue a year at today's "
+            f"volume of {num(entry['annual_volume'])} jobs — as long as customers keep buying. "
+            "The evidence says they will, because how much we discount has made almost no "
+            "difference to how often we win. That is evidence, not proof, so test it first."
+        )
+    else:
+        title = (
+            f"Set a published price of {gbp(entry['recommended_price'], 0)} for {line_name} work"
+        )
+        cost_line = (
+            f"A {line_name} job costs us about {gbp(serve['cost_per_completed_job'], 0)} to "
+            f"complete once you count the visits that do not finish it"
+            if serve else
+            f"A {line_name} job costs us about {gbp(entry['cost_base'], 0)}"
+        )
+        detail_body = (
+            f"We do not have a published price for {line_name} work at all. "
+            f"{cost_line}. At the margin the business targets, that means charging "
+            f"{gbp(entry['recommended_price'], 0)}.\n\n"
+            f"What we recommend:\n"
+            f"1. Publish {gbp(entry['recommended_price'], 0)} as the standard {line_name} price.\n"
+            f"2. Check it against what the billing system actually charges today — the estate "
+            f"does not record it, so someone needs to confirm we are not already above or "
+            f"below this.\n"
+            f"3. Fix the cost first where you can. A cheaper job is worth more than a higher "
+            f"price, and it does not cost us a single customer."
+        )
+        impact = (
+            f"At {num(entry['annual_volume'])} jobs a year this is about "
+            f"{gbp(entry['annual_revenue_effect_gbp'])} of work being priced properly, on a "
+            f"cost of {gbp(entry['cost_base'], 0)} a job and a "
+            f"{entry['margin_at_recommended_pct']}% margin. Confidence in this number is "
+            f"{entry['confidence']} — read the build-up before publishing it."
+        )
+    impact += _cost_alternative(entry["service_line"])
+
+    action = _STORE.create_action({
+        "requested_by": requested_by or _CURRENT_USER,
+        "action_type": "pricing",
+        "title": title[:200],
+        "detail": detail_body[:1500],
+        "rationale": str(reason).strip()[:1500],
+        "expected_impact": impact[:800],
+        "payload": {
+            "kind": "price_change",
+            "service_line": entry["service_line"],
+            "basis": entry["basis"],
+            "confidence": entry["confidence"],
+            "cost_base": entry["cost_base"],
+            "realised_price": entry["realised_price"],
+            "recommended_price": entry["recommended_price"],
+            "price_change_pct": entry["price_change_pct"],
+            "annual_volume": entry["annual_volume"],
+            "annual_revenue_effect_gbp": entry["annual_revenue_effect_gbp"],
+            "sensitivity": entry["sensitivity"],
+            # The technical build-up moves here so the card a person reads stays
+            # plain, without losing the detail an analyst will want to check.
+            "build_up": [
+                {"name": component["name"], "value": component["value"],
+                 "detail": component["detail"]}
+                for component in entry["components"]
+            ],
+            "cost_to_serve": serve,
+        },
+    })
+    evidence.record_action_proposed(action["id"])
+    return {
+        "ok": True,
+        "message": f"Price change queued for human approval (id {action['id']}).",
+        "action": action,
+        "line": entry,
+    }
+
+
+@tool
+def propose_price_change(service_line: str, reason: str) -> str:
+    """
+    Put a price change in front of a human for approval.
+
+    The recommended price, the movement from today's realised price and the
+    annual revenue effect are RE-COMPUTED here - you supply only the reason.
+    Nothing is repriced by calling this; it is queued for Approve or Reject.
+
+    service_line: 'Service', 'Repair' or 'Installation'.
+    reason: why the price should move, in one or two sentences.
+    """
+    try:
+        outcome = queue_price_change(service_line, reason)
+    except Exception as error:  # noqa: BLE001 - a broken engine must not abort the run
+        return _engine_error(error, "the price change")
+
+    if not outcome["ok"]:
+        return outcome["message"]
+    return (
+        f"{outcome['message']} \"{outcome['action']['title']}\".\n"
+        "Nothing has been repriced. The user will see the build-up and can approve or reject."
+    )
+
+
 def get_all_tools():
     """Return list of tool functions for LangChain agent."""
     return [
         query_datasets_sql,
         propose_action,
+        evaluate_demand_forecast,
+        weekly_demand_outlook,
+        assess_planning_impact,
+        recommend_improvements,
+        detect_forecast_gaps,
+        generate_demand_forecast,
+        explain_demand_drivers,
+        propose_forecast_correction,
+        analyse_commercial_seasonality,
+        recommend_negotiation_position,
+        analyse_cost_to_serve,
+        recommend_service_pricing,
+        price_repairs_by_fault,
+        propose_price_change,
         simulate_capacity_reallocation,
         simulate_weather_scenario,
         search_knowledge_base_rag,

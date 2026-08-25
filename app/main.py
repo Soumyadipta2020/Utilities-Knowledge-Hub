@@ -34,12 +34,19 @@ from app.services.graph_service import KnowledgeGraphService
 from app.services.data_service import DataService
 from app.services.sql_service import SqlService
 from app.services.pipeline_service import KnowledgeHarnessingPipeline
+from app.services.rag_service import get_rag_service
 from app.services.store import HubStore
 from app.services.watchtower import Watchtower
+from app.agent import commercial as commercial_engine
+from app.agent import demand_forecast as demand_engine
+from app.agent import pricing as pricing_engine
+from app.agent import tools as tools_module
+from app.agent.analytics import AnalyticsError
 from app.agent.tools import register_services, get_all_tools
 from app.agent.agent_runtime import AgentRuntime
 from app.agent.baseline import run_baseline_chat
 from app.agent import briefing as briefing_module
+from app.agent import charts as charts_module
 from app.agent import specialists as specialists_module
 from app.agent import verifier as verifier_module
 from app.agent.agent_builder import (
@@ -71,9 +78,30 @@ graph_service = KnowledgeGraphService(DATA_DIR)
 sql_service = SqlService(DATA_DIR)
 data_service = DataService(DATA_DIR, sql_service=sql_service)
 pipeline_engine = KnowledgeHarnessingPipeline(DATA_DIR, graph_service, data_service, sql_service)
+# Retrieval for the comparison's baseline arm: plain document + data-extract RAG,
+# no graph. Built on a daemon thread so aggregating the extracts never delays boot.
+rag_service = get_rag_service(DATA_DIR, sql_service=sql_service)
+threading.Thread(target=rag_service.warm, name="rag-warm", daemon=True).start()
 hub_store = HubStore(DATA_DIR / "hub_state.db")
 watchtower = Watchtower(sql_service, hub_store)
 register_services(graph_service, data_service, sql_service, hub_store)
+
+
+def _warm_planning_agents() -> None:
+    """Pre-compute the planning agents' expensive scans.
+
+    The forecast run-rate joins three multi-million-row history tables to
+    customer_holdings, which costs 10-20 seconds cold. Paying that on a live chat
+    turn would eat most of the agent's time budget, so it is paid once at boot on
+    a daemon thread and cached from then on.
+    """
+    demand_engine.warm(sql_service)
+    commercial_engine.warm(sql_service)
+    pricing_engine.warm(sql_service)
+    print("[PlanningAgents] Demand, commercial and pricing engines warmed.")
+
+
+threading.Thread(target=_warm_planning_agents, name="planning-warm", daemon=True).start()
 
 # Build LangChain executor (if OpenRouter API key exists)
 agent_executor = build_agent_executor(OPENROUTER_API_KEY, OPENROUTER_MODEL_NAME, OPENROUTER_BASE_URL)
@@ -92,8 +120,8 @@ MAX_HISTORY_TURNS = 12
 
 
 # The comparison keeps a SEPARATE history per arm. Feeding the agent's grounded
-# answer into the baseline's context would let the plain chatbot quote figures it
-# never had access to, which would invalidate the whole comparison.
+# answer into the baseline's context would let the RAG chatbot quote figures it
+# never retrieved, which would invalidate the whole comparison.
 COMPARE_CONVERSATIONS: dict[str, dict[str, list[dict[str, str]]]] = {}
 COMPARE_LOCK = threading.Lock()
 
@@ -441,14 +469,16 @@ def chat_api():
             runtime=agent_runtime,
         )
 
-        _append_history(user_email, user_message, agent_response)
+        agent_response, _ = charts_module.sanitize_answer(agent_response)
+        prose = charts_module.strip_chart_blocks(agent_response)
+        _append_history(user_email, user_message, prose)
 
-        access_required_flag = _access_required(agent_response)
-        response_graph = graph_service.extract_subgraph_for_query(user_message, response=agent_response)
+        access_required_flag = _access_required(prose)
+        response_graph = graph_service.extract_subgraph_for_query(user_message, response=prose)
         _record_data_access_activity(
             user_email,
             user_message,
-            agent_response,
+            prose,
             response_graph,
             access_required_flag,
         )
@@ -499,22 +529,26 @@ def chat_stream_api():
                 if event.get("type") == "done":
                     proposed_ids = (event.get("evidence") or {}).get("proposed_action_ids", [])
                 if event.get("type") == "answer":
-                    answer = event.get("text", "")
-                    access_required = _access_required(answer)
+                    answer, chart_specs = charts_module.sanitize_answer(event.get("text", ""))
+                    # Everything downstream reasons about the words, not the specs.
+                    prose = charts_module.strip_chart_blocks(answer)
+                    access_required = _access_required(prose)
                     response_graph = graph_service.extract_subgraph_for_query(
-                        user_message, response=answer
+                        user_message, response=prose
                     )
                     _record_data_access_activity(
-                        user_email, user_message, answer, response_graph, access_required
+                        user_email, user_message, prose, response_graph, access_required
                     )
-                    _append_history(user_email, user_message, answer)
-                    _remember_decision(user_email, user_message, answer)
+                    _append_history(user_email, user_message, prose)
+                    _remember_decision(user_email, user_message, prose)
                     yield sse({
                         "type": "answer",
                         "text": answer,
                         "access_required": access_required,
                         "graph": response_graph,
+                        "charts": len(chart_specs),
                     })
+                    answer = prose
                     continue
                 yield sse(event)
 
@@ -733,30 +767,213 @@ def specialists_api():
     return jsonify({"success": True, "specialists": specialists_module.roster()})
 
 
+# ------------------------------------------------- planning agents (REST)
+#
+# The chat agent reaches these same engines through tools. These endpoints exist
+# so the Planning Agents tab can render the full structured result - tables,
+# before/after numbers, sensitivity - rather than the markdown summary the model
+# gets. One computation, two surfaces: the figures on the screen and the figures
+# in the chat answer can never disagree.
+
+
+def _engine_response(builder, **payload_extra):
+    """Run an engine call and normalise its failure modes into JSON."""
+    try:
+        return jsonify({"success": True, **builder(), **payload_extra})
+    except AnalyticsError as error:
+        return jsonify({"success": False, "error": str(error)}), 400
+    except Exception as error:  # noqa: BLE001
+        print(f"[Planning Agent Error]: {error}")
+        return jsonify({"success": False, "error": str(error)}), 500
+
+
+@app.route("/api/forecast/evaluate", methods=["GET"])
+def forecast_evaluate_api():
+    """Grade the published demand forecast against the actual run-rate."""
+    region = request.args.get("region", "")
+    job_type = request.args.get("job_type", "")
+    return _engine_response(
+        lambda: {"evaluation": demand_engine.evaluate(sql_service, region, job_type)}
+    )
+
+
+@app.route("/api/forecast/weekly", methods=["GET"])
+def forecast_weekly_api():
+    """Published forecast week by week, next to the bias-corrected view."""
+    weeks = int(request.args.get("weeks", demand_engine.HORIZON_WEEKS))
+    job_types = [p.strip() for p in request.args.get("job_types", "").split(",") if p.strip()]
+    return _engine_response(
+        lambda: {"weekly": demand_engine.weekly_outlook(sql_service, weeks, job_types or None)}
+    )
+
+
+@app.route("/api/forecast/impact", methods=["GET"])
+def forecast_impact_api():
+    """What the forecast being wrong means for the plan: hours, FTE, jobs at risk."""
+    return _engine_response(lambda: {"impact": demand_engine.planning_impact(sql_service)})
+
+
+@app.route("/api/pricing/cost-to-serve", methods=["GET"])
+def pricing_cost_to_serve_api():
+    """What a completed job actually costs, and what the operational levers are worth."""
+    return _engine_response(lambda: {"cost_to_serve": pricing_engine.cost_to_serve(sql_service)})
+
+
+@app.route("/api/forecast/recommendations", methods=["GET"])
+def forecast_recommendations_api():
+    """A ranked, plain-English plan for closing the capacity gap."""
+    return _engine_response(
+        lambda: {"plan": demand_engine.recommendations(sql_service)}
+    )
+
+
+@app.route("/api/forecast/gaps", methods=["GET"])
+def forecast_gaps_api():
+    """Demand the estate staffs but does not forecast at all."""
+    return _engine_response(lambda: {"gaps": demand_engine.gaps(sql_service)})
+
+
+@app.route("/api/forecast/drivers", methods=["GET"])
+def forecast_drivers_api():
+    """Ranked demand drivers, including the ones measured to be immaterial."""
+    job_type = request.args.get("job_type", "")
+    return _engine_response(lambda: {"drivers": demand_engine.drivers(sql_service, job_type)})
+
+
+@app.route("/api/forecast/generate", methods=["POST"])
+def forecast_generate_api():
+    """Build a forecast from history for a job type that has none."""
+    payload = request.get_json(silent=True) or {}
+    job_type = str(payload.get("job_type") or "Installation")
+    weeks = int(payload.get("weeks") or demand_engine.HORIZON_WEEKS)
+    return _engine_response(
+        lambda: {"forecast": demand_engine.build_forecast(sql_service, job_type, weeks)}
+    )
+
+
+@app.route("/api/forecast/correction", methods=["POST"])
+def forecast_correction_api():
+    """Queue a forecast correction for human approval.
+
+    The corrected figures are re-derived inside the engine, so a caller cannot
+    submit numbers of their own - only the reason travels from the client.
+    """
+    payload = request.get_json(silent=True) or {}
+    region = str(payload.get("region") or "").strip()
+    job_type = str(payload.get("job_type") or "").strip()
+    reason = str(payload.get("reason") or "").strip()
+    user_email = str(payload.get("user_email") or "leadership@abc.com").strip()
+
+    if not region or not job_type:
+        return jsonify({"success": False, "error": "region and job_type are required."}), 400
+    if not reason:
+        reason = (
+            "Published forecast is materially below the trailing actual run-rate for this "
+            "series; correcting it aligns the capacity plan with observed demand."
+        )
+
+    try:
+        outcome = tools_module.queue_forecast_correction(region, job_type, reason, user_email)
+    except AnalyticsError as error:
+        return jsonify({"success": False, "error": str(error)}), 400
+    except Exception as error:  # noqa: BLE001
+        print(f"[Forecast Correction Error]: {error}")
+        return jsonify({"success": False, "error": str(error)}), 500
+
+    return jsonify({
+        "success": outcome["ok"],
+        "message": outcome["message"],
+        "action": outcome["action"],
+        "series": outcome["row"],
+    }), (200 if outcome["ok"] else 409)
+
+
+@app.route("/api/commercial/season", methods=["GET"])
+def commercial_season_api():
+    """Trading months ranked on commercial pull and delivery headroom together."""
+    return _engine_response(lambda: {"season": commercial_engine.season(sql_service)})
+
+
+@app.route("/api/commercial/negotiation", methods=["GET"])
+def commercial_negotiation_api():
+    """What discounting has actually bought, and the guardrail that follows."""
+    segment = request.args.get("segment", "")
+    return _engine_response(
+        lambda: {"negotiation": commercial_engine.negotiation(sql_service, segment)}
+    )
+
+
+@app.route("/api/pricing/book", methods=["GET"])
+def pricing_book_api():
+    """Recommended price per service line, with basis, confidence and sensitivity."""
+    service_line = request.args.get("service_line", "")
+    return _engine_response(
+        lambda: {"price_book": pricing_engine.price_book(sql_service, service_line)}
+    )
+
+
+@app.route("/api/pricing/repairs", methods=["GET"])
+def pricing_repairs_api():
+    """Per-fault repair price schedule."""
+    return _engine_response(lambda: {"schedule": pricing_engine.repair_price_list(sql_service)})
+
+
+@app.route("/api/pricing/change", methods=["POST"])
+def pricing_change_api():
+    """Queue a price change for human approval."""
+    payload = request.get_json(silent=True) or {}
+    service_line = str(payload.get("service_line") or "").strip()
+    reason = str(payload.get("reason") or "").strip()
+    user_email = str(payload.get("user_email") or "leadership@abc.com").strip()
+
+    if not service_line:
+        return jsonify({"success": False, "error": "service_line is required."}), 400
+    if not reason:
+        reason = (
+            "Recommended price differs from the realised price on evidence the pricing engine "
+            "computed from the full estate."
+        )
+
+    try:
+        outcome = tools_module.queue_price_change(service_line, reason, user_email)
+    except AnalyticsError as error:
+        return jsonify({"success": False, "error": str(error)}), 400
+    except Exception as error:  # noqa: BLE001
+        print(f"[Price Change Error]: {error}")
+        return jsonify({"success": False, "error": str(error)}), 500
+
+    return jsonify({
+        "success": outcome["ok"],
+        "message": outcome["message"],
+        "action": outcome["action"],
+        "line": outcome["line"],
+    }), (200 if outcome["ok"] else 409)
+
+
 COMPARISON_SCENARIOS = [
     {
         "step": 1,
         "title": "Weekly net appointments, last 3 months",
         "question": "Show me the trend of total weekly net appointments for the past 3 months. Net excludes cancellations and no-access visits.",
-        "why": "A routine KPI question. The chatbot cannot produce a single real number.",
+        "why": "RAG answers with real but GROSS weekly volumes from one extract. Netting off cancellations needs a join it cannot do.",
     },
     {
         "step": 2,
         "title": "Follow up: why the sudden dip?",
         "question": "There is a sharp dip in one of those weeks. Why did it happen? Investigate the root cause and tell me which regions were affected.",
-        "why": "The proof point: root cause needs appointments, weather, engineer shifts and regions joined together.",
+        "why": "The proof point: RAG sees no dip at all - its gross extract shows a normal week. The lost jobs exist only in visit_outcome.",
     },
     {
         "step": 3,
         "title": "Follow up: what did it cost us?",
         "question": "How many appointments did we lose that week compared with a normal week, and what should we change so it does not happen again?",
-        "why": "Quantified impact plus a recommendation, grounded in the actual shortfall rather than a generic answer.",
+        "why": "Quantified impact plus a recommendation. RAG has no per-week outcome split, so it cannot size the loss at all.",
     },
     {
         "step": 4,
         "title": "Data ownership & lineage",
         "question": "Who is the SME data owner for customer_master, which platform hosts it, and what is its governance tier?",
-        "why": "Governance questions answerable only from the knowledge graph and ownership register.",
+        "why": "Three linked facts about one entity. The document corpus describes the dataset; only the graph holds owner, platform and tier.",
     },
 ]
 
@@ -772,10 +989,15 @@ def compare_stream_api():
     """
     Answer one question two ways and stream both.
 
-    Arm A ("baseline") is the same model with no tools, no knowledge graph and
-    no data access - a normal chatbot. Arm B ("agent") is the full agentic
-    knowledge hub. Holding the model constant means the difference shown is
-    attributable to the graph and the agent loop, not to a better model.
+    Arm A ("baseline") is the same model doing conventional document RAG: TF-IDF
+    retrieval over the unstructured knowledge corpus, top-k chunks in the prompt,
+    single shot, no tools and no knowledge graph. Arm B ("agent") is the full
+    agentic knowledge hub - knowledge graph traversal, every enterprise dataset
+    and a tool loop on top of the same retrieval.
+
+    Holding both the model and retrieval constant means the difference shown is
+    attributable to the knowledge graph and the agent loop specifically, not to a
+    better model and not to the baseline having been denied retrieval.
     """
     data = request.get_json() or {}
     user_message = data.get("message", "").strip()
@@ -799,11 +1021,11 @@ def compare_stream_api():
 
         yield sse({"type": "start", "question": user_message, "turn": turn_number})
 
-        # The baseline is a single short call, so run it alongside the agent and
-        # surface it as soon as it lands rather than serialising the two.
+        # The baseline is one retrieval plus one short call, so run it alongside
+        # the agent and surface it as soon as it lands rather than serialising.
         pool = ThreadPoolExecutor(max_workers=1)
         baseline_future = pool.submit(
-            run_baseline_chat, agent_executor, user_message, baseline_history
+            run_baseline_chat, agent_executor, user_message, baseline_history, rag_service
         )
 
         agent_answer = ""
@@ -816,16 +1038,20 @@ def compare_stream_api():
                 kind = event.get("type")
 
                 if kind == "answer":
-                    agent_answer = event.get("text", "")
-                    response_graph = graph_service.extract_subgraph_for_query(
-                        user_message, response=agent_answer
+                    agent_answer, agent_charts = charts_module.sanitize_answer(
+                        event.get("text", "")
                     )
-                    _append_compare_history(user_email, "agent", user_message, agent_answer)
+                    agent_prose = charts_module.strip_chart_blocks(agent_answer)
+                    response_graph = graph_service.extract_subgraph_for_query(
+                        user_message, response=agent_prose
+                    )
+                    _append_compare_history(user_email, "agent", user_message, agent_prose)
                     yield sse({
                         "side": "agent",
                         "type": "answer",
                         "text": agent_answer,
                         "graph": response_graph,
+                        "charts": len(agent_charts),
                     })
                     continue
 
@@ -868,48 +1094,100 @@ def compare_stream_api():
 def _baseline_event(result: dict, user_email: str = "", question: str = "") -> dict:
     """Normalize the baseline result onto the same `text` key the agent uses."""
     if user_email and question:
-        _append_compare_history(user_email, "baseline", question, result.get("answer", ""))
+        _append_compare_history(
+            user_email,
+            "baseline",
+            question,
+            charts_module.strip_chart_blocks(result.get("answer", "")),
+        )
     return {
         "side": "baseline",
         "type": "answer",
         "text": result.get("answer", ""),
         "elapsed_ms": result.get("elapsed_ms", 0),
         "available": result.get("available", False),
+        # Sent so the UI can show that RAG did retrieve, and what it retrieved -
+        # the gap is a capability gap, not a missing-retrieval gap.
+        "retrieval": result.get("retrieval", {}),
     }
 
 
 def _build_scorecard(agent_summary: dict, response_graph: dict, baseline: dict) -> dict:
-    """Quantify the difference between the two answers."""
+    """Quantify the difference between the two answers.
+
+    Both arms retrieve, so the first row is deliberately near-parity: it shows the
+    baseline is a real RAG chatbot, not a strawman. Every row below it is a
+    capability the knowledge graph and the agent loop add on top of that retrieval.
+    """
     ev = agent_summary.get("evidence", {}) or {}
+    retrieval = baseline.get("retrieval", {}) or {}
     datasets = ev.get("datasets", [])
     graph_nodes = len(response_graph.get("nodes", []))
     graph_edges = len(response_graph.get("edges", []))
+    graph_entities = len(ev.get("graph_entities", [])) or graph_nodes
+    baseline_chunks = retrieval.get("chunk_count", 0)
+    baseline_extracts = retrieval.get("extract_sources", []) or []
 
     return {
         "rows": [
             {
-                "label": "Enterprise datasets queried",
+                "label": "Chunks retrieved (RAG)",
+                "baseline": baseline_chunks,
+                "agent": ev.get("rag_documents", 0),
+                "detail": (
+                    f"The same retrieval over a "
+                    f"{retrieval.get('corpus_documents', 0)}-document corpus is open to both sides"
+                ),
+            },
+            {
+                "label": "Knowledge graph entities traversed",
                 "baseline": 0,
+                "agent": graph_entities,
+                "detail": (
+                    f"{graph_nodes} nodes / {graph_edges} edges of lineage behind the answer. "
+                    "RAG chunks are flat: no relationships to follow."
+                ),
+            },
+            {
+                "label": "Cross-dataset joins performed",
+                "baseline": 0,
+                "agent": max(ev.get("sql_queries", 0), 1) if datasets else 0,
+                "detail": (
+                    "The gap in one line: net appointments needs appointment_schedule "
+                    "joined to visit_outcome on job_id. Every RAG extract is single-source."
+                ),
+            },
+            {
+                "label": "Enterprise datasets reached",
+                "baseline": len(baseline_extracts),
                 "agent": len(datasets),
-                "detail": ", ".join(datasets) if datasets else "",
+                "detail": (
+                    (
+                        f"RAG read pre-aggregated extracts of {', '.join(baseline_extracts)}; "
+                        f"the agent queried {', '.join(datasets)} live"
+                    )
+                    if baseline_extracts and datasets
+                    else ", ".join(datasets)
+                    or "RAG reads pre-aggregated extracts, not the rows behind them"
+                ),
             },
             {
                 "label": "Records scanned",
                 "baseline": 0,
                 "agent": ev.get("records_scanned", 0),
-                "detail": "Every row of each dataset referenced",
-            },
-            {
-                "label": "Knowledge graph entities linked",
-                "baseline": 0,
-                "agent": len(ev.get("graph_entities", [])) or graph_nodes,
-                "detail": f"{graph_nodes} nodes / {graph_edges} edges in answer lineage",
+                "detail": "Agent scans every row; RAG sees only what an export already summed",
             },
             {
                 "label": "Live queries executed",
                 "baseline": 0,
                 "agent": ev.get("sql_queries", 0) + ev.get("pandas_queries", 0),
                 "detail": f"{ev.get('sql_queries', 0)} SQL, {ev.get('pandas_queries', 0)} dataframe",
+            },
+            {
+                "label": "Retrieval hops",
+                "baseline": 1,
+                "agent": max(ev.get("graph_lookups", 0) + agent_summary.get("tool_calls", 0), 1),
+                "detail": "Single-shot top-k vs iterative graph traversal and querying",
             },
             {
                 "label": "Reasoning steps",
@@ -927,16 +1205,72 @@ def _build_scorecard(agent_summary: dict, response_graph: dict, baseline: dict) 
         ],
         "verdict": {
             "grounded": bool(datasets or graph_nodes),
-            "headline": (
-                f"The agent grounded its answer in {len(datasets)} dataset"
-                f"{'' if len(datasets) == 1 else 's'} and "
-                f"{ev.get('records_scanned', 0):,} records. "
-                "The standard chatbot answered from model memory with no access to any of it."
-                if datasets or graph_nodes
-                else "The agent answered from governed knowledge; the standard chatbot had no data access."
+            "headline": _scorecard_headline(
+                baseline_chunks,
+                bool(baseline_extracts),
+                graph_entities,
+                graph_edges,
+                datasets,
+                ev.get("records_scanned", 0),
             ),
         },
     }
+
+
+def _scorecard_headline(
+    baseline_chunks: int,
+    baseline_had_data: bool,
+    graph_entities: int,
+    graph_edges: int,
+    datasets: list,
+    records: int,
+) -> str:
+    """State the gap in terms of what RAG reached vs what the graph added."""
+    if not baseline_chunks:
+        rag_part = "RAG retrieved no relevant chunk from the corpus"
+    elif baseline_had_data:
+        # The interesting case: RAG answered with real numbers off a single export.
+        rag_part = (
+            f"RAG answered from {baseline_chunks} retrieved chunk"
+            f"{'' if baseline_chunks == 1 else 's'}, including single-dataset "
+            "reporting extracts - real figures, but gross and unjoinable"
+        )
+    else:
+        rag_part = (
+            f"RAG retrieved {baseline_chunks} chunk"
+            f"{'' if baseline_chunks == 1 else 's'} of descriptive text only"
+        )
+
+    if not (datasets or graph_entities):
+        return (
+            f"{rag_part}. The agent answered from governed knowledge; retrieval alone "
+            "had no relationships to follow and no rows to compute from."
+        )
+
+    # Which half of the agent's advantage to name depends on the question: a
+    # lineage question is answered by traversal alone, a KPI question by the
+    # datasets the traversal led to. Claiming "0 datasets" on the former reads as
+    # a failure rather than as the graph doing its job.
+    added: list[str] = []
+    if graph_entities:
+        added.append(
+            f"traversed {graph_entities} knowledge graph "
+            f"entit{'y' if graph_entities == 1 else 'ies'} across {graph_edges} "
+            f"relationship{'' if graph_edges == 1 else 's'}"
+        )
+    if datasets:
+        added.append(
+            f"queried {len(datasets)} dataset{'' if len(datasets) == 1 else 's'}"
+            + (f" over {records:,} records" if records else "")
+        )
+
+    closing = (
+        "The knowledge graph is what made the difference: it holds the relationships "
+        "retrieval cannot see."
+        if graph_entities
+        else "Governed dataset access is what made the difference."
+    )
+    return f"{rag_part}. The agent {' and '.join(added)}. {closing}"
 
 
 @app.route("/api/trust/summary", methods=["GET"])
@@ -1037,7 +1371,7 @@ def run_pipeline_stage_api(stage_id: int):
 @app.route("/api/pipeline/run", methods=["POST"])
 def run_pipeline_api():
     """
-    API endpoint to trigger and return the 12-stage OEM Knowledge Base Harnessing pipeline.
+    API endpoint to trigger and return the 12-stage Knowledge Base Harnessing pipeline.
     Runs all 12 backend stages and returns live execution results and metrics.
     """
     try:
@@ -1048,7 +1382,7 @@ def run_pipeline_api():
 
         return jsonify({
             "success": True,
-            "title": "OEM Knowledge Base",
+            "title": "Knowledge Base",
             "overall_progress": 100,
             "knowledge_base_updated": True,
             "stages": stages,

@@ -16,8 +16,8 @@ TEMPLATES_DIR = BASE_DIR / "templates"
 load_dotenv(PROJECT_ROOT / ".env")
 
 # Server Settings
-FLASK_HOST = os.getenv("FLASK_HOST", "127.0.0.1")
-FLASK_PORT = int(os.getenv("FLASK_PORT", 5000))
+FLASK_HOST = os.getenv("FLASK_HOST", "0.0.0.0")
+FLASK_PORT = int(os.getenv("PORT", os.getenv("FLASK_PORT", "5000")))
 SECRET_KEY = os.getenv("SECRET_KEY", "utilities-knowledge-hub-secret-key-2026")
 
 # OpenRouter / LLM Settings

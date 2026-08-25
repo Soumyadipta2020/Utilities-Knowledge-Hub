@@ -1,0 +1,48 @@
+
+Context (short):
+- Product: enterprise "Utilities Knowledge Hub" — an AI agentic platform for a utilities business (gas/heating/field service).
+- Key capabilities: dataset discovery & lineage, NetworkX knowledge graph + RAG, LangChain-based agent loop with tools, specialist routing, deterministic fallback offline mode, verification agent, briefing pack generator, IT access ticketing, forecasting pipelines.
+- Core components: `KnowledgeGraphService`, `DataService`, `SqlService`/`KnowledgeHarnessingPipeline`, `AgentRuntime`, tools in tools.py, specialist routing (`specialists.py`), verifier (`verifier.py`), briefing (`briefing.py`), UI in `templates/index.html`.
+
+
+Problem and Customer Focus
+- Slide Title: Problem Statement & Customer Focus
+- Summary: Utilities struggle with fragmented operational data, slow access to SME knowledge, long service lead times, and costly field failures that reduce revenue and customer satisfaction.
+- Customer: Enterprise gas/heating service operators — roles: Head of Field Ops, Reliability Engineer, Commercial Director, Data Governance Officer.
+- Pain Points: inconsistent dataset discovery, manual SME lookup, slow IT access requests, poor root-cause traceability for recurring faults, capacity mismatches across regions.
+- Business Impact (quantifiable): higher mean time to repair (MTTR), lost installation revenue, increased emergency callouts, and avoidable parts & logistics expense (present as £ and % where available).
+- Evidence / Data Sources: cite `repair_history`, `installation_history`, `engineer_productivity`, `quotes_and_sales`, `regional_capacity_forecast` as primary datasets for analysis.
+- Visuals: funnel showing lost revenue (leads → installs), heatmap of regional capacity gaps, timeline of MTTR vs fault frequency.
+- Call to Action: Validate dataset gaps, quantify current MTTR and revenue leakage, and prioritize top 3 high-impact failure modes for analytics.
+
+The AI Solution and Innovation
+- Slide Title: AI Solution — Architecture & Innovations
+- Core proposition: An agentic Knowledge Hub that turns enterprise CSVs/Excel into an explainable, auditable decision layer combining a NetworkX knowledge graph and RAG-enabled retrieval with controlled tool access.
+- Technical highlights: `KnowledgeGraphService` (semantic lineage + metric nodes), `DataService` (pandas-backed frames + schema cache), `AgentRuntime` (traceable agent loop), specialist routing and deterministic fallback for offline operation.
+- Unique capabilities: ground-truth-first answers (calls `query_datasets_sql` for numeric claims), verifier module for independent validation, briefing pack generator for exec-ready summaries, IT access automation (`raise_access_request`) and audit trails.
+- Operational advantages: reproducible evidence chains (sources listed), reduced hallucination risk, rapid troubleshooting by linking fault codes → repairs → parts → SMEs.
+- Visuals: architecture diagram (data CSVs → `KnowledgeGraphService` → `AgentRuntime` → tools & specialists → UI), sample trace timeline showing tool calls and sources.
+- KPIs to track: % answers with computed numeric backing, verification agreement rate, time to insight (minutes), model uptime in deterministic mode.
+- CTA: Pilot on a high-frequency fault class to measure time-to-diagnosis and cost-avoided.
+
+Standing out from Competitors
+- Slide Title: Differentiation & Competitive Advantages
+- Domain grounding: built specifically for utilities (boiler, service, engineer datasets), not a generic chatbot — specialist modules (`specialists.py`) encode domain priors and exact dataset locations.
+- Transparency & governance: explicit data lineage via the graph, dataset ownership & access tooling, and `verifier.py` for independent check—making outputs board-ready and audit-friendly.
+- Hybrid resilience: works offline (deterministic fallback) and with an LLM gateway (OpenRouter) — avoids vendor lock-in, supports reproducible demos.
+- Product features competitors lack: side-by-side baseline comparison arm, briefing pack generator (`briefing.py`) and programmatic IT ticketing for access — accelerates adoption by non-technical stakeholders.
+- Integration-ready: simple Excel/CSV data onboarding, lightweight tech stack (Flask + pandas + NetworkX + LangChain), single-page UI for demos.
+- Market positioning: "Explainable AI for Utilities Ops" — sell as risk-reducing analytics adjunct to existing field operations.
+- Visuals: competitor matrix (columns: explainability, verification, offline mode, IT ticketing, domain-specialists).
+- CTA: Build go-to-market collateral emphasizing governance, verification, and immediate ROI.
+
+Revenue and Business Growth
+- Slide Title: Revenue Opportunities & Growth Plan
+- Direct value levers: reduce emergency callouts and MTTR (cost savings), increase installation conversion rates (revenue uplift), improve engineer productivity (lower opex).
+- Quantification framework: model revenue impact = (increase in installs × avg final_quotation) + (reduced downtime × £ per avoided outage) − implementation cost; use `quotes_and_sales` + `installation_history`.
+- Products & pricing: SaaS subscription (tiered by dataset/region), Professional Services for onboarding and model tuning, Data & Insights reports (monthly briefings) and premium verification audits.
+- Commercial motions: pilot → prove savings on one region → roll-out across regions → upsell advanced forecasting and custom integrations.
+- Metrics to track: ARR/MRR, incremental revenue from improved conversion, reduction in MTTR (days → %), ticket resolution time, NPS change post-deployment.
+- Go-to-market collateral: executive briefing template (use `generate_briefing`), ROI case study using pre/post pilot metrics, and a technical appendix showing lineage and verifier outputs.
+- Visuals: 12-month revenue ramp chart, ROI waterfall (cost avoided vs incremental revenue), pilot success case snapshot.
+- Next steps: run a 6–8 week pilot on a region, measure baseline KPIs, and produce an executive briefing showing realized £ impact.

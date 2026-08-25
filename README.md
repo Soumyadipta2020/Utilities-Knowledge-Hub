@@ -406,19 +406,158 @@ All datasets are stored as `.xlsx` files in `app/data/` and auto-generated on fi
 
 ## 🔨 Agent Tools
 
-The agent is equipped with **9 custom LangChain tools** defined in `app/agent/tools.py`:
+Custom LangChain tools defined in `app/agent/tools.py`:
 
 | Tool | Description |
 |---|---|
 | `query_knowledge_graph` | Traverse NetworkX graph for boiler models, error codes, and components |
 | `search_knowledge_base_rag` | RAG keyword search over Knowledge Base records |
 | `query_graph_rag` | **Hybrid** Graph-RAG: combines RAG retrieval + graph traversal + LangChain triples |
+| `query_datasets_sql` | Read-only DuckDB SQL across every row of every dataset, including joins |
+| `execute_pandas_query` | Row-level pandas inspection of a single dataset |
 | `query_live_metrics` | Fetch live telemetry readings (requires access check first) |
 | `query_business_operations` | Fetch sales funnel and commercial data (requires access check first) |
 | `query_metric_definitions` | Return metric definitions (leads, quotes, conversion, sales) |
 | `forecast_boiler_installations` | Directional installation forecast from pipeline conversion rate |
+| `simulate_capacity_reallocation` | Model moving engineer hours between regions |
+| `simulate_weather_scenario` | Project the fault load from a cold-weather event |
+| `propose_action` | Queue any recommendation for human approval |
 | `check_data_access` | Validate `user_role` vs `data_source` access permission |
 | `raise_access_request` | Generate a `TICK-XXXX` IT access request ticket |
+
+---
+
+## 🧠 Planning Agents
+
+Three specialists that produce a **position** rather than an answer: a corrected
+forecast, a negotiation guardrail, a price. Each is backed by a deterministic
+engine that computes over the full estate — the language model chooses which
+analysis to run and explains why it matters, but never supplies the numbers.
+Anything that would change the business is queued for a named human to approve
+or reject through the existing action queue; nothing is applied automatically.
+
+Engines live in `app/agent/demand_forecast.py`, `app/agent/commercial.py` and
+`app/agent/pricing.py`, on shared plumbing in `app/agent/analytics.py`. They are
+reachable three ways: as agent tools in chat, as REST endpoints, and as the
+**Planning Agents** tab in the UI. All three render one computation, so a figure
+on screen and the same figure in a chat answer cannot disagree.
+
+Every planning specialist answers in a fixed shape, defined by
+`DECISION_STRUCTURE` in `app/agent/specialists.py`: **the call**, **why — the
+facts**, **what it means for the plan**, **what to do about it**, and **what
+would change this** (including what the finding does *not* say). A total the
+reader could read off the source is context, not a finding; an analysis with no
+forward consequence is not an answer; and a problem reported without a plan for
+closing it is not one either. The same block requires plain language — the
+reader may be a regional manager, not an analyst — and reproduction of the
+tables the engines return, rather than summarising them away.
+
+**Charts come from the engines, not the model.** Each renderer emits its own
+validated ```chart spec built from the same figures as the table beside it, via
+`chart_block` in `app/agent/analytics.py`. A picture therefore cannot disagree
+with the numbers it sits under, and a chart appears whether or not the model
+remembers to draw one. `tests/test_planning_agents.py` asserts that every
+rendered answer still carries both a table and a renderable chart.
+
+### 📊 Demand Forecast Agent
+
+Grades the published `regional_demand_forecast` against the run-rate re-derived
+from the job histories, and turns any material bias into an approvable
+correction with its effect in hours, engineer-days, cost and capacity balance.
+It also checks for demand the estate *staffs but does not forecast at all* — a
+forecast can be wrong by being absent, which no accuracy metric catches — and
+builds the missing numbers from history when asked. Its driver analysis reports
+the factors measured to be **immaterial** as well as the ones that matter, so a
+planner knows what not to model.
+
+Each evaluation carries a **decision record**: the conclusion, its confidence,
+the facts it rests on, a sign test that separates a method fault from a run of
+bad luck, an explicit falsifier, and a statement of what the finding does *not*
+say. `assess_planning_impact` then converts the finding into the forward
+consequence — it adds the forecast bias, the unforecast job types, and the
+return visits implied by jobs that fail first time, and reports the result per
+skill as hours, FTE and jobs at risk. It deliberately separates the deficit the
+published plan *already* implied from the part this analysis adds, so no credit
+is claimed for the plan's own arithmetic.
+
+| Tool | Description |
+|---|---|
+| `evaluate_demand_forecast` | Decision record, bias per series, corrected jobs/day and its effect |
+| `weekly_demand_outlook` | Week-by-week job numbers, published against bias-corrected |
+| `assess_planning_impact` | Hours, FTE and jobs at risk per skill over the horizon |
+| `detect_forecast_gaps` | Job types, regions and horizon days with no forecast line |
+| `generate_demand_forecast` | Build a forecast from trailing run-rate × seasonality × trend |
+| `explain_demand_drivers` | Ranked drivers with measured effect sizes, material and not |
+| `propose_forecast_correction` | Queue a correction for approval (figures re-computed server-side) |
+
+### 📈 Commercial Agent
+
+Tests what discounting has actually bought by banding every quoted lead on the
+discount from opening to closed price and comparing **revenue per lead** across
+the bands, then sets the negotiation guardrail that follows. Separately ranks
+the trading months on commercial pull *and* on the installation capacity
+provisioned to deliver them — a month that converts well but cannot be staffed
+is not a productive period.
+
+| Tool | Description |
+|---|---|
+| `recommend_negotiation_position` | Discount bands vs conversion and revenue per lead, plus the guardrail |
+| `analyse_commercial_seasonality` | Months scored on revenue per trading day and delivery headroom |
+
+### 💷 Pricing Agent
+
+Prices Service, Repair and Installation, each from the evidence that exists for
+it, and says which it used: an observed market price where the estate records
+one (`quotes_and_sales`), a cost build-up where it records a cost
+(`parts_replaced`, `fault_codes`), and a labour floor where it records neither.
+Every figure resting on an assumption — labour rate, target margin — is printed
+with that assumption attached.
+
+Prices are set against **cost to serve**, not the cost of one visit. A job costs
+more than a visit for three measurable reasons: visits that end without
+finishing the work, visits cancelled or unable to get access, and paid hours
+that never reach a job. In this estate only 47.3% of repair visits finish the
+job, so a completed repair consumes 2.11 visits, and only ~84% of paid gross
+hours become available — together understating a single-visit repair cost base
+by 60%. Pricing repairs off one visit would set them *below* what completing one
+costs. The same model also sizes the operational levers, so a proposed price
+change is always weighed against what fixing the cost base would be worth
+instead.
+
+| Tool | Description |
+|---|---|
+| `analyse_cost_to_serve` | True cost per completed job, where it goes, and what each lever is worth |
+| `recommend_service_pricing` | Price book with cost build-up, basis, confidence and sensitivity |
+| `price_repairs_by_fault` | Per-fault repair price schedule against the recorded fault cost |
+| `propose_price_change` | Queue a price change for approval (figures re-computed server-side) |
+
+### Endpoints
+
+| Method | Path | Returns |
+|---|---|---|
+| `GET` | `/api/forecast/evaluate?region=&job_type=` | Decision record, bias, corrections and effects |
+| `GET` | `/api/forecast/weekly?weeks=&job_types=` | Weekly job numbers, published vs corrected |
+| `GET` | `/api/forecast/impact` | Hours, FTE and jobs at risk per skill |
+| `GET` | `/api/forecast/gaps` | Missing job types, regions and horizon days |
+| `GET` | `/api/forecast/drivers` | Ranked demand drivers with effect sizes |
+| `POST` | `/api/forecast/generate` | Build a forecast — `{job_type, weeks}` |
+| `POST` | `/api/forecast/correction` | Queue a correction — `{region, job_type, reason}` |
+| `GET` | `/api/commercial/negotiation?segment=` | Discount bands, leakage and guardrail |
+| `GET` | `/api/commercial/season` | Trading months ranked on pull and delivery |
+| `GET` | `/api/pricing/cost-to-serve` | True cost per completed job and the operational levers |
+| `GET` | `/api/pricing/book?service_line=` | Recommended price per service line |
+| `GET` | `/api/pricing/repairs` | Per-fault repair price schedule |
+| `POST` | `/api/pricing/change` | Queue a price change — `{service_line, reason}` |
+
+Queued suggestions are decided through the existing
+`POST /api/actions/<id>/decide` endpoint, so forecast corrections and price
+changes carry the same audit trail as every other approved action.
+
+> **Note on assumptions.** The estate records no labour rate and no target
+> margin. Both are declared in `ASSUMPTIONS` in `app/agent/analytics.py`,
+> carried through every result that depends on them, and printed with the
+> answer. Replace them with finance's own figures before any number leaves the
+> building.
 
 ---
 

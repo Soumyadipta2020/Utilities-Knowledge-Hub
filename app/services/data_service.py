@@ -13,10 +13,12 @@ import pandas as pd
 # only if a machine cannot hold the frames.
 MAX_QUERY_ROWS = int(os.getenv("AGENT_MAX_ROWS", "0"))
 
-# Loaded frames are cached, but a single dataset can occupy ~3 GB in pandas, so
-# the cache is bounded by memory rather than by frame count - otherwise holding
-# three of the large datasets would exhaust the machine.
-FRAME_CACHE_BUDGET_BYTES = int(float(os.getenv("AGENT_FRAME_CACHE_GB", "4")) * 1024**3)
+# Loaded frames are cached with a safe memory budget suited for lightweight and
+# containerized free-tier environments (e.g. Render Free 512MB RAM).
+FRAME_CACHE_BUDGET_BYTES = int(
+    float(os.getenv("AGENT_FRAME_CACHE_MB", os.getenv("AGENT_FRAME_CACHE_GB", "0.128") if "AGENT_FRAME_CACHE_GB" in os.environ else "128"))
+    * (1024**2 if "AGENT_FRAME_CACHE_MB" in os.environ or "AGENT_FRAME_CACHE_GB" not in os.environ else 1024**3)
+)
 
 
 class DataService:

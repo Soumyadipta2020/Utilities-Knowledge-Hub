@@ -26,6 +26,7 @@ def start_collection() -> None:
         "pandas_queries": 0,
         "graph_entities": [],
         "graph_lookups": 0,
+        "rag_documents": 0,
         "failed_calls": 0,
         "simulations": 0,
         "actions_proposed": 0,
@@ -69,6 +70,18 @@ def record_graph_lookup(entities: list[str]) -> None:
             ledger["graph_entities"].append(entity)
 
 
+def record_rag_documents(count: int) -> None:
+    """Note document chunks retrieved by RAG.
+
+    Tracked separately from graph lookups because the comparison view has to show
+    that the agent does the same document retrieval the baseline does, and then
+    traverses the graph on top of it.
+    """
+    ledger = _ledger()
+    if ledger is not None:
+        ledger["rag_documents"] += max(int(count), 0)
+
+
 def record_failure() -> None:
     ledger = _ledger()
     if ledger is not None:
@@ -105,6 +118,7 @@ def snapshot() -> dict[str, Any]:
             "pandas_queries": 0,
             "graph_entities": [],
             "graph_lookups": 0,
+            "rag_documents": 0,
             "failed_calls": 0,
             "simulations": 0,
             "actions_proposed": 0,
@@ -117,6 +131,7 @@ def snapshot() -> dict[str, Any]:
         "pandas_queries": ledger["pandas_queries"],
         "graph_entities": list(ledger["graph_entities"])[:40],
         "graph_lookups": ledger["graph_lookups"],
+        "rag_documents": ledger["rag_documents"],
         "failed_calls": ledger["failed_calls"],
         "simulations": ledger["simulations"],
         "actions_proposed": ledger["actions_proposed"],

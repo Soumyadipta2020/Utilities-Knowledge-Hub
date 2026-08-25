@@ -2,20 +2,29 @@ import pandas as pd
 import numpy as np
 import random
 import os
+import sys
+from pathlib import Path
 from datetime import datetime, date, timedelta
 import string
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+scripts_dir = Path(__file__).resolve().parent
+if str(scripts_dir) not in sys.path:
+    sys.path.insert(0, str(scripts_dir))
 
 np.random.seed(42)
 random.seed(42)
 
-# Per-week base counts — loop runs over all ~84 historical weeks automatically
-BASE_LEADS = 5700
-BASE_APPTS = 4200
-BASE_SALES = 2000
-BASE_INSTALLS = 1500
-BASE_REPAIRS = 17000
-BASE_SERVICES = 45000
-NUM_ENGINEERS = 3800
+# Per-week base counts optimized for ±3 months window and lightweight memory profile
+BASE_LEADS = 1200
+BASE_APPTS = 900
+BASE_SALES = 450
+BASE_INSTALLS = 300
+BASE_REPAIRS = 3500
+BASE_SERVICES = 9000
+NUM_ENGINEERS = 800
 
 NUM_BOILERS_REF = 10
 NUM_FAULTS_REF = 15
@@ -52,7 +61,7 @@ def generate_all_datasets(output_dir='data'):
         })
     df_product_info = pd.DataFrame(product_info)
     df_product_info['addition_warranty_end_date'] = df_product_info.apply(
-        lambda row: (datetime.now() + timedelta(days=random.randint(365, 365*5))).strftime('%Y-%m-%d') if row['addition_warranty_purchased'] == 'Yes' else None, axis=1)
+        lambda row: (datetime.now() + timedelta(days=random.randint(90, 365*3))).strftime('%Y-%m-%d') if row['addition_warranty_purchased'] == 'Yes' else None, axis=1)
 
     fault_codes = []
     for i in range(NUM_FAULTS_REF):
@@ -86,25 +95,25 @@ def generate_all_datasets(output_dir='data'):
     ]
     df_kb = pd.DataFrame(kb_data)
 
-    # 2. Events & Targets Generation
-    print("Generating Events (Leads, Services, Repairs)...")
+    # 2. Events & Targets Generation: ±3 Months Window from Current Date
+    print("Generating Events (Leads, Services, Repairs) for ±3 Months window...")
 
-    # Current window: Jan 1, 2025 -> today (Aug 7, 2026)
-    CURRENT_START = date(2025, 1, 1)
-    CURRENT_END   = datetime.now().date()          # 2026-08-07
+    today = datetime.now().date()
+    # Historical window: ~13.5 weeks before today (~3 months)
+    CURRENT_START = today - timedelta(days=95)
+    CURRENT_END   = today
 
-    # Future window: today -> Dec 31, 2027 (for forecasts & future-tagged data)
-    FUTURE_END = date(2027, 12, 31)
+    # Future window: ~15 weeks after today (ensures 13 full 7-day forecast weeks)
+    FUTURE_END = today + timedelta(days=105)
 
     # Date ranges
     current_dates = pd.date_range(start=CURRENT_START, end=CURRENT_END, freq='D')
     future_dates_range = pd.date_range(start=CURRENT_END + timedelta(days=1), end=FUTURE_END, freq='D')
     all_dates_range = pd.date_range(start=CURRENT_START, end=FUTURE_END, freq='D')
 
-    # Build weekly buckets over the historical (current) window
-    start_date = CURRENT_START  # alias kept for downstream references
+    start_date = CURRENT_START
     end_date   = CURRENT_END
-    dates      = current_dates   # alias kept for downstream references
+    dates      = current_dates
 
     week_starts = pd.date_range(start=CURRENT_START, end=CURRENT_END, freq='W-MON')
     WEEKS_HIST  = len(week_starts)
@@ -297,7 +306,7 @@ def generate_all_datasets(output_dir='data'):
         'customer_name': [f"Customer_{i}" for i in range(n_cust)],
         'boiler_history': 'Yes',
         'boiler_company': np.random.choice(BOILER_MANUFACTURERS, n_cust),
-        'registration_date': np.random.choice(pd.date_range(start='2015-01-01', end=start_date), n_cust),
+        'registration_date': np.random.choice(pd.date_range(start=CURRENT_START - timedelta(days=365*3), end=start_date), n_cust),
         'have_insurance': np.random.choice(['Yes', 'No'], n_cust)
     })
 
@@ -330,7 +339,7 @@ def generate_all_datasets(output_dir='data'):
     df_boiler_master = pd.DataFrame({
         'customer_id': active_customers,
         'boiler_id': np.random.choice([p['boiler_id'] for p in product_info], n_cust),
-        'installation_date': np.random.choice(pd.date_range(start='2018-01-01', end=start_date), n_cust),
+        'installation_date': np.random.choice(pd.date_range(start=CURRENT_START - timedelta(days=365*3), end=start_date), n_cust),
         'boiler_type': np.random.choice(BOILER_TYPES, n_cust),
         'boiler_manufacturer': np.random.choice(BOILER_MANUFACTURERS, n_cust),
         'model': 'Model X',
@@ -350,7 +359,7 @@ def generate_all_datasets(output_dir='data'):
             'pay_id': f"ENG{str(i+1).zfill(5)}",
             'home_location': random.choice(CITIES),
             'work_location': random.choice(REGIONS),
-            'joining_date': (datetime.now() - timedelta(days=random.randint(100, 2000))).strftime('%Y-%m-%d')
+            'joining_date': (datetime.now() - timedelta(days=random.randint(30, 1000))).strftime('%Y-%m-%d')
         })
     df_engineer_master = pd.DataFrame(engineers)
     pay_ids = df_engineer_master['pay_id'].tolist()
@@ -390,21 +399,21 @@ def generate_all_datasets(output_dir='data'):
 
     # Forecasting & Inventory & Weather
     print("Generating Forecasts and Inventory...")
-    # Regional forecasts: FUTURE only (Aug 7, 2026 -> Dec 31, 2027)
     forecast_dates = future_dates_range
+
+    daily_service_per_region = int((BASE_SERVICES / 7 / len(REGIONS)) * 0.92)
+    daily_repair_per_region = int((BASE_REPAIRS / 7 / len(REGIONS)) * 0.90)
 
     reg_demand = []
     reg_capacity = []
     for r in REGIONS:
         for d in forecast_dates:
             for job_cat in ['Service', 'Repair']:
-                # Target 45000 services/week -> 6428/day -> ~642/region/day
-                # Target 17000 repairs/week -> 2428/day -> ~242/region/day
                 if job_cat == 'Service':
-                    num_jobs = max(0, int(np.random.normal(642, 50)))
+                    num_jobs = max(0, int(np.random.normal(daily_service_per_region, max(5, int(daily_service_per_region * 0.08)))))
                     det_cat = 'Annual Service'
                 else:
-                    num_jobs = max(0, int(np.random.normal(242, 30)))
+                    num_jobs = max(0, int(np.random.normal(daily_repair_per_region, max(3, int(daily_repair_per_region * 0.12)))))
                     det_cat = random.choice(['Boiler Breakdown', 'Leak'])
 
                 reg_demand.append({
@@ -413,10 +422,15 @@ def generate_all_datasets(output_dir='data'):
                     'number_of_jobs': num_jobs, 'jobs_hours': int(num_jobs * random.uniform(1.5, 2.5))
                 })
 
+            gross_h = random.randint(500, 750)
+            npe_h = random.randint(30, 80)
+            ot_h = random.randint(0, 50)
+            avail_h = gross_h - npe_h + ot_h
+
             reg_capacity.append({
                 'date': d, 'region': r, 'eng_skill_type': random.choice(JOB_CATEGORIES),
-                'gross_hours': random.randint(1500, 3500), 'non_productive_event': random.randint(100, 300),
-                'overtime': random.randint(0, 300), 'available_hours': random.randint(1000, 3200)
+                'gross_hours': gross_h, 'non_productive_event': npe_h,
+                'overtime': ot_h, 'available_hours': avail_h
             })
     df_reg_demand = pd.DataFrame(reg_demand)
     df_reg_capacity = pd.DataFrame(reg_capacity)
@@ -432,7 +446,6 @@ def generate_all_datasets(output_dir='data'):
     df_inventory = pd.DataFrame(inventory)
 
     weather = []
-    # Weather: full current + future range (Jan 1, 2025 -> Dec 31, 2027)
     for d in all_dates_range:
         weather.append({
             'pincode': 'ALL', 'date': d,
@@ -466,7 +479,6 @@ def generate_all_datasets(output_dir='data'):
         'contact_center_interaction': df_contact,
         'regional_demand_forecast': df_reg_demand,
         'regional_capacity_forecast': df_reg_capacity,
-        # 'knowledge_base': df_kb,
         'inventory_and_van_stock': df_inventory,
         'weather': df_weather,
         'epc_property_data': df_epc,
@@ -478,6 +490,14 @@ def generate_all_datasets(output_dir='data'):
         file_path = os.path.join(output_dir, f"{name}.csv")
         df.to_csv(file_path, index=False)
         print(f"Exported {file_path} ({len(df)} rows)")
+
+    print("Injecting demo signals (weather event & sales conversion dip)...")
+    try:
+        from scripts.inject_demo_signal import inject
+        inject(Path(output_dir), week_start=None)
+        print("Demo signals injected successfully!")
+    except Exception as e:
+        print(f"Demo signal injection note: {e}")
 
     print("All datasets generated successfully!")
 

@@ -19,7 +19,7 @@ from app.services.data_service import DataService
 
 class KnowledgeHarnessingPipeline:
     """
-    Real execution engine for the 12-stage OEM Knowledge Base Harnessing pipeline.
+    Real execution engine for the 12-stage Knowledge Base Harnessing pipeline.
     """
 
     def __init__(

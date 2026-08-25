@@ -19,7 +19,7 @@ from app.agent.tools import register_services
 from app.agent.agent_builder import process_chat_message, suggest_graph_relationship
 
 
-def run_tests():
+def test_app_workflows():
     print("--- 1. Testing Services ---")
     kg = KnowledgeGraphService(DATA_DIR)
     ds = DataService(DATA_DIR)
@@ -103,5 +103,7 @@ def run_tests():
     print("\n[SUCCESS] ALL AUTOMATED VERIFICATION TESTS PASSED SUCCESSFULLY!")
 
 
+run_tests = test_app_workflows
+
 if __name__ == "__main__":
-    run_tests()
+    test_app_workflows()

@@ -22,6 +22,7 @@ from typing import Any, Iterator, Sequence
 import pandas as pd
 
 from app.agent import evidence
+from app.agent.charts import CHART_INSTRUCTIONS
 
 try:
     from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
@@ -99,11 +100,18 @@ You answer by investigating with tools, not by guessing. Work through a question
 
 ANSWER STYLE
 - Concise markdown. Lead with the answer, then the supporting detail.
-- Never dump raw dicts, JSON or full dataframes.
+- Show a markdown TABLE for any per-region, per-month, per-category or per-period
+  breakdown you retrieved, and reproduce a table a tool returned rather than
+  summarising it away. A table is supporting detail, not clutter.
+- Never dump raw dicts, JSON or unformatted dataframe output. That is a rule
+  about FORM - render the figures as a clean markdown table instead - and it is
+  never a reason to leave retrieved figures out of the answer.
 - Do NOT tell the user access is denied or required unless they explicitly asked
   about access or entitlements.
 - If the user asks to raise a request or ticket, call `raise_access_request` with
   user_email='{user_email}'.
+
+{chart_instructions}
 
 DATASETS AVAILABLE (exact names and columns - use verbatim in SQL and pandas):
 {dataset_schemas}
@@ -131,6 +139,20 @@ _TOOL_LABELS = {
     "check_data_access": "Checking entitlements",
     "raise_access_request": "Raising IT access request",
     "execute_pandas_query": "Analysing dataset",
+    "evaluate_demand_forecast": "Grading the demand forecast",
+    "weekly_demand_outlook": "Reading the week-by-week forecast",
+    "assess_planning_impact": "Sizing the impact on the plan",
+    "recommend_improvements": "Building the plan to close the gap",
+    "analyse_cost_to_serve": "Costing what a completed job takes",
+    "detect_forecast_gaps": "Checking forecast coverage",
+    "generate_demand_forecast": "Building a forecast from history",
+    "explain_demand_drivers": "Measuring demand drivers",
+    "propose_forecast_correction": "Queuing a forecast correction",
+    "analyse_commercial_seasonality": "Scoring the trading season",
+    "recommend_negotiation_position": "Testing what discounting buys",
+    "recommend_service_pricing": "Pricing the service lines",
+    "price_repairs_by_fault": "Building the repair price schedule",
+    "propose_price_change": "Queuing a price change",
 }
 
 
@@ -295,6 +317,7 @@ class AgentRuntime:
         system_text = SYSTEM_PROMPT.format(
             user_email=user_email,
             dataset_schemas=schema_text,
+            chart_instructions=CHART_INSTRUCTIONS,
         )
         if specialist is not None:
             from app.agent.specialists import specialist_directive

@@ -2,5 +2,15 @@ services:
   - type: web
     name: utilities-knowledge-hub
     env: python
-    buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn app:app
+    plan: free
+    buildCommand: pip install -r requirements.txt && python scripts/generate_datasets.py
+    startCommand: gunicorn --bind 0.0.0.0:$PORT --workers 1 --threads 4 --timeout 120 wsgi:app
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: PORT
+        value: 10000
+      - key: FLASK_ENV
+        value: production
+      - key: AGENT_FRAME_CACHE_MB
+        value: 128

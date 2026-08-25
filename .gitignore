@@ -226,3 +226,6 @@ data/*.csv
 
 # Runtime state for Watchtower findings, actions and decision memory
 data/hub_state.db
+
+# Cached RAG reporting extracts (rebuilt automatically from the CSVs)
+data/.rag_data_extracts.json

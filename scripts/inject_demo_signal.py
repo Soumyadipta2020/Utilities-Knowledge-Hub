@@ -4,7 +4,7 @@ Plant a realistic, discoverable operational incident in the demo datasets.
 WHY THIS EXISTS
 ---------------
 The generated datasets are uniform random noise: weekly appointment volumes sit
-in a flat 61k-65k band with no seasonality and no events, and `visit_status` only
+in a flat band with no seasonality and no events, and `visit_status` only
 ever contains 'Completed' or 'Parts Required'. That makes two things impossible:
 
   * "net appointments" is not a meaningful measure - nothing is ever cancelled;
@@ -24,7 +24,7 @@ Only three files are rewritten: visit_outcome, weather and
 engineer_availability_and_shifts. Appointment records are left untouched, so
 "booked" volume is unchanged and the dip appears in NET appointments only.
 
-Usage:  python scripts/inject_demo_signal.py [--week 2026-07-06] [--verify]
+Usage:  python scripts/inject_demo_signal.py [--week YYYY-MM-DD] [--verify]
 """
 
 from __future__ import annotations
@@ -32,7 +32,7 @@ from __future__ import annotations
 import argparse
 import os
 import sys
-from datetime import date, timedelta
+from datetime import datetime, date, timedelta
 from pathlib import Path
 
 import duckdb
@@ -71,11 +71,6 @@ COLD_FAULTS = ("F27", "F11", "F78")
 COLD_TEMP_THRESHOLD = 3.0
 COLD_DISPLACEMENT_PCT = 55  # share of cold-day repairs that become cold faults
 
-# Sales conversion incident: a pricing change one week depresses conversion.
-# Deliberately a DIFFERENT week and a DIFFERENT cause from the weather event, so
-# the demo shows the agent finding two distinct root causes rather than
-# attributing everything to the storm.
-SALES_DIP_WEEK = date(2026, 6, 22)
 SALES_LOST_PCT = 45          # share of that week's sales that fail to close
 ELEVATED_QUOTE_MIN = 2700.0  # the pricing spike that explains the drop
 ELEVATED_QUOTE_MAX = 3400.0
@@ -91,8 +86,7 @@ def _p(path: Path) -> str:
     return str(path.resolve()).replace("\\", "/").replace("'", "''")
 
 
-def inject(data_dir: Path, week_start: date) -> dict:
-    week_end = week_start + timedelta(days=6)
+def inject(data_dir: Path, week_start: date | None = None) -> dict:
     con = duckdb.connect()
     con.execute("SET enable_progress_bar = false")
 
@@ -104,13 +98,33 @@ def inject(data_dir: Path, week_start: date) -> dict:
 
     for required in (visit, holdings, weather, shifts, engineers):
         if not required.exists():
+            con.close()
             raise FileNotFoundError(f"Missing dataset: {required}")
+
+    # Determine anchor date from data if week_start is not specified
+    if week_start is None:
+        try:
+            latest_val = con.execute(f"SELECT max(visit_date) FROM read_csv_auto('{_p(visit)}')").fetchone()[0]
+            if hasattr(latest_val, "date"):
+                anchor_date = latest_val.date()
+            elif isinstance(latest_val, str):
+                anchor_date = datetime.fromisoformat(latest_val[:10]).date()
+            else:
+                anchor_date = datetime.now().date()
+        except Exception:
+            anchor_date = datetime.now().date()
+        # Monday ~3 weeks prior to anchor date
+        week_start = anchor_date - timedelta(days=anchor_date.weekday() + 21)
+    else:
+        anchor_date = week_start + timedelta(days=21)
+
+    week_end = week_start + timedelta(days=6)
+    sales_dip_week = anchor_date - timedelta(days=anchor_date.weekday() + 42)
+    sales_end = sales_dip_week + timedelta(days=6)
 
     regions_sql = ", ".join(f"'{r}'" for r in STORM_REGIONS)
 
     # --- 1. visit_outcome: cancellations -------------------------------------
-    # customer_holdings is expected to be one row per customer; deduplicate
-    # defensively so the join cannot multiply visit rows.
     tmp_visit = visit.with_suffix(".csv.tmp")
     con.execute(f"""
         COPY (
@@ -145,8 +159,6 @@ def inject(data_dir: Path, week_start: date) -> dict:
     os.replace(tmp_visit, visit)
 
     # --- 2. weather: the storm itself ----------------------------------------
-    # A sharp temperature drop with heavy rain and gale-force wind, so the event
-    # is visible to anyone querying the weather dataset for that week.
     tmp_weather = weather.with_suffix(".csv.tmp")
     con.execute(f"""
         COPY (
@@ -169,8 +181,6 @@ def inject(data_dir: Path, week_start: date) -> dict:
     os.replace(tmp_weather, weather)
 
     # --- 3. engineer shifts: lost productive time ----------------------------
-    # Engineers based in the affected regions lose most of the working day to a
-    # non-productive event (storm standby / travel disruption) that week.
     tmp_shifts = shifts.with_suffix(".csv.tmp")
     con.execute(f"""
         COPY (
@@ -222,11 +232,6 @@ def inject(data_dir: Path, week_start: date) -> dict:
     os.replace(tmp_faults, fault_codes)
 
     # --- 5. repair_history: cold-weather fault correlation --------------------
-    # Fault codes are re-derived from a hash of the job id for EVERY row rather
-    # than mutated in place. That keeps the script idempotent, and means a
-    # cold-day repair still has a realistic chance of an ordinary fault - a
-    # blanket override would leave zero low-pressure faults on cold days, which
-    # no one would believe.
     repairs = data_dir / "repair_history.csv"
     tmp_repairs = repairs.with_suffix(".csv.tmp")
     all_codes = "[" + ", ".join(f"'{c}'" for c in FAULT_TAXONOMY) + "]"
@@ -255,16 +260,13 @@ def inject(data_dir: Path, week_start: date) -> dict:
     # --- 6. sales conversion dip ---------------------------------------------
     leads = data_dir / "installation_history.csv"
     quotes = data_dir / "quotes_and_sales.csv"
-    sales_end = SALES_DIP_WEEK + timedelta(days=6)
 
-    # Quotes are set to an absolute elevated band rather than scaled, so a second
-    # run cannot compound the increase.
     tmp_quotes = quotes.with_suffix(".csv.tmp")
     con.execute(f"""
         COPY (
             WITH dip_leads AS (
                 SELECT lead_id FROM read_csv_auto('{_p(leads)}')
-                WHERE lead_date BETWEEN DATE '{SALES_DIP_WEEK}' AND DATE '{sales_end}'
+                WHERE lead_date BETWEEN DATE '{sales_dip_week}' AND DATE '{sales_end}'
             )
             SELECT
                 q.lead_id, q.primary_qutation, q.secondary_quotation,
@@ -292,7 +294,7 @@ def inject(data_dir: Path, week_start: date) -> dict:
                 CASE WHEN lost THEN 'No' ELSE insurance_purchased END AS insurance_purchased
             FROM (
                 SELECT *,
-                    (lead_date BETWEEN DATE '{SALES_DIP_WEEK}' AND DATE '{sales_end}'
+                    (lead_date BETWEEN DATE '{sales_dip_week}' AND DATE '{sales_end}'
                      AND (abs(hash(lead_id)) % 100) < {SALES_LOST_PCT}) AS lost
                 FROM read_csv_auto('{_p(leads)}')
             )
@@ -304,24 +306,36 @@ def inject(data_dir: Path, week_start: date) -> dict:
     return {
         "storm_week": f"{week_start} to {week_end}",
         "storm_regions": list(STORM_REGIONS),
-        "sales_dip_week": f"{SALES_DIP_WEEK} to {sales_end}",
+        "sales_dip_week": f"{sales_dip_week} to {sales_end}",
         "fault_codes_named": len(FAULT_TAXONOMY),
     }
 
 
-def verify(data_dir: Path, week_start: date) -> None:
+def verify(data_dir: Path, week_start: date | None = None) -> None:
     con = duckdb.connect()
     con.execute("SET enable_progress_bar = false")
     visit = _p(data_dir / "visit_outcome.csv")
 
-    print("\nWeekly booked vs net appointments (last 13 weeks):")
+    if week_start is None:
+        try:
+            latest_val = con.execute(f"SELECT max(visit_date) FROM read_csv_auto('{visit}')").fetchone()[0]
+            if hasattr(latest_val, "date"):
+                anchor_date = latest_val.date()
+            elif isinstance(latest_val, str):
+                anchor_date = datetime.fromisoformat(latest_val[:10]).date()
+            else:
+                anchor_date = datetime.now().date()
+        except Exception:
+            anchor_date = datetime.now().date()
+        week_start = anchor_date - timedelta(days=anchor_date.weekday() + 21)
+
+    print("\nWeekly booked vs net appointments (historical window):")
     rows = con.execute(f"""
         SELECT date_trunc('week', visit_date) AS wk,
                count(*) AS booked,
                count(*) FILTER (WHERE visit_status NOT LIKE 'Cancelled%'
                                   AND visit_status <> 'No Access') AS net
         FROM read_csv_auto('{visit}')
-        WHERE visit_date <= (SELECT max(visit_date) - INTERVAL 10 DAY FROM read_csv_auto('{visit}'))
         GROUP BY 1 ORDER BY wk DESC LIMIT 13
     """).fetchall()
     print(f"    {'week':<12}{'booked':>9}{'net':>9}{'net %':>8}")
@@ -347,24 +361,22 @@ def verify(data_dir: Path, week_start: date) -> None:
 
     leads = _p(data_dir / "installation_history.csv")
     quotes = _p(data_dir / "quotes_and_sales.csv")
-    print("\nWeekly leads / net sales / conversion (last 3 months):")
+    print("\nWeekly leads / net sales / conversion:")
     rows = con.execute(f"""
         SELECT date_trunc('week', l.lead_date) wk, count(*) leads,
                count(*) FILTER (WHERE l.sale_happened='Yes') sales,
                round(100.0*count(*) FILTER (WHERE l.sale_happened='Yes')/count(*),1) conv,
                round(avg(q.final_quotation)) avg_quote
         FROM read_csv_auto('{leads}') l LEFT JOIN read_csv_auto('{quotes}') q USING (lead_id)
-        WHERE l.lead_date BETWEEN DATE '2026-05-11' AND DATE '2026-08-09'
         GROUP BY 1 ORDER BY wk
     """).fetchall()
     print(f"    {'week':<12}{'leads':>8}{'sales':>8}{'conv%':>8}{'avg quote':>11}")
     for wk, leads_n, sales_n, conv, avg_q in rows:
-        mark = "   <-- pricing incident" if str(wk.date()) == str(SALES_DIP_WEEK) else ""
-        print(f"    {str(wk.date()):<12}{leads_n:>8,}{sales_n:>8,}{conv:>7}%{avg_q:>11,.0f}{mark}")
+        print(f"    {str(wk.date()):<12}{leads_n:>8,}{sales_n:>8,}{conv:>7}%{avg_q:>11,.0f}")
 
     repairs = _p(data_dir / "repair_history.csv")
     faults = _p(data_dir / "fault_codes.csv")
-    print("\nTop fault types, last 3 months, split by temperature:")
+    print("\nTop fault types, split by temperature:")
     rows = con.execute(f"""
         WITH daily AS (SELECT date, min(temperature) t FROM read_csv_auto('{_p(data_dir / "weather.csv")}') GROUP BY date),
              named AS (SELECT fault_code, any_value(explanation_related_fault_codes) d FROM read_csv_auto('{faults}') GROUP BY 1)
@@ -375,7 +387,6 @@ def verify(data_dir: Path, week_start: date) -> None:
         FROM read_csv_auto('{repairs}') r
         JOIN daily ON daily.date = r.repair_date
         LEFT JOIN named n ON n.fault_code = r.fault_code
-        WHERE r.repair_date >= DATE '2026-05-11'
         GROUP BY 1 ORDER BY total DESC LIMIT 6
     """).fetchall()
     print(f"    {'fault type':<40}{'cold':>9}{'mild':>9}{'total':>9}")
@@ -387,16 +398,18 @@ def verify(data_dir: Path, week_start: date) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--data-dir", default=str(PROJECT_ROOT / "data"))
-    parser.add_argument("--week", default="2026-07-06", help="Monday of the incident week")
+    parser.add_argument("--week", default=None, help="Monday of the incident week (defaults to 3 weeks prior to dataset end)")
     parser.add_argument("--verify", action="store_true", help="Only report, do not modify")
     args = parser.parse_args()
 
     data_dir = Path(args.data_dir)
-    year, month, day = (int(part) for part in args.week.split("-"))
-    week_start = date(year, month, day)
+    week_start = None
+    if args.week:
+        year, month, day = (int(part) for part in args.week.split("-"))
+        week_start = date(year, month, day)
 
     if not args.verify:
-        print(f"Injecting demo incident: week of {week_start}, regions {', '.join(STORM_REGIONS)}")
+        print(f"Injecting demo incident (regions: {', '.join(STORM_REGIONS)})...")
         result = inject(data_dir, week_start)
         print(f"Rewrote visit_outcome, weather and engineer_availability_and_shifts. {result}")
 

@@ -630,6 +630,90 @@
             box-shadow: 0 2px 8px var(--accent-orange-glow);
         }
 
+        /* ------------------------- Planning agents tab ------------------------- */
+
+        .agent-card {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-subtle);
+            border-radius: 10px;
+            padding: 16px 18px;
+            margin-bottom: 16px;
+        }
+        .agent-card-head {
+            display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;
+            margin-bottom: 4px;
+        }
+        .agent-card-title {
+            font-size: 13.5px; font-weight: 700; color: var(--text-primary); margin: 0;
+        }
+        .agent-card-note { font-size: 11.5px; color: var(--text-muted); line-height: 1.55; margin: 0; }
+        .agent-headline {
+            font-size: 12.5px; line-height: 1.6; color: var(--text-primary); margin: 10px 0 0;
+        }
+        .agent-headline strong { color: var(--accent-orange); }
+
+        .agent-stat-row { display: flex; gap: 12px; flex-wrap: wrap; margin: 12px 0 4px; }
+        .agent-stat {
+            flex: 1 1 150px; background: var(--bg-lighter);
+            border: 1px solid var(--border-subtle); border-radius: 8px; padding: 10px 12px;
+        }
+        .agent-stat-value { font-size: 17px; font-weight: 700; color: var(--accent-orange); }
+        .agent-stat-label {
+            font-size: 10px; font-weight: 700; letter-spacing: 0.04em;
+            text-transform: uppercase; color: var(--text-muted); margin-top: 3px;
+        }
+        .agent-stat-note { font-size: 10.5px; color: var(--text-muted); margin-top: 5px; line-height: 1.45; }
+
+        .agent-table-wrap { overflow-x: auto; margin-top: 12px; }
+        table.agent-table { width: 100%; border-collapse: collapse; font-size: 11.5px; }
+        table.agent-table th {
+            text-align: left; padding: 7px 10px; white-space: nowrap;
+            border-bottom: 1px solid var(--border-strong);
+            color: var(--text-muted); font-weight: 700;
+            font-size: 10px; letter-spacing: 0.04em; text-transform: uppercase;
+        }
+        table.agent-table td {
+            padding: 7px 10px; border-bottom: 1px solid var(--border-subtle);
+            color: var(--text-primary); white-space: nowrap;
+        }
+        table.agent-table td.wrap { white-space: normal; min-width: 240px; line-height: 1.5; }
+        table.agent-table tr:last-child td { border-bottom: none; }
+        .agent-neg { color: var(--accent-rose); font-weight: 600; }
+        .agent-pos { color: var(--accent-emerald); font-weight: 600; }
+
+        .agent-pill {
+            display: inline-block; padding: 2px 8px; border-radius: 10px;
+            font-size: 10px; font-weight: 700; letter-spacing: 0.03em;
+        }
+        .agent-pill.material { background: rgba(244, 63, 94, 0.14); color: var(--accent-rose); }
+        .agent-pill.ok { background: rgba(34, 197, 94, 0.14); color: var(--accent-emerald); }
+        .agent-pill.info { background: var(--accent-orange-soft); color: var(--accent-orange); }
+
+        .agent-suggestion {
+            margin-top: 14px; padding: 12px 14px; border-radius: 8px;
+            background: var(--accent-orange-soft); border: 1px solid rgba(217, 102, 43, 0.35);
+        }
+        .agent-suggestion-label {
+            font-size: 10px; font-weight: 700; letter-spacing: 0.05em;
+            color: var(--accent-orange); text-transform: uppercase;
+        }
+        .agent-btn {
+            padding: 5px 13px; border-radius: 6px; font-size: 11px; font-weight: 700;
+            border: 1px solid var(--border-strong); background: transparent;
+            color: var(--text-primary); cursor: pointer; transition: all 0.15s ease;
+        }
+        .agent-btn:hover { border-color: var(--accent-orange); color: var(--accent-orange); }
+        .agent-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .agent-btn.primary {
+            background: var(--accent-orange); border-color: var(--accent-orange); color: #fff;
+        }
+        .agent-btn.primary:hover { filter: brightness(1.1); color: #fff; }
+        .agent-method {
+            font-size: 10.5px; color: var(--text-muted); line-height: 1.55;
+            margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--border-subtle);
+        }
+        .agent-loading { font-size: 12px; color: var(--text-muted); padding: 24px 0; }
+
         .canvas-scroll-wrapper {
             flex: 1;
             min-height: 300px;
@@ -944,6 +1028,123 @@
             max-height: 190px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px;
         }
         .compare-trace:empty { display: none; }
+
+        /* Retrieved chunks behind the RAG answer: shown so the audience can see
+           that retrieval happened and still could not close the gap. */
+        .compare-retrieval {
+            border-top: 1px solid var(--border-subtle); padding: 8px 14px;
+            max-height: 190px; overflow-y: auto;
+        }
+        .compare-retrieval:empty { display: none; }
+        .retrieval-head {
+            font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+            color: var(--text-muted); margin-bottom: 6px;
+        }
+        .retrieval-chunk {
+            border: 1px solid var(--border-subtle); border-radius: 6px;
+            padding: 5px 8px; margin-bottom: 5px; font-size: 11px; line-height: 1.45;
+        }
+        .retrieval-chunk-head {
+            display: flex; align-items: center; justify-content: space-between; gap: 8px;
+            font-weight: 600; color: var(--text-primary);
+        }
+        .retrieval-score {
+            font-size: 9.5px; font-weight: 700; color: var(--text-muted);
+            background: rgba(127,127,127,0.16); padding: 1px 5px; border-radius: 3px;
+            font-variant-numeric: tabular-nums; white-space: nowrap;
+        }
+        .retrieval-chunk-text { color: var(--text-muted); margin-top: 2px; }
+        .retrieval-gap {
+            font-size: 10.5px; color: var(--text-muted); font-style: italic; margin-top: 6px;
+        }
+
+        /* ---------------- Answer charts ----------------
+           Categorical slots are the app's brand orange followed by the validated
+           reference hues, in a fixed order. The order is the colourblind-safety
+           mechanism, not cosmetic: this sequence clears the adjacent-pair CVD and
+           normal-vision gates in BOTH themes against these surfaces (verified with
+           the palette validator), and the first three slots clear all-pairs. Slots
+           are assigned by series index and never cycled - a 6th series is folded
+           into "Other" upstream rather than given a generated hue. */
+        .viz-card {
+            --viz-surface: #151515;
+            --viz-grid: #2c2c2a;
+            --viz-axis: #383835;
+            --viz-ink: var(--text-primary);
+            --viz-ink-muted: #898781;
+            --viz-series-1: #D9662B;
+            --viz-series-2: #3987e5;
+            --viz-series-3: #199e70;
+            --viz-series-4: #c98500;
+            --viz-series-5: #9085e9;
+            /* De-emphasis grey for the emphasis form: one bar accented, rest recede. */
+            --viz-dim: #4a4a48;
+            background: var(--viz-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: 10px;
+            padding: 14px 16px 12px;
+            margin: 14px 0;
+        }
+        [data-theme="light"] .viz-card {
+            --viz-surface: #ffffff;
+            --viz-grid: #e1e0d9;
+            --viz-axis: #c3c2b7;
+            --viz-series-1: #D9662B;
+            --viz-series-2: #2a78d6;
+            --viz-series-3: #1baf7a;
+            --viz-series-4: #eda100;
+            --viz-series-5: #4a3aa7;
+            --viz-dim: #c9c8c2;
+        }
+        .viz-title {
+            font-size: 13px; font-weight: 700; color: var(--viz-ink);
+            line-height: 1.35; margin: 0;
+        }
+        .viz-subtitle { font-size: 11px; color: var(--text-muted); margin: 2px 0 0; }
+        /* The plot box is sized to include the x-axis band, so the axis labels are
+           never cut off into a nested scrollbar. */
+        .viz-plot { position: relative; height: 260px; margin: 12px 0 4px; }
+        .viz-plot.tall { height: 320px; }
+        .viz-foot {
+            display: flex; align-items: flex-start; justify-content: space-between;
+            gap: 12px; margin-top: 8px;
+        }
+        .viz-note { font-size: 11px; color: var(--text-muted); line-height: 1.5; flex: 1; }
+        .viz-source { font-size: 10px; color: var(--viz-ink-muted); margin-top: 3px; }
+        .viz-toggle {
+            flex-shrink: 0; font-size: 10.5px; font-weight: 600; cursor: pointer;
+            background: transparent; color: var(--text-muted);
+            border: 1px solid var(--border-strong); border-radius: 5px; padding: 3px 9px;
+        }
+        .viz-toggle:hover { color: var(--viz-ink); border-color: var(--accent-orange); }
+        /* The table twin. Every value in the chart is readable here, so no value is
+           gated behind a hover - and it is the documented relief for the two
+           light-mode hues that sit below 3:1 against a white surface. */
+        .viz-table { display: none; margin-top: 10px; overflow-x: auto; }
+        .viz-table.open { display: block; }
+        .viz-table table {
+            width: 100%; border-collapse: collapse; font-size: 11.5px;
+            font-variant-numeric: tabular-nums;
+        }
+        .viz-table th, .viz-table td {
+            border-bottom: 1px solid var(--border-subtle); padding: 4px 8px; text-align: right;
+        }
+        .viz-table th:first-child, .viz-table td:first-child { text-align: left; }
+        .viz-table th { color: var(--text-muted); font-weight: 600; white-space: nowrap; }
+        .viz-swatch {
+            display: inline-block; width: 8px; height: 8px; border-radius: 2px;
+            margin-right: 5px; vertical-align: baseline;
+        }
+        /* Stat tiles - the right form for one headline number, instead of a
+           one-bar bar chart. */
+        .viz-stats { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+        .viz-stat {
+            flex: 1 1 130px; border: 1px solid var(--border-subtle); border-radius: 8px;
+            padding: 9px 11px;
+        }
+        .viz-stat-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+        .viz-stat-value { font-size: 22px; font-weight: 600; color: var(--viz-ink); margin-top: 3px; line-height: 1.15; }
+        .viz-stat-note { font-size: 10.5px; color: var(--text-muted); margin-top: 2px; }
 
         .scorecard { border: 1px solid var(--border-subtle); border-radius: 10px; overflow: hidden; }
         .scorecard-verdict {
@@ -1945,7 +2146,7 @@
 }
 .trust-posture-card.security-overall-card { border-color: rgba(245,158,11,.28); }
 .trust-posture-card > span {
-    color: #64748b;
+    color: var(--text-muted);
     font-size: 9.5px;
     font-weight: 700;
     letter-spacing: .06em;
@@ -1954,8 +2155,9 @@
 .trust-posture-card > strong {
     display: block;
     margin-top: 7px;
-    color: #f8fafc;
+    color: var(--text-primary);
     font-size: 14px;
+    line-height: 1.35;
 }
 .trust-posture-card > small {
     display: block;
@@ -1985,7 +2187,7 @@
     margin-bottom: 12px;
 }
 .security-section-heading h4 { margin: 0 0 4px; color: var(--text-primary); font-size: 12px; }
-.security-section-heading p { color: #64748b; font-size: 9.5px; line-height: 1.45; }
+.security-section-heading p { color: var(--text-muted); font-size: 9.5px; line-height: 1.45; }
 .security-summary-chip {
     flex-shrink: 0;
     padding: 4px 8px;
@@ -2000,7 +2202,7 @@
 .security-storage-list { max-height: 310px; padding-right: 4px; overflow-y: auto; }
 .security-status-card {
     padding: 11px;
-    background: rgba(255,255,255,.025);
+    background: var(--bg-lighter);
     border: 1px solid var(--border-subtle);
     border-radius: 7px;
 }
@@ -2027,7 +2229,7 @@
     margin-top: 7px;
     padding: 2px 6px;
     color: var(--text-primary);
-    background: var(--bg-darker);
+    background: rgba(127,127,127,.14);
     border-radius: 4px;
     font-family: monospace;
     font-size: 8.5px;
@@ -2039,7 +2241,7 @@
     margin-top: 8px;
     padding-top: 8px;
     color: var(--text-primary);
-    border-top: 1px solid rgba(255,255,255,.05);
+    border-top: 1px solid var(--border-subtle);
     font-size: 9px;
     line-height: 1.45;
 }
@@ -2048,9 +2250,9 @@
 .security-table { width: 100%; border-collapse: collapse; font-size: 9.5px; text-align: left; }
 .security-table th {
     padding: 8px 10px;
-    color: #64748b;
-    background: var(--bg-darker);
-    border-bottom: 1px solid rgba(255,255,255,.07);
+    color: var(--text-muted);
+    background: rgba(127,127,127,.1);
+    border-bottom: 1px solid var(--border-subtle);
     font-size: 8px;
     letter-spacing: .05em;
     text-transform: uppercase;
@@ -2059,12 +2261,12 @@
 .security-table td {
     padding: 9px 10px;
     color: var(--text-primary);
-    border-bottom: 1px solid rgba(255,255,255,.045);
+    border-bottom: 1px solid var(--border-subtle);
     white-space: nowrap;
 }
 .security-table tr:last-child td { border-bottom: none; }
 .security-table td:first-child { white-space: normal; }
-.security-table td strong { color: #f1f5f9; font-weight: 600; }
+.security-table td strong { color: var(--text-primary); font-weight: 600; }
 .security-live-badge {
     display: inline-block;
     margin-left: 6px;
@@ -2077,17 +2279,17 @@
     vertical-align: middle;
 }
 .security-table-escalated { color: #fbbf24; font-weight: 700; }
-.security-empty-state { padding: 18px !important; color: #64748b !important; text-align: center; white-space: normal !important; }
+.security-empty-state { padding: 18px !important; color: var(--text-muted) !important; text-align: center; white-space: normal !important; }
 .security-privacy-note {
     margin-top: 9px;
-    color: #64748b;
+    color: var(--text-muted);
     font-size: 8.5px;
     line-height: 1.45;
 }
 .control-register { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
 .control-register-item {
     padding: 10px;
-    background: rgba(255,255,255,.025);
+    background: var(--bg-lighter);
     border: 1px solid var(--border-subtle);
     border-radius: 7px;
 }
@@ -2214,6 +2416,13 @@
         [data-theme="light"] .stage-status[style*="#4ade80"] {
             color: #16a34a !important;
         }
+        /* Trust Center: dark-theme accents are too pale on white cards */
+        [data-theme="light"] .security-status-badge.protected { color: #15803d; background: rgba(34,197,94,.14); }
+        [data-theme="light"] .security-status-badge.warning { color: #b45309; background: rgba(245,158,11,.16); }
+        [data-theme="light"] .security-status-badge.informational { color: #1d4ed8; background: rgba(59,130,246,.13); }
+        [data-theme="light"] .security-table-escalated { color: #b45309; }
+        [data-theme="light"] .security-summary-chip { color: #b04a1c; }
+        [data-theme="light"] .security-protection-detail i { color: #15803d !important; }
 </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -2236,11 +2445,11 @@
             <input type="email" id="userEmail" value="project.lead@abc.com" placeholder="email@abc.com">
         </div>
 
-        <!-- OEM Knowledge Base Harnessing Pipeline Visualizer -->
+        <!-- Knowledge Base Harnessing Pipeline Visualizer -->
         <div class="pipeline-sidebar-panel" id="pipelineBanner">
             <div style="display: flex; justify-content: space-between; align-items: center;">
                 <div>
-                    <h3 style="font-size: 15px; font-weight: 600; color: var(--text-primary);">OEM Knowledge Base</h3>
+                    <h3 style="font-size: 15px; font-weight: 600; color: var(--text-primary);">Knowledge Base</h3>
                 </div>
                 <button class="ticket-btn" style="background: var(--accent-orange); padding: 5px 10px; font-size: 11px; display: inline-flex; align-items: center; gap: 4px;" onclick="triggerPipeline()">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Run Pipeline
@@ -2275,6 +2484,8 @@
             <div class="nav-tabs" style="padding: 0; background: transparent; border-bottom: none; margin: 0;">
                 <div class="nav-tab active" onclick="switchMainTab(this, 'tab-conversation')">Conversation</div>
                 <div class="nav-tab" onclick="switchMainTab(this, 'tab-compare')">Agent vs Standard Chatbot</div>
+                <!-- Planning Agents tab hidden; remove the style below to restore it -->
+                <div class="nav-tab" onclick="switchMainTab(this, 'tab-planning')" style="display: none;">Planning Agents</div>
                 <div class="nav-tab" onclick="switchMainTab(this, 'tab-harnessing')">Domain Intelligence Sub-System Metrics</div>
                 <div class="nav-tab" onclick="switchMainTab(this, 'tab-storage')">Storage & Governance</div>
                 <div class="nav-tab" onclick="switchMainTab(this, 'tab-trust')">Trust Center</div>
@@ -2351,10 +2562,13 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
             <div class="compare-head">
                 <h3>Why the Knowledge Graph and Agent Mode matter</h3>
                 <p>
-                    The same question, answered twice by the <strong>same language model</strong>. On the left it runs as a standard
-                    chatbot with no data access. On the right it runs as the agentic Knowledge Hub, with the knowledge graph and
-                    live enterprise datasets. Holding the model constant means any difference you see comes from the graph and the
-                    agent &mdash; not from a smarter model.
+                    The same question, answered twice by the <strong>same language model</strong>, and <strong>both sides answer from
+                    real data</strong>. On the left it runs as a standard RAG chatbot: vector search over the document corpus <em>and</em>
+                    pre-aggregated reporting extracts, top-k chunks in the prompt, one shot. Its figures are real &mdash; but each extract
+                    comes from a single dataset, so it reports <strong>gross</strong> volumes it cannot net off, cannot split by region,
+                    and cannot explain. On the right, the agentic Knowledge Hub uses the <strong>knowledge graph</strong> to join
+                    <code>appointment_schedule</code> to <code>visit_outcome</code>, weather and engineer shifts. Same model, same
+                    retrieval &mdash; the gap is the relationships.
                 </p>
             </div>
 
@@ -2379,14 +2593,15 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
                 <div class="compare-panel">
                     <div class="compare-panel-head">
                         <div>
-                            <div class="compare-panel-title">Standard AI Chatbot</div>
-                            <div class="compare-panel-sub">Language model only &mdash; no data, no graph, no tools</div>
+                            <div class="compare-panel-title">Standard AI Chatbot (RAG)</div>
+                            <div class="compare-panel-sub">Vector search over documents + data extracts</div>
                         </div>
-                        <span class="compare-badge plain" id="baselineBadge">Ungrounded</span>
+                        <span class="compare-badge plain" id="baselineBadge">RAG only</span>
                     </div>
                     <div class="compare-body" id="baselineBody">
                         <span class="compare-placeholder">Pick a scenario above or ask a question to run both side by side.</span>
                     </div>
+                    <div class="compare-retrieval" id="baselineRetrieval"></div>
                 </div>
 
                 <div class="compare-panel agent">
@@ -2410,8 +2625,8 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
                     <thead>
                         <tr>
                             <th style="width:46%;">Evidence behind the answer</th>
-                            <th style="width:27%;">Standard chatbot</th>
-                            <th style="width:27%;">Agentic Knowledge Hub</th>
+                            <th style="width:27%;">RAG chatbot</th>
+                            <th style="width:27%;">Knowledge graph + agent</th>
                         </tr>
                     </thead>
                     <tbody id="scorecardBody"></tbody>
@@ -2419,6 +2634,35 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
             </div>
         </div> <!-- End tab-compare -->
 
+
+        <!-- Planning Agents: demand forecast, commercial and pricing -->
+        <div id="tab-planning" class="tab-content" style="padding: 18px 24px; overflow-y: auto; flex-direction: column; height: 100%; box-sizing: border-box;">
+            <div class="compare-head" style="margin-bottom: 14px;">
+                <h3>Planning Agents</h3>
+                <p>
+                    Three specialists that produce a <strong>position</strong>, not just an answer. Every figure below is
+                    computed over the full estate in a deterministic engine &mdash; the language model chooses which analysis
+                    to run and explains why it matters, but it never supplies the numbers. Anything that would change the
+                    business is queued for a named human to <strong>approve or reject</strong>; nothing is applied automatically.
+                </p>
+            </div>
+
+            <div style="display: flex; gap: 6px; background: var(--panel-bg); border: 1px solid var(--border-subtle); padding: 4px; border-radius: 20px; align-self: flex-start; margin-bottom: 16px; flex-shrink: 0;">
+                <button class="view-toggle-btn active" onclick="switchPlanningSubTab(this, 'plan-demand')">📊 Demand Forecast Agent</button>
+                <button class="view-toggle-btn" onclick="switchPlanningSubTab(this, 'plan-commercial')">📈 Commercial Agent</button>
+                <button class="view-toggle-btn" onclick="switchPlanningSubTab(this, 'plan-pricing')">💷 Pricing Agent</button>
+            </div>
+
+            <div id="plan-demand" class="planning-panel">
+                <div class="agent-loading">Loading the forecast review&hellip;</div>
+            </div>
+            <div id="plan-commercial" class="planning-panel" style="display: none;">
+                <div class="agent-loading">Loading the commercial review&hellip;</div>
+            </div>
+            <div id="plan-pricing" class="planning-panel" style="display: none;">
+                <div class="agent-loading">Loading the price book&hellip;</div>
+            </div>
+        </div> <!-- End tab-planning -->
 
 
         <!-- Domain Intelligence Sub-System Metrics Tab -->
@@ -3463,6 +3707,7 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
             }
             if (tabId === 'tab-trust') loadTrustCenter();
             if (tabId === 'tab-compare') loadCompareScenarios();
+            if (tabId === 'tab-planning') loadPlanningPanel('plan-demand');
         }
 
 
@@ -3631,6 +3876,410 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
             return formatted.join('<br>').replace(/(<br>\s*){2,}/g, '<br>');
         }
 
+        /* ================= Answer charts =================
+           The model emits a validated JSON spec in a ```chart fence (see
+           app/agent/charts.py); nothing here evaluates model output as code. One
+           renderer serves the conversation tab and both panels of the comparison,
+           so a visual difference between the two arms is a difference in their
+           data, never in their plotting. */
+
+        const VIZ_INSTANCES = new Map();   // canvas id -> {spec, chart}
+        let vizSeq = 0;
+
+        const VIZ_CHART_BLOCK = /```chart\s*(\{[\s\S]*?\})\s*```/g;
+
+        function vizToken(el, name, fallback) {
+            const value = getComputedStyle(el).getPropertyValue(name).trim();
+            return value || fallback;
+        }
+
+        function vizPalette(card) {
+            return [1, 2, 3, 4, 5].map(i => vizToken(card, `--viz-series-${i}`, '#D9662B'));
+        }
+
+        // Area washes only: a series hue at ~10% so a fill never becomes a block.
+        function vizAlpha(hex, alpha) {
+            const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(String(hex).trim());
+            if (!m) return hex;
+            const [r, g, b] = [1, 2, 3].map(i => parseInt(m[i], 16));
+            return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+        }
+
+        function vizFormat(value, spec) {
+            if (value === null || value === undefined || Number.isNaN(value)) return '—';
+            const abs = Math.abs(value);
+            const digits = abs > 0 && abs < 10 ? 2 : (abs < 1000 ? 1 : 0);
+            const body = Number(value).toLocaleString(undefined, {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: digits,
+            });
+            return `${spec.value_prefix || ''}${body}${spec.value_suffix || ''}`;
+        }
+
+        /* Selective direct labels: the last point of each series, plus the one
+           highlighted point. Never a number on every point - that is unreadable and
+           goes unread. Labels wear text ink with a surface halo, never the series
+           colour. */
+        const vizDirectLabels = {
+            id: 'vizDirectLabels',
+            afterDatasetsDraw(chart, args, opts) {
+                const spec = opts.spec;
+                if (!spec || spec.type === 'stacked_bar') return;
+                const ctx = chart.ctx;
+                const highlightIndex = spec.highlight ? spec.labels.indexOf(spec.highlight) : -1;
+                const wanted = new Set();
+                if (highlightIndex >= 0) wanted.add(highlightIndex);
+                if (spec.labels.length > 1) wanted.add(spec.labels.length - 1);
+
+                ctx.save();
+                ctx.font = '600 10px system-ui, -apple-system, "Segoe UI", sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'bottom';
+                ctx.lineWidth = 3;
+                ctx.strokeStyle = opts.surface;
+                ctx.fillStyle = opts.ink;
+
+                chart.data.datasets.forEach((dataset, di) => {
+                    if (chart.getDatasetMeta(di).hidden) return;
+                    const points = chart.getDatasetMeta(di).data || [];
+                    wanted.forEach(index => {
+                        const point = points[index];
+                        if (!point) return;
+                        const text = vizFormat(dataset.data[index], spec);
+                        const horizontal = spec.type === 'hbar';
+                        const x = horizontal ? Math.min(point.x + 22, chart.chartArea.right - 4) : point.x;
+                        const y = horizontal ? point.y + 4 : point.y - 7;
+                        ctx.strokeText(text, x, y);
+                        ctx.fillText(text, x, y);
+                    });
+                });
+                ctx.restore();
+            },
+        };
+
+        function vizScales(spec, card, horizontal) {
+            const grid = vizToken(card, '--viz-grid', '#2c2c2a');
+            const axis = vizToken(card, '--viz-axis', '#383835');
+            const muted = vizToken(card, '--viz-ink-muted', '#898781');
+            const tickFont = { size: 10, family: 'system-ui, -apple-system, "Segoe UI", sans-serif' };
+
+            const valueAxis = {
+                stacked: spec.type === 'stacked_bar',
+                beginAtZero: spec.type !== 'line',
+                border: { color: axis },
+                // Hairline, solid, one step off the surface - never dashed.
+                grid: { color: grid, lineWidth: 1, drawTicks: false, tickLength: 8 },
+                ticks: {
+                    color: muted, font: tickFont, maxTicksLimit: 6, padding: 6,
+                    callback: v => vizFormat(v, spec),
+                },
+                title: spec.y_label
+                    ? { display: !horizontal, text: spec.y_label, color: muted, font: { size: 10 } }
+                    : { display: false },
+            };
+            const categoryAxis = {
+                stacked: spec.type === 'stacked_bar',
+                border: { color: axis },
+                grid: { display: false },
+                ticks: {
+                    color: muted, font: tickFont, autoSkip: true,
+                    maxTicksLimit: horizontal ? 12 : 10, maxRotation: 0, padding: 4,
+                },
+                title: spec.x_label
+                    ? { display: !horizontal, text: spec.x_label, color: muted, font: { size: 10 } }
+                    : { display: false },
+            };
+            return horizontal
+                ? { x: valueAxis, y: categoryAxis }
+                : { x: categoryAxis, y: valueAxis };
+        }
+
+        function vizDatasets(spec, card) {
+            const palette = vizPalette(card);
+            const surface = vizToken(card, '--viz-surface', '#151515');
+            const dim = vizToken(card, '--viz-dim', '#4a4a48');
+            const horizontal = spec.type === 'hbar';
+            const single = spec.series.length === 1;
+            const highlightIndex = spec.highlight ? spec.labels.indexOf(spec.highlight) : -1;
+
+            return spec.series.map((series, si) => {
+                const color = palette[si % palette.length];   // by series index, never by rank
+                if (spec.type === 'line') {
+                    const dense = spec.labels.length > 24;
+                    return {
+                        label: series.name,
+                        data: series.values,
+                        borderColor: color,
+                        borderWidth: 2,
+                        tension: 0,
+                        // A single series gets a 10% wash; overlapping washes would muddy.
+                        fill: single ? { target: 'origin', above: vizAlpha(color, 0.1) } : false,
+                        pointBackgroundColor: color,
+                        pointBorderColor: surface,
+                        pointBorderWidth: 2,              // the 2px surface ring
+                        pointRadius: ctx => (ctx.dataIndex === highlightIndex ? 6 : (dense ? 0 : 4)),
+                        pointHoverRadius: 7,
+                        pointHitRadius: 14,               // comfortable hit target
+                    };
+                }
+
+                // Emphasis: with one series and a named highlight, the story is that
+                // one bar. Accent it and recede the rest rather than colouring every
+                // bar by size (which would double-encode length as hue).
+                const background = (single && highlightIndex >= 0)
+                    ? spec.labels.map((_, i) => (i === highlightIndex ? color : dim))
+                    : color;
+
+                return {
+                    label: series.name,
+                    data: series.values,
+                    backgroundColor: background,
+                    borderRadius: { topLeft: 4, topRight: 4, bottomLeft: 0, bottomRight: 0 },
+                    borderSkipped: horizontal ? 'left' : 'bottom',
+                    maxBarThickness: horizontal ? 20 : 24,
+                    categoryPercentage: 0.7,
+                    barPercentage: 0.85,
+                    // Stacked segments are separated by a 2px gap in the surface
+                    // colour, not by a stroke around the mark.
+                    borderColor: spec.type === 'stacked_bar' ? surface : 'transparent',
+                    borderWidth: spec.type === 'stacked_bar'
+                        ? (horizontal ? { left: 0, right: 2, top: 0, bottom: 0 }
+                                      : { top: 2, bottom: 0, left: 0, right: 0 })
+                        : 0,
+                };
+            });
+        }
+
+        function vizTableHtml(spec, card) {
+            const palette = vizPalette(card);
+            if (spec.type === 'stat') return '';
+            const head = spec.series.map((s, i) =>
+                `<th><span class="viz-swatch" style="background:${palette[i % palette.length]}"></span>${escapeHtml(s.name)}</th>`
+            ).join('');
+            const rows = spec.labels.map((label, ri) => `
+                <tr>
+                    <td>${escapeHtml(label)}</td>
+                    ${spec.series.map(s => `<td>${escapeHtml(vizFormat(s.values[ri], spec))}</td>`).join('')}
+                </tr>
+            `).join('');
+            return `<table>
+                <thead><tr><th>${escapeHtml(spec.x_label || 'Category')}</th>${head}</tr></thead>
+                <tbody>${rows}</tbody>
+            </table>`;
+        }
+
+        function buildVizCard(spec) {
+            const card = document.createElement('div');
+            card.className = 'viz-card';
+            const id = `viz-${++vizSeq}`;
+            const isStat = spec.type === 'stat';
+
+            const body = isStat
+                ? `<div class="viz-stats">${(spec.stats || []).map(s => `
+                        <div class="viz-stat">
+                            <div class="viz-stat-label">${escapeHtml(s.label || '')}</div>
+                            <div class="viz-stat-value">${escapeHtml(s.value || '')}</div>
+                            ${s.note ? `<div class="viz-stat-note">${escapeHtml(s.note)}</div>` : ''}
+                        </div>`).join('')}</div>`
+                : `<div class="viz-plot${spec.labels && spec.labels.length > 14 ? ' tall' : ''}">
+                        <canvas id="${id}"></canvas>
+                   </div>`;
+
+            card.innerHTML = `
+                <div>
+                    <p class="viz-title">${escapeHtml(spec.title || 'Chart')}</p>
+                    ${spec.subtitle ? `<p class="viz-subtitle">${escapeHtml(spec.subtitle)}</p>` : ''}
+                </div>
+                ${body}
+                <div class="viz-foot">
+                    <div class="viz-note">
+                        ${spec.note ? escapeHtml(spec.note) : ''}
+                        ${spec.source ? `<div class="viz-source">Source: ${escapeHtml(spec.source)}</div>` : ''}
+                    </div>
+                    ${isStat ? '' : '<button type="button" class="viz-toggle">Show table</button>'}
+                </div>
+                ${isStat ? '' : `<div class="viz-table">${vizTableHtml(spec, card)}</div>`}
+            `;
+
+            if (!isStat) {
+                const toggle = card.querySelector('.viz-toggle');
+                const table = card.querySelector('.viz-table');
+                toggle.onclick = () => {
+                    const open = table.classList.toggle('open');
+                    toggle.textContent = open ? 'Hide table' : 'Show table';
+                };
+                card.dataset.vizId = id;
+            }
+            return { card, id, isStat };
+        }
+
+        /* Attach first, then paint. Both the chart and the table's swatches read
+           their colours from CSS custom properties, and getComputedStyle only
+           resolves those once the card is in the document. */
+        function mountViz(spec, place) {
+            const { card, id, isStat } = buildVizCard(spec);
+            place(card);
+            if (isStat) return card;
+            const table = card.querySelector('.viz-table');
+            if (table) table.innerHTML = vizTableHtml(spec, card);
+            drawViz(card, id, spec);
+            return card;
+        }
+
+        function drawViz(card, id, spec) {
+            const canvas = card.querySelector(`#${id}`);
+            if (!canvas || typeof Chart === 'undefined') return;
+            const existing = VIZ_INSTANCES.get(id);
+            if (existing && existing.chart) existing.chart.destroy();
+
+            const horizontal = spec.type === 'hbar';
+            const chart = new Chart(canvas, {
+                type: spec.type === 'line' ? 'line' : 'bar',
+                data: { labels: spec.labels, datasets: vizDatasets(spec, card) },
+                options: {
+                    indexAxis: horizontal ? 'y' : 'x',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: { duration: 300 },
+                    layout: { padding: { top: 16, right: 18, bottom: 2, left: 2 } },
+                    interaction: spec.type === 'line'
+                        ? { mode: 'index', intersect: false }
+                        : { mode: 'nearest', intersect: true },
+                    scales: vizScales(spec, card, horizontal),
+                    plugins: {
+                        // A legend is always present for two or more series, so identity
+                        // never rests on colour matching alone. One series needs none -
+                        // the title already names what is plotted.
+                        legend: {
+                            display: spec.series.length > 1,
+                            position: 'bottom',
+                            labels: {
+                                color: vizToken(card, '--viz-ink', '#f5f5f5'),
+                                usePointStyle: true, pointStyle: 'rectRounded',
+                                boxWidth: 8, boxHeight: 8, padding: 14,
+                                font: { size: 10.5 },
+                            },
+                        },
+                        tooltip: {
+                            backgroundColor: vizToken(card, '--viz-surface', '#151515'),
+                            borderColor: vizToken(card, '--viz-axis', '#383835'),
+                            borderWidth: 1,
+                            titleColor: vizToken(card, '--viz-ink', '#f5f5f5'),
+                            bodyColor: vizToken(card, '--viz-ink', '#f5f5f5'),
+                            padding: 9,
+                            usePointStyle: true,
+                            callbacks: {
+                                label: item => ` ${item.dataset.label}: ${vizFormat(item.parsed[horizontal ? 'x' : 'y'], spec)}`,
+                            },
+                        },
+                        vizDirectLabels: {
+                            spec,
+                            ink: vizToken(card, '--viz-ink', '#f5f5f5'),
+                            surface: vizToken(card, '--viz-surface', '#151515'),
+                        },
+                    },
+                },
+                plugins: [vizDirectLabels],
+            });
+            VIZ_INSTANCES.set(id, { spec, chart, card });
+        }
+
+        // Re-step every chart when the theme flips: the dark palette is its own
+        // selected set of steps, not an automatic inversion of the light one.
+        function rerenderAllCharts() {
+            VIZ_INSTANCES.forEach((entry, id) => {
+                if (!entry.card.isConnected) { VIZ_INSTANCES.delete(id); return; }
+                drawViz(entry.card, id, entry.spec);
+                const table = entry.card.querySelector('.viz-table');
+                if (table) table.innerHTML = vizTableHtml(entry.spec, entry.card);
+            });
+        }
+
+        /* Renders an answer: markdown for the prose, chart cards where the model put
+           a ```chart block. Use this anywhere an answer is shown. */
+        function renderRichAnswer(host, text) {
+            const specs = [];
+            const cleaned = String(text || '').replace(VIZ_CHART_BLOCK, (match, json) => {
+                try {
+                    const spec = JSON.parse(json);
+                    if (!spec || !spec.type) return '';
+                    specs.push(spec);
+                    return `\n\n@@VIZ${specs.length - 1}@@\n\n`;
+                } catch (err) {
+                    return '';   // a malformed spec is dropped, never shown as JSON
+                }
+            });
+
+            host.innerHTML = parseMarkdown(cleaned);
+
+            specs.forEach((spec, index) => {
+                const marker = findVizMarker(host, `@@VIZ${index}@@`);
+                mountViz(spec, card => {
+                    if (marker) marker.replaceWith(card);
+                    else host.appendChild(card);
+                });
+            });
+
+            if (!specs.length) autoChartFromTable(host);
+            return specs.length;
+        }
+
+        function findVizMarker(host, token) {
+            const walker = document.createTreeWalker(host, NodeFilter.SHOW_TEXT);
+            while (walker.nextNode()) {
+                if (walker.currentNode.nodeValue.includes(token)) {
+                    const node = walker.currentNode;
+                    // Replace the whole paragraph the marker sits in, not just the text.
+                    return node.parentElement && node.parentElement !== host
+                        ? node.parentElement
+                        : node;
+                }
+            }
+            return null;
+        }
+
+        /* Fallback: chart a table the model wrote but forgot to chart. Deliberately
+           conservative - a numeric series of at least 4 rows, at most 3 measure
+           columns - because a chart of the wrong thing is worse than no chart. */
+        function autoChartFromTable(host) {
+            const tables = host.querySelectorAll('table');
+            if (!tables.length) return;
+            const table = tables[tables.length - 1];
+            if (table.closest('.viz-card')) return;
+
+            const headers = [...table.querySelectorAll('thead th')].map(th => th.textContent.trim());
+            const rows = [...table.querySelectorAll('tbody tr')]
+                .map(tr => [...tr.children].map(td => td.textContent.trim()));
+            if (headers.length < 2 || headers.length > 4 || rows.length < 4) return;
+
+            const toNumber = (cell) => {
+                const cleaned = cell.replace(/[,\s£$€%]/g, '');
+                if (!/^-?\d+(\.\d+)?$/.test(cleaned)) return null;
+                return Number(cleaned);
+            };
+
+            const labels = rows.map(r => r[0]);
+            const series = [];
+            for (let col = 1; col < headers.length; col++) {
+                const values = rows.map(r => toNumber(r[col] ?? ''));
+                if (values.some(v => v === null)) return;   // not a clean measure column
+                series.push({ name: headers[col], values });
+            }
+            if (!series.length) return;
+
+            const dateLike = labels.every(l => /\d{4}-\d{2}-\d{2}|\d{1,2}\s\w{3}|\w{3}\s\d{4}|W\d+/i.test(l));
+            const spec = {
+                type: dateLike ? 'line' : (labels.length > 6 ? 'hbar' : 'bar'),
+                title: headers[1] && series.length === 1 ? headers[1] : 'Figures in this answer',
+                x_label: headers[0],
+                y_label: series.length === 1 ? series[0].name : '',
+                labels,
+                series,
+                note: 'Charted from the table above.',
+            };
+            mountViz(spec, card => table.after(card));
+        }
+
         function appendMessage(sender, text, showTicketCTA = false, responseGraph = null) {
             const container = document.getElementById('chatMessages');
             const row = document.createElement('div');
@@ -3642,7 +4291,11 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
 
             const bubble = document.createElement('div');
             bubble.className = 'message-bubble';
-            bubble.innerHTML = parseMarkdown(text);
+            if (sender === 'agent') {
+                renderRichAnswer(bubble, text);
+            } else {
+                bubble.innerHTML = parseMarkdown(text);
+            }
 
             let actionBar = null;
             if (sender === 'agent') {
@@ -4059,6 +4712,807 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
 
 
 
+        /* -------------------------- Planning agents --------------------------
+           Each panel renders the SAME structured result the chat agent's tools
+           return, so a figure on this screen and the same figure in a chat answer
+           come from one computation and cannot disagree. Anything that would
+           change the business routes through the existing approval queue. */
+
+        const PLANNING_LOADED = {};
+
+        function switchPlanningSubTab(el, panelId) {
+            document.querySelectorAll('#tab-planning .view-toggle-btn')
+                .forEach(b => b.classList.remove('active'));
+            el.classList.add('active');
+            document.querySelectorAll('.planning-panel').forEach(p => p.style.display = 'none');
+            const target = document.getElementById(panelId);
+            if (target) target.style.display = 'block';
+            loadPlanningPanel(panelId);
+        }
+
+        function loadPlanningPanel(panelId) {
+            if (PLANNING_LOADED[panelId]) return;
+            PLANNING_LOADED[panelId] = true;
+            if (panelId === 'plan-demand') loadDemandAgent();
+            if (panelId === 'plan-commercial') loadCommercialAgent();
+            if (panelId === 'plan-pricing') loadPricingAgent();
+        }
+
+        function planningFail(panelId, error) {
+            // Let the panel be retried: a cold engine can time out on first call.
+            PLANNING_LOADED[panelId] = false;
+            const el = document.getElementById(panelId);
+            if (!el) return;
+            el.innerHTML = `<div class="agent-card">
+                <p class="agent-card-title">This analysis could not be computed</p>
+                <p class="agent-card-note" style="margin-top:6px;">${escapeHtml(error)}</p>
+                <div style="margin-top:10px;">
+                    <button class="agent-btn" onclick="loadPlanningPanel('${panelId}')">Try again</button>
+                </div>
+            </div>`;
+        }
+
+        const gbp0 = v => (v === null || v === undefined || isNaN(v))
+            ? '—' : '£' + Math.round(Number(v)).toLocaleString();
+        const gbp2 = v => (v === null || v === undefined || isNaN(v))
+            ? 'not recorded'
+            : '£' + Number(v).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        const n0 = v => (v === null || v === undefined || isNaN(v))
+            ? '—' : Math.round(Number(v)).toLocaleString();
+        const n1 = v => (v === null || v === undefined || isNaN(v))
+            ? '—' : Number(v).toLocaleString(undefined, {minimumFractionDigits: 1, maximumFractionDigits: 1});
+        const pct1 = v => (v === null || v === undefined || isNaN(v)) ? '—' : Number(v).toFixed(1) + '%';
+        const signed = v => (v === null || v === undefined || isNaN(v))
+            ? '—' : (Number(v) >= 0 ? '+' : '') + Number(v).toFixed(1) + '%';
+        const sign = v => Number(v) < 0 ? 'agent-neg' : 'agent-pos';
+
+        function agentTable(headers, rows) {
+            return `<div class="agent-table-wrap"><table class="agent-table">
+                <thead><tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr></thead>
+                <tbody>${rows.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody>
+            </table></div>`;
+        }
+
+        /* ----- Demand Forecast Agent ----- */
+
+        async function loadDemandAgent() {
+            const el = document.getElementById('plan-demand');
+            el.innerHTML = '<div class="agent-loading">Grading the published forecast against '
+                + 'actual run-rate across the full estate&hellip; this scans several million rows.</div>';
+            try {
+                const [evalRes, impactRes, planRes, gapRes, driverRes] = await Promise.all([
+                    fetch('/api/forecast/evaluate').then(r => r.json()),
+                    fetch('/api/forecast/impact').then(r => r.json()),
+                    fetch('/api/forecast/recommendations').then(r => r.json()),
+                    fetch('/api/forecast/gaps').then(r => r.json()),
+                    fetch('/api/forecast/drivers').then(r => r.json())
+                ]);
+                if (!evalRes.success) throw new Error(evalRes.error || 'Forecast evaluation failed.');
+
+                let html = renderForecastEvaluation(evalRes.evaluation);
+                if (impactRes.success) html += renderPlanningImpact(impactRes.impact);
+                // The plan sits directly under the problem it solves: a reader
+                // should never see a shortfall without what to do about it.
+                if (planRes.success) html += renderImprovementPlan(planRes.plan);
+                if (gapRes.success) html += renderForecastGaps(gapRes.gaps);
+                if (driverRes.success) html += renderDemandDrivers(driverRes.drivers);
+                el.innerHTML = html;
+            } catch (err) {
+                planningFail('plan-demand', err.message);
+            }
+        }
+
+        function renderForecastEvaluation(data) {
+            const s = data.summary;
+            const rows = data.rows.map(r => [
+                escapeHtml(r.region),
+                escapeHtml(r.job_type),
+                n1(r.forecast_jobs_per_day),
+                n1(r.actual_jobs_per_day),
+                `<span class="${sign(r.bias_pct)}">${signed(r.bias_pct)}</span>`,
+                `<strong>${n1(r.suggested_jobs_per_day)}</strong>`,
+                `<span class="${sign(r.hours_delta)}">${n0(r.hours_delta)} h</span>`,
+                `${n0(r.balance_before)} → <span class="${sign(r.balance_after)}">${n0(r.balance_after)}</span>`,
+                r.material
+                    ? `<button class="agent-btn primary" onclick="proposeCorrection(this, '${escapeHtml(r.region)}', '${escapeHtml(r.job_type)}')">Suggest correction</button>`
+                    : '<span class="agent-pill ok">Within tolerance</span>'
+            ]);
+
+            const d = data.decision || {};
+            const decisionBlock = !d.conclusion ? '' : `
+                <div class="agent-suggestion" style="margin-top:12px;">
+                    <div class="agent-suggestion-label">The call · confidence ${escapeHtml(d.confidence || '')}</div>
+                    <p class="agent-headline" style="font-weight:600;">${escapeHtml(d.conclusion)}</p>
+                    <div class="agent-card-note" style="margin-top:9px;">
+                        <strong style="color:var(--text-primary);">Why — the facts</strong>
+                        <ul style="margin:5px 0 0; padding-left:16px;">
+                            ${(d.facts || []).map(f => `<li>${escapeHtml(f)}</li>`).join('')}
+                        </ul>
+                    </div>
+                    ${d.not_concluded ? `<p class="agent-card-note" style="margin-top:8px;">
+                        <strong style="color:var(--text-primary);">What this does NOT say.</strong>
+                        ${escapeHtml(d.not_concluded)}</p>` : ''}
+                    ${d.falsifier ? `<p class="agent-card-note" style="margin-top:8px;">
+                        <strong style="color:var(--text-primary);">What would overturn it.</strong>
+                        ${escapeHtml(d.falsifier)}</p>` : ''}
+                </div>`;
+
+            return `<div class="agent-card">
+                <div class="agent-card-head">
+                    <p class="agent-card-title">📊 Forecast accuracy review</p>
+                    <span class="agent-pill ${s.material ? 'material' : 'ok'}">${s.material} of ${s.graded} series outside tolerance</span>
+                </div>
+                <p class="agent-card-note">
+                    The published forecast for ${escapeHtml(data.forecast_window.start)} → ${escapeHtml(data.forecast_window.end)},
+                    graded against what demand actually ran at over the ${data.actuals_window.days} days to
+                    ${escapeHtml(data.actuals_window.end)}.
+                </p>
+                ${decisionBlock}
+                <div class="agent-stat-row">
+                    <div class="agent-stat">
+                        <div class="agent-stat-value ${sign(s.weighted_bias_pct)}">${signed(s.weighted_bias_pct)}</div>
+                        <div class="agent-stat-label">Weighted bias</div>
+                        <div class="agent-stat-note">${escapeHtml(s.pattern)}</div>
+                    </div>
+                    <div class="agent-stat">
+                        <div class="agent-stat-value">${n0(Math.abs(s.hours_delta_horizon))}</div>
+                        <div class="agent-stat-label">Engineer-hours missing</div>
+                        <div class="agent-stat-note">over ${s.horizon_weeks} weeks if every series is corrected</div>
+                    </div>
+                    <div class="agent-stat">
+                        <div class="agent-stat-value">${n0(Math.abs(s.engineer_days_delta))}</div>
+                        <div class="agent-stat-label">Engineer-days</div>
+                        <div class="agent-stat-note">the same gap expressed as days of engineer work</div>
+                    </div>
+                    <div class="agent-stat">
+                        <div class="agent-stat-value">${gbp0(Math.abs(s.cost_delta_gbp))}</div>
+                        <div class="agent-stat-label">Labour value</div>
+                        <div class="agent-stat-note">at the assumed rate — see method</div>
+                    </div>
+                </div>
+                ${agentTable(
+                    ['Region', 'Job type', 'Forecast/day', 'Actual/day', 'Bias', 'Suggested/day',
+                     'Hours effect', 'Capacity balance', ''],
+                    rows)}
+                <div id="demand-suggestions"></div>
+                <div class="agent-method">${escapeHtml(data.method)}</div>
+            </div>`;
+        }
+
+        function renderPlanningImpact(data) {
+            const t = data.totals;
+            const rows = data.skills.map(s => [
+                `<strong>${escapeHtml(s.job_type)}</strong>`,
+                n0(s.available_hours),
+                n0(s.planned_hours),
+                n0(s.true_hours),
+                `<span class="agent-neg">${n0(s.unplanned_hours)}</span>`,
+                `${n0(s.balance_before)} → <span class="${sign(s.balance_after)}">${n0(s.balance_after)}</span>`,
+                s.position === 'deficit'
+                    ? `<span class="agent-pill material">${n1(s.fte_equivalent)} FTE short</span>`
+                    : `<span class="agent-pill ok">${n1(s.fte_equivalent)} FTE spare</span>`,
+                s.jobs_at_risk ? `${n0(s.jobs_at_risk_before)} → <strong>${n0(s.jobs_at_risk)}</strong>` : '—'
+            ]);
+
+            const revisits = data.skills.filter(s => s.revisit && s.revisit.visits_per_completed_job > 1.01)
+                .sort((a, b) => b.revisit.extra_hours - a.revisit.extra_hours)
+                .map(s => `<li><strong>${escapeHtml(s.job_type)}:</strong> only
+                    ${pct1(s.revisit.first_time_fix_pct)} of visits finish the job, so a completed job takes
+                    ${n1(s.revisit.visits_per_completed_job)} visits — <strong>${n0(s.revisit.extra_hours)} hours</strong>
+                    (${n0(s.revisit.extra_engineer_days)} engineer-days) the demand line never asked for.</li>`).join('');
+
+            return `<div class="agent-card">
+                <div class="agent-card-head">
+                    <p class="agent-card-title">🎯 What it means for the plan</p>
+                    <span class="agent-pill ${t.jobs_at_risk ? 'material' : 'ok'}">
+                        ${data.horizon.weeks} weeks · ${escapeHtml(data.horizon.start)} → ${escapeHtml(data.horizon.end)}
+                    </span>
+                </div>
+                <p class="agent-card-note">
+                    Three things the published plan does not carry, added together: the forecast bias, the job types
+                    that are staffed but never forecast, and the return visits that jobs failing first time will need.
+                </p>
+                <div class="agent-stat-row">
+                    <div class="agent-stat">
+                        <div class="agent-stat-value agent-neg">${n0(t.unplanned_hours)}</div>
+                        <div class="agent-stat-label">Engineer-hours not in the plan</div>
+                        <div class="agent-stat-note">~${n0(t.unplanned_engineer_days)} engineer-days</div>
+                    </div>
+                    <div class="agent-stat">
+                        <div class="agent-stat-value agent-neg">${n1(t.fte_gap)}</div>
+                        <div class="agent-stat-label">FTE gap</div>
+                        <div class="agent-stat-note">across the skills that go into deficit</div>
+                    </div>
+                    <div class="agent-stat">
+                        <div class="agent-stat-value">${n0(t.jobs_at_risk_added)}</div>
+                        <div class="agent-stat-label">Jobs at risk added by this finding</div>
+                        <div class="agent-stat-note">
+                            ${n0(t.jobs_at_risk_before)} of the ${n0(t.jobs_at_risk)} total were already implied
+                            by the plan's own numbers
+                        </div>
+                    </div>
+                    <div class="agent-stat">
+                        <div class="agent-stat-value agent-pos">${n0(t.transferable_surplus_hours)}</div>
+                        <div class="agent-stat-label">Surplus hours elsewhere</div>
+                        <div class="agent-stat-note">
+                            in ${escapeHtml((data.surplus_skills || []).join(', ') || 'no other skill')} — redeployment
+                            before hiring
+                        </div>
+                    </div>
+                </div>
+                ${agentTable(['Skill', 'Hours available', 'Hours planned', 'True hours needed', 'Not in plan',
+                              'Balance before → after', 'Resourcing', 'Jobs at risk (implied → total)'], rows)}
+                ${revisits ? `<div class="agent-suggestion">
+                    <div class="agent-suggestion-label">The cheapest capacity available</div>
+                    <ul class="agent-card-note" style="margin:6px 0 0; padding-left:16px;">${revisits}</ul>
+                    <p class="agent-card-note" style="margin-top:8px;">
+                        Raising first-time fix removes this work rather than staffing it, so it needs no hiring at all.
+                        See the Pricing Agent's cost-to-serve view for what each point of fix rate is worth in pounds.
+                    </p>
+                </div>` : ''}
+                <div class="agent-method">${escapeHtml(data.method)}</div>
+            </div>`;
+        }
+
+        function renderImprovementPlan(data) {
+            if (!data.options || !data.options.length) {
+                return `<div class="agent-card">
+                    <p class="agent-card-title">✅ Nothing to close</p>
+                    <p class="agent-card-note">Every skill has enough capacity for the work the corrected forecast implies.</p>
+                </div>`;
+            }
+
+            const steps = data.options.map(o => `
+                <div style="margin-top:14px; padding:12px 14px; border-radius:8px;
+                            background: var(--bg-lighter); border:1px solid var(--border-subtle);">
+                    <div style="display:flex; align-items:baseline; gap:10px; flex-wrap:wrap;">
+                        <span class="agent-stat-value" style="font-size:15px;">${o.rank}</span>
+                        <span class="agent-card-title">${escapeHtml(o.name)}</span>
+                        <span class="agent-pill ${o.no_new_people ? 'ok' : 'material'}">
+                            ${o.no_new_people ? 'no new people needed' : 'needs recruitment'}
+                        </span>
+                    </div>
+                    <p class="agent-headline" style="margin-top:8px;">${escapeHtml(o.plain)}</p>
+                    <div class="agent-stat-row" style="margin:10px 0 2px;">
+                        <div class="agent-stat">
+                            <div class="agent-stat-value agent-pos">${n0(o.hours_closed)}</div>
+                            <div class="agent-stat-label">Hours this closes</div>
+                        </div>
+                        <div class="agent-stat">
+                            <div class="agent-stat-value">${o.gap_remaining_after ? n0(o.gap_remaining_after) : '0'}</div>
+                            <div class="agent-stat-label">Still open after it</div>
+                        </div>
+                        <div class="agent-stat">
+                            <div class="agent-stat-value" style="font-size:13px;">${escapeHtml(o.lead_time)}</div>
+                            <div class="agent-stat-label">Time to take effect</div>
+                            <div class="agent-stat-note">effort: ${escapeHtml(o.effort)}</div>
+                        </div>
+                    </div>
+                    <p class="agent-card-note" style="margin-top:8px;"><em>${escapeHtml(o.value_note)}</em></p>
+                    <div class="agent-card-note" style="margin-top:8px;">
+                        <strong style="color:var(--text-primary);">What this takes</strong>
+                        <ul style="margin:4px 0 0; padding-left:16px;">
+                            ${o.how.map(h => `<li>${escapeHtml(h)}</li>`).join('')}
+                        </ul>
+                    </div>
+                    <p class="agent-card-note" style="margin-top:6px;">Evidence: ${escapeHtml(o.evidence)}</p>
+                </div>`).join('');
+
+            return `<div class="agent-card">
+                <div class="agent-card-head">
+                    <p class="agent-card-title">🛠️ What to do about it — in the order to do it</p>
+                    <span class="agent-pill ok">${pct1(data.closed_without_hiring_pct)} closable without hiring</span>
+                </div>
+                <p class="agent-card-note">
+                    We are short about <strong>${n0(data.gap_hours)} hours of engineer time</strong> over the next
+                    ${data.horizon.weeks} weeks — roughly ${n1(data.gap_fte)} full-time engineers. Most of that does
+                    not need new people. These steps are ordered by what to reach for first, not by what is biggest:
+                    work you can stop needing beats work you can move, which beats work you have to pay more for,
+                    which beats hiring.
+                </p>
+                ${steps}
+                <div class="agent-suggestion">
+                    <div class="agent-suggestion-label">If we do nothing</div>
+                    <p class="agent-headline">
+                        The work does not disappear — it turns into missed appointments, longer waits and overtime
+                        nobody planned for. Hiring our way out of the whole
+                        ${n0(data.gap_hours)}-hour shortfall would cost around
+                        <strong>${gbp0(data.gap_cost_gbp)}</strong> in labour. Doing the cheaper things first
+                        leaves about ${n1(data.residual_fte)} engineers to recruit, at roughly
+                        <strong>${gbp0(data.residual_cost_gbp)}</strong>.
+                    </p>
+                </div>
+                <div class="agent-method">${escapeHtml(data.method)}</div>
+            </div>`;
+        }
+
+        function renderForecastGaps(data) {
+            if (!data.has_gaps) {
+                return `<div class="agent-card">
+                    <p class="agent-card-title">✅ No coverage gaps</p>
+                    <p class="agent-card-note">Every job type the estate staffs is forecast, in every region, for every horizon day.</p>
+                </div>`;
+            }
+            const items = (data.missing_job_types || []).map(item => `
+                <div class="agent-stat-row">
+                    <div class="agent-stat">
+                        <div class="agent-stat-value">${n0(item.capacity_hours_horizon)}</div>
+                        <div class="agent-stat-label">${escapeHtml(item.job_type)} hours staffed</div>
+                        <div class="agent-stat-note">across ${item.regions_staffed} regions</div>
+                    </div>
+                    <div class="agent-stat">
+                        <div class="agent-stat-value">0</div>
+                        <div class="agent-stat-label">Hours forecast</div>
+                        <div class="agent-stat-note">no demand line exists for this job type at all</div>
+                    </div>
+                    <div class="agent-stat">
+                        <div class="agent-stat-value">${n1(item.observed_jobs_per_day)}</div>
+                        <div class="agent-stat-label">Actual jobs/day</div>
+                        <div class="agent-stat-note">implying about ${n0(item.implied_demand_hours)} hours of real demand</div>
+                    </div>
+                    <div class="agent-stat">
+                        <div class="agent-stat-value agent-neg">${pct1(item.utilisation_pct)}</div>
+                        <div class="agent-stat-label">Utilisation</div>
+                        <div class="agent-stat-note">${n0(item.engineer_days_idle)} engineer-days unmatched</div>
+                    </div>
+                </div>
+                <div class="agent-suggestion">
+                    <div class="agent-suggestion-label">Agent suggestion &middot; missing forecast</div>
+                    <p class="agent-headline">
+                        <strong>${escapeHtml(item.job_type)} demand is not forecast at all.</strong>
+                        Build it from history so the capacity plan has something to reconcile against.
+                    </p>
+                    <div style="margin-top:10px;">
+                        <button class="agent-btn primary" onclick="generateMissingForecast(this, '${escapeHtml(item.job_type)}')">
+                            Generate the ${escapeHtml(item.job_type)} forecast
+                        </button>
+                    </div>
+                    <div class="generated-forecast"></div>
+                </div>`).join('');
+
+            const regionRows = (data.missing_regions || []).map(item =>
+                `<li>${escapeHtml(item.job_type)} has no forecast for ${escapeHtml(item.region)}, although the region is staffed for that skill.</li>`
+            ).join('');
+
+            return `<div class="agent-card">
+                <div class="agent-card-head">
+                    <p class="agent-card-title">🔍 Coverage gaps — where the forecast is absent, not wrong</p>
+                    <span class="agent-pill material">Action needed</span>
+                </div>
+                <p class="agent-card-note">
+                    A forecast can be wrong by being missing, and no accuracy metric catches that. This checks for
+                    job types with engineer capacity but no demand line, regions missing from a job type, and
+                    uncovered horizon days.
+                </p>
+                ${items}
+                ${regionRows ? `<ul class="agent-card-note" style="margin-top:10px;">${regionRows}</ul>` : ''}
+            </div>`;
+        }
+
+        function renderDemandDrivers(data) {
+            const rows = data.factors.map(f => [
+                escapeHtml(f.factor),
+                `<span class="agent-pill ${f.effect_pct >= data.materiality_threshold_pct ? 'material' : 'info'}">${pct1(f.effect_pct)}</span>`,
+                escapeHtml(f.measure),
+                `<span class="agent-card-note">${escapeHtml(f.reading)}</span>`,
+                `<code style="font-size:10.5px;">${escapeHtml(f.dataset)}</code>`
+            ]);
+            return `<div class="agent-card">
+                <div class="agent-card-head">
+                    <p class="agent-card-title">🧭 What actually drives demand</p>
+                    <span class="agent-pill info">${data.material.length} material · ${data.immaterial.length} ruled out</span>
+                </div>
+                <p class="agent-card-note">
+                    Every candidate factor is measured and reported with its effect size &mdash; including the ones that
+                    turn out not to matter. Knowing a factor is worth 1% here is what stops a team building a model
+                    around it.
+                </p>
+                ${agentTable(['Factor', 'Effect', 'Measured', 'Reading', 'Datasets'], rows)}
+            </div>`;
+        }
+
+        async function proposeCorrection(btn, region, jobType) {
+            btn.disabled = true;
+            btn.textContent = 'Computing…';
+            try {
+                const res = await fetch('/api/forecast/correction', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        region: region,
+                        job_type: jobType,
+                        user_email: document.getElementById('userEmail').value || 'leadership@abc.com'
+                    })
+                });
+                const data = await res.json();
+                if (!data.success) throw new Error(data.message || data.error || 'Could not queue the correction.');
+                document.getElementById('demand-suggestions')
+                    .insertAdjacentHTML('beforeend', renderApprovalCard(data.action, 'forecast correction'));
+                btn.textContent = 'Queued for approval';
+            } catch (err) {
+                btn.disabled = false;
+                btn.textContent = 'Suggest correction';
+                alert(err.message);
+            }
+        }
+
+        async function generateMissingForecast(btn, jobType) {
+            btn.disabled = true;
+            btn.textContent = 'Building from history…';
+            const holder = btn.closest('.agent-suggestion').querySelector('.generated-forecast');
+            try {
+                const res = await fetch('/api/forecast/generate', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({job_type: jobType, weeks: 13})
+                });
+                const data = await res.json();
+                if (!data.success) throw new Error(data.error || 'Forecast build failed.');
+                const f = data.forecast;
+                holder.innerHTML = `
+                    <div class="agent-stat-row">
+                        <div class="agent-stat">
+                            <div class="agent-stat-value">${n0(f.totals.jobs)}</div>
+                            <div class="agent-stat-label">Jobs forecast</div>
+                            <div class="agent-stat-note">${f.weeks} weeks from ${escapeHtml(f.start)}</div>
+                        </div>
+                        <div class="agent-stat">
+                            <div class="agent-stat-value">${n0(f.totals.jobs_hours)}</div>
+                            <div class="agent-stat-label">Engineer-hours</div>
+                            <div class="agent-stat-note">at ${f.parameters.hours_per_job} h/job</div>
+                        </div>
+                        <div class="agent-stat">
+                            <div class="agent-stat-value">${pct1(f.totals.utilisation_pct)}</div>
+                            <div class="agent-stat-label">Utilisation of staffed hours</div>
+                            <div class="agent-stat-note">${n0(f.totals.balance)} hours left unused</div>
+                        </div>
+                    </div>
+                    ${agentTable(['Week commencing', 'Jobs', 'Hours', 'Low', 'High'],
+                        f.national_weekly.map(w => [escapeHtml(w.week_commencing), n0(w.jobs), n0(w.jobs_hours), n0(w.low), n0(w.high)]))}
+                    ${agentTable(['Region', 'Jobs/day now', 'Forecast jobs', 'Forecast hours'],
+                        f.regional_totals.map(r => [escapeHtml(r.region), n1(r.jobs_per_day_now), n0(r.jobs), n0(r.jobs_hours)]))}
+                    <div class="agent-method">${escapeHtml(f.method)}</div>`;
+                btn.textContent = 'Forecast generated';
+            } catch (err) {
+                btn.disabled = false;
+                btn.textContent = `Generate the ${jobType} forecast`;
+                holder.innerHTML = `<p class="agent-card-note agent-neg">${escapeHtml(err.message)}</p>`;
+            }
+        }
+
+        /* ----- Commercial Agent ----- */
+
+        async function loadCommercialAgent() {
+            const el = document.getElementById('plan-commercial');
+            el.innerHTML = '<div class="agent-loading">Testing what discounting has actually bought, and scoring the trading season&hellip;</div>';
+            try {
+                const [negRes, seasonRes] = await Promise.all([
+                    fetch('/api/commercial/negotiation').then(r => r.json()),
+                    fetch('/api/commercial/season').then(r => r.json())
+                ]);
+                if (!negRes.success) throw new Error(negRes.error || 'Negotiation analysis failed.');
+                let html = renderNegotiation(negRes.negotiation);
+                if (seasonRes.success) html += renderSeason(seasonRes.season);
+                el.innerHTML = html;
+            } catch (err) {
+                planningFail('plan-commercial', err.message);
+            }
+        }
+
+        function renderNegotiation(data) {
+            const rows = data.bands.map(b => [
+                escapeHtml(b.band),
+                n0(b.leads),
+                pct1(b.conversion_pct),
+                gbp0(b.avg_opening),
+                gbp0(b.avg_final),
+                `<strong>${gbp2(b.revenue_per_lead)}</strong>`,
+                pct1(b.insurance_attach_pct)
+            ]);
+            const shape = data.deal_shape || {};
+            const above = shape.deals ? (shape.closed_above_opening / shape.deals * 100) : null;
+            const below = shape.deals ? (shape.closed_below_walkaway / shape.deals * 100) : null;
+
+            return `<div class="agent-card">
+                <div class="agent-card-head">
+                    <p class="agent-card-title">🤝 Negotiation position — ${escapeHtml(data.segment)}</p>
+                    <span class="agent-pill ${data.price_responsive ? 'info' : 'material'}">
+                        ${data.price_responsive ? 'Price is buying volume' : 'Discount is NOT buying volume'}
+                    </span>
+                </div>
+                <p class="agent-card-note">
+                    Every quoted lead banded by the discount from the opening quotation to the closed price, then
+                    scored on conversion and on revenue per lead &mdash; the quantity a discount policy actually moves.
+                </p>
+                ${agentTable(['Discount band', 'Leads', 'Conversion', 'Avg opening', 'Avg closed',
+                              'Revenue per lead', 'Insurance attach'], rows)}
+                <div class="agent-stat-row">
+                    <div class="agent-stat">
+                        <div class="agent-stat-value">${Number(data.conversion_spread_pp).toFixed(1)} pp</div>
+                        <div class="agent-stat-label">Conversion spread</div>
+                        <div class="agent-stat-note">across the entire discount range</div>
+                    </div>
+                    <div class="agent-stat">
+                        <div class="agent-stat-value agent-neg">${gbp0(data.leakage_gbp)}</div>
+                        <div class="agent-stat-label">Value at stake</div>
+                        <div class="agent-stat-note">upper bound, holding conversion constant</div>
+                    </div>
+                    ${above !== null ? `<div class="agent-stat">
+                        <div class="agent-stat-value">${pct1(above)}</div>
+                        <div class="agent-stat-label">Close ABOVE the opening quote</div>
+                        <div class="agent-stat-note">average uplift ${gbp0(shape.avg_uplift)} — the opening number is not a ceiling</div>
+                    </div>` : ''}
+                    ${below !== null ? `<div class="agent-stat">
+                        <div class="agent-stat-value agent-neg">${pct1(below)}</div>
+                        <div class="agent-stat-label">Close below the walk-away</div>
+                        <div class="agent-stat-note">where approval discipline should sit</div>
+                    </div>` : ''}
+                </div>
+                <div class="agent-suggestion">
+                    <div class="agent-suggestion-label">Agent recommendation</div>
+                    <p class="agent-headline"><strong>${escapeHtml(data.guardrail.position)}.</strong>
+                        ${escapeHtml(data.guardrail.detail)}</p>
+                </div>
+                <div class="agent-method">${escapeHtml(data.method)}</div>
+            </div>`;
+        }
+
+        function renderSeason(data) {
+            const best = data.peak.map(m => m.month_name).join(', ');
+            const worst = data.trough.map(m => m.month_name).join(', ');
+            const rows = data.months.map(m => [
+                escapeHtml(m.month_name),
+                n1(m.leads_per_day),
+                pct1(m.conversion_pct),
+                gbp0(m.avg_order_value),
+                gbp0(m.revenue_per_day),
+                n0(m.install_hours_per_day),
+                `<strong>${Number(m.opportunity_score).toFixed(2)}</strong>`
+            ]);
+            return `<div class="agent-card">
+                <div class="agent-card-head">
+                    <p class="agent-card-title">🗓️ Productive periods of the trading season</p>
+                    <span class="agent-pill ${data.seasonal ? 'material' : 'info'}">
+                        ${data.seasonal ? 'Genuinely seasonal' : 'Demand near flat — delivery sets the season'}
+                    </span>
+                </div>
+                <p class="agent-card-note">
+                    Each month scored on commercial pull <em>and</em> on the installation capacity provisioned to
+                    deliver it. A month that converts well but cannot be staffed does not rank as a peak.
+                </p>
+                ${agentTable(['Month', 'Leads/day', 'Conversion', 'Avg order value', 'Revenue/day',
+                              'Install hrs/day available', 'Opportunity'], rows)}
+                <div class="agent-suggestion">
+                    <div class="agent-suggestion-label">Agent recommendation</div>
+                    <p class="agent-headline">
+                        Push acquisition and installation volume into <strong>${escapeHtml(best)}</strong>.
+                        Use <strong>${escapeHtml(worst)}</strong> for service-plan renewals, maintenance campaigns and
+                        training rather than committing install volume the estate cannot deliver.
+                        Revenue per trading day varies ${pct1(data.revenue_spread_pct)} across the year and conversion
+                        ${Number(data.conversion_spread_pp).toFixed(1)} points.
+                    </p>
+                </div>
+                <div class="agent-method">${escapeHtml(data.method)}</div>
+            </div>`;
+        }
+
+        /* ----- Pricing Agent ----- */
+
+        async function loadPricingAgent() {
+            const el = document.getElementById('plan-pricing');
+            el.innerHTML = '<div class="agent-loading">Building the cost base and pricing each service line&hellip;</div>';
+            try {
+                const [serveRes, bookRes, repairRes] = await Promise.all([
+                    fetch('/api/pricing/cost-to-serve').then(r => r.json()),
+                    fetch('/api/pricing/book').then(r => r.json()),
+                    fetch('/api/pricing/repairs').then(r => r.json())
+                ]);
+                if (!bookRes.success) throw new Error(bookRes.error || 'Pricing failed.');
+                // Cost to serve comes first deliberately: a price cannot be judged
+                // before the cost of the job it has to cover is on the table.
+                let html = serveRes.success ? renderCostToServe(serveRes.cost_to_serve) : '';
+                html += renderPriceBook(bookRes.price_book);
+                if (repairRes.success) html += renderRepairSchedule(repairRes.schedule);
+                el.innerHTML = html;
+            } catch (err) {
+                planningFail('plan-pricing', err.message);
+            }
+        }
+
+        function renderCostToServe(data) {
+            const rows = data.lines.map(l => [
+                `<strong>${escapeHtml(l.service_line)}</strong>`,
+                `<span class="${l.first_time_fix_pct < 80 ? 'agent-neg' : 'agent-pos'}">${pct1(l.first_time_fix_pct)}</span>`,
+                n1(l.visits_per_completed_job),
+                gbp2(l.labour_per_visit),
+                gbp2(l.labour_per_completed_job),
+                gbp2(l.parts_per_completed_job),
+                `<strong>${gbp2(l.cost_per_completed_job)}</strong>`,
+                gbp2(l.naive_single_visit_cost),
+                `<span class="agent-neg">${signed(l.understatement_pct)}</span>`,
+                gbp0(l.annual_cost_gbp)
+            ]);
+
+            const detail = data.lines.map(l => `
+                <div style="margin-top:14px; padding-top:12px; border-top:1px dashed var(--border-subtle);">
+                    <p class="agent-card-title">${escapeHtml(l.service_line)} —
+                        ${gbp0(l.annual_cost_gbp)} a year to serve</p>
+                    <p class="agent-card-note" style="margin-top:4px;">
+                        ${n0(l.visits_total)} visits produced ${n0(l.visits_completed)} completed jobs.
+                        ${l.visits_incomplete ? n0(l.visits_incomplete) + ' ended needing parts and ' : ''}
+                        ${n0(l.visits_aborted)} were no-access or cancelled. Only ${pct1(l.productive_ratio_pct)}
+                        of paid hours reach a job, so an hour of work is charged at
+                        ${gbp2(l.labour_rate_loaded)} rather than the raw rate.
+                    </p>
+                    ${agentTable(['Operational lever', 'Worth per year', 'How'],
+                        l.levers.map(lever => [
+                            escapeHtml(lever.name),
+                            `<strong class="agent-pos">${gbp0(lever.annual_value_gbp)}</strong>`,
+                            `<span class="agent-card-note">${escapeHtml(lever.detail)}</span>`
+                        ]))}
+                </div>`).join('');
+
+            const worst = data.lines.reduce((a, b) =>
+                (a.understatement_pct > b.understatement_pct ? a : b), data.lines[0]);
+
+            return `<div class="agent-card">
+                <div class="agent-card-head">
+                    <p class="agent-card-title">🧾 Cost to serve — what a completed job actually costs</p>
+                    <span class="agent-pill material">${escapeHtml(worst.service_line)} understated by ${signed(worst.understatement_pct)}</span>
+                </div>
+                <p class="agent-card-note">
+                    A job is not one visit. Visits that end without finishing the work, visits that are cancelled or
+                    cannot get access, and paid hours that never reach a job all load onto every completed job. Price
+                    a line on a single visit when it takes two and every job loses money.
+                </p>
+                ${agentTable(['Service line', 'First-time fix', 'Visits per job', 'Labour per visit',
+                              'Labour per job', 'Parts', 'True cost per job', 'Single-visit cost',
+                              'Understated by', 'Annual cost'], rows)}
+                ${detail}
+                <div class="agent-method">${escapeHtml(data.method)}</div>
+            </div>`;
+        }
+
+        function renderPriceBook(data) {
+            const summary = agentTable(
+                ['Service line', 'Basis', 'Confidence', 'Cost base', 'Realised price',
+                 'Recommended', 'Margin', 'Annual volume', ''],
+                data.lines.map(l => [
+                    `<strong>${escapeHtml(l.service_line)}</strong>`,
+                    escapeHtml(l.basis),
+                    `<span class="agent-pill ${l.confidence === 'high' ? 'ok' : l.confidence === 'low' ? 'material' : 'info'}">${escapeHtml(l.confidence)}</span>`,
+                    l.cost_base ? gbp2(l.cost_base) : '<span class="agent-card-note">not recorded</span>',
+                    l.realised_price ? gbp2(l.realised_price) : '<span class="agent-card-note">not recorded</span>',
+                    `<strong>${gbp2(l.recommended_price)}</strong>`,
+                    l.margin_at_recommended_pct !== null ? pct1(l.margin_at_recommended_pct) : '—',
+                    n0(l.annual_volume),
+                    `<button class="agent-btn primary" onclick="proposePrice(this, '${escapeHtml(l.service_line)}')">Suggest price</button>`
+                ]));
+
+            const detail = data.lines.map(l => `
+                <div style="margin-top:14px; padding-top:12px; border-top:1px dashed var(--border-subtle);">
+                    <p class="agent-card-title">${escapeHtml(l.service_line)} — ${gbp2(l.recommended_price)}
+                        ${l.price_change_pct !== null && l.price_change_pct !== undefined
+                            ? `<span class="${sign(l.price_change_pct)}" style="font-size:12px;"> (${signed(l.price_change_pct)} vs realised, ${gbp0(l.annual_revenue_effect_gbp)}/yr)</span>`
+                            : ''}
+                    </p>
+                    <ul class="agent-card-note" style="margin:6px 0 0; padding-left:16px;">
+                        ${l.components.map(c => `<li><strong>${escapeHtml(c.name)}: ${gbp2(c.value)}</strong> — ${escapeHtml(c.detail)}</li>`).join('')}
+                        ${l.cross_check ? `<li><strong>Cross-check · ${escapeHtml(l.cross_check.name)}: ${gbp2(l.cross_check.value)}</strong> — ${escapeHtml(l.cross_check.detail)}</li>` : ''}
+                        ${(l.evidence || []).map(e => `<li>${escapeHtml(e)}</li>`).join('')}
+                    </ul>
+                    ${agentTable(['Price move', 'Price', 'Margin', 'Annual revenue'],
+                        (l.sensitivity || []).map(s => [
+                            (s.step_pct >= 0 ? '+' : '') + s.step_pct + '%',
+                            gbp2(s.price),
+                            s.margin_pct !== null ? pct1(s.margin_pct) : '—',
+                            gbp0(s.annual_revenue)
+                        ]))}
+                </div>`).join('');
+
+            const assumptions = (data.assumptions || []).map(a =>
+                `<li><code>${escapeHtml(a.key)}</code> = ${escapeHtml(a.value)} — ${escapeHtml(a.note)}</li>`).join('');
+
+            return `<div class="agent-card">
+                <div class="agent-card-head">
+                    <p class="agent-card-title">💷 Service price book</p>
+                    <span class="agent-pill info">${data.lines.length} service line${data.lines.length === 1 ? '' : 's'}</span>
+                </div>
+                <p class="agent-card-note">
+                    Each line is priced from the evidence that exists for it, and says which: an observed market price
+                    where the estate records one, a cost build-up where it records a cost, and a labour floor where it
+                    records neither. A price resting on an assumption is labelled as one.
+                </p>
+                ${summary}
+                <div id="pricing-suggestions"></div>
+                ${detail}
+                ${assumptions ? `<div class="agent-method"><strong>Assumptions used</strong> (not measured in the estate):
+                    <ul style="margin:6px 0 0; padding-left:16px;">${assumptions}</ul></div>` : ''}
+                <div class="agent-method">${escapeHtml(data.method)}</div>
+            </div>`;
+        }
+
+        function renderRepairSchedule(data) {
+            return `<div class="agent-card">
+                <div class="agent-card-head">
+                    <p class="agent-card-title">🔧 Repair price schedule by fault type</p>
+                    <span class="agent-pill info">${data.hours_per_job} h/job</span>
+                </div>
+                <p class="agent-card-note">${escapeHtml(data.method)}</p>
+                ${agentTable(['Fault type', 'Severity', 'Jobs', 'Share', 'Part', 'Labour',
+                              'Cost base', 'Recorded cost', 'Recommended', 'Margin'],
+                    data.rows.map(r => [
+                        escapeHtml(r.fault_type), escapeHtml(r.severity), n0(r.jobs), pct1(r.share_pct),
+                        gbp2(r.part_cost), gbp2(r.labour_cost), gbp2(r.cost_base),
+                        gbp2(r.recorded_cost), `<strong>${gbp2(r.recommended_price)}</strong>`, pct1(r.margin_pct)
+                    ]))}
+            </div>`;
+        }
+
+        async function proposePrice(btn, serviceLine) {
+            btn.disabled = true;
+            btn.textContent = 'Computing…';
+            try {
+                const res = await fetch('/api/pricing/change', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        service_line: serviceLine,
+                        user_email: document.getElementById('userEmail').value || 'leadership@abc.com'
+                    })
+                });
+                const data = await res.json();
+                if (!data.success) throw new Error(data.message || data.error || 'Could not queue the price change.');
+                document.getElementById('pricing-suggestions')
+                    .insertAdjacentHTML('beforeend', renderApprovalCard(data.action, 'price change'));
+                btn.textContent = 'Queued for approval';
+            } catch (err) {
+                btn.disabled = false;
+                btn.textContent = 'Suggest price';
+                alert(err.message);
+            }
+        }
+
+        /* ----- Shared approval card ----- */
+
+        function renderApprovalCard(action, kind) {
+            return `<div class="agent-suggestion" id="approval-${action.id}">
+                <div class="agent-suggestion-label">Agent suggestion · ${escapeHtml(kind)} · awaiting your approval</div>
+                <p class="agent-headline" style="font-weight:600;">${escapeHtml(action.title)}</p>
+                <p class="agent-card-note" style="margin-top:5px;">${escapeHtml(action.detail)}</p>
+                <p class="agent-card-note" style="margin-top:6px;">
+                    <strong style="color:var(--accent-orange);">Reason:</strong> ${escapeHtml(action.rationale)}</p>
+                <p class="agent-card-note" style="margin-top:6px;">
+                    <strong style="color:var(--accent-emerald);">Expected effect:</strong> ${escapeHtml(action.expected_impact)}</p>
+                <div style="display:flex; gap:8px; margin-top:10px;" class="approval-buttons">
+                    <button class="agent-btn primary" onclick="decidePlanningAction('${action.id}', true, this)">Approve</button>
+                    <button class="agent-btn" onclick="decidePlanningAction('${action.id}', false, this)">Reject</button>
+                </div>
+            </div>`;
+        }
+
+        async function decidePlanningAction(actionId, approved, btn) {
+            const row = btn.closest('.approval-buttons');
+            row.innerHTML = '<span class="agent-card-note">Recording…</span>';
+            try {
+                const res = await fetch(`/api/actions/${encodeURIComponent(actionId)}/decide`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        approved: approved,
+                        decided_by: document.getElementById('userEmail').value || 'leadership@abc.com'
+                    })
+                });
+                const data = await res.json();
+                row.innerHTML = `<span class="agent-card-note ${approved ? 'agent-pos' : 'agent-neg'}">`
+                    + escapeHtml(data.success ? (data.action.result || '') : (data.error || 'Failed'))
+                    + '</span>';
+            } catch (err) {
+                row.innerHTML = `<span class="agent-card-note agent-neg">${escapeHtml(err.message)}</span>`;
+            }
+        }
+
+
         /* ---------------- Agent vs Standard Chatbot ---------------- */
 
         let compareScenariosLoaded = false;
@@ -4114,6 +5568,40 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
             document.getElementById('compareScorecard').style.display = 'block';
         }
 
+        // The RAG panel shows its retrieved chunks and scores. Without this the
+        // baseline looks like it simply had no data; the point is that it DID
+        // retrieve, and flat chunks still could not answer the question.
+        function renderBaselineRetrieval(retrieval) {
+            const host = document.getElementById('baselineRetrieval');
+            if (!host) return;
+            if (!retrieval || !retrieval.chunk_count) {
+                host.innerHTML = retrieval
+                    ? `<div class="retrieval-head">Retrieval: 0 of ${Number(retrieval.corpus_chunks || 0)} chunks matched</div>
+                       <div class="retrieval-gap">Nothing in the document corpus scored above the similarity threshold. There are no relationships to fall back on.</div>`
+                    : '';
+                return;
+            }
+
+            const chunks = (retrieval.chunks || []).map(c => `
+                <div class="retrieval-chunk">
+                    <div class="retrieval-chunk-head">
+                        <span>${escapeHtml(c.title || c.doc_id || '')}</span>
+                        <span class="retrieval-score">sim ${Number(c.score).toFixed(2)}</span>
+                    </div>
+                    <div class="retrieval-chunk-text">${escapeHtml((c.text || '').slice(0, 190))}${(c.text || '').length > 190 ? '&hellip;' : ''}</div>
+                </div>
+            `).join('');
+
+            host.innerHTML = `
+                <div class="retrieval-head">
+                    Retrieved context &mdash; top ${Number(retrieval.chunk_count)} of
+                    ${Number(retrieval.corpus_chunks || 0)} chunks (${escapeHtml(retrieval.method || 'vector search')})
+                </div>
+                ${chunks}
+                <div class="retrieval-gap">0 knowledge graph hops &middot; 0 cross-dataset joins &middot; single-shot retrieval over pre-aggregated extracts.</div>
+            `;
+        }
+
         function addCompareTrace(event) {
             const host = document.getElementById('compareTrace');
             if (event.type === 'tool_call') {
@@ -4166,6 +5654,7 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
                 '<span class="compare-placeholder">New thread. Pick step 1 above or ask your own question.</span>';
             document.getElementById('agentBody').innerHTML =
                 '<span class="compare-placeholder">The agent\'s reasoning steps will appear below as it works.</span>';
+            document.getElementById('baselineRetrieval').innerHTML = '';
             document.getElementById('compareTrace').innerHTML = '';
             document.getElementById('compareScorecard').style.display = 'none';
         }
@@ -4188,8 +5677,9 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
 
             btn.disabled = true;
             btn.innerHTML = '<span>Running both...</span>';
-            baselineBody.innerHTML = '<span class="compare-placeholder">Standard chatbot is answering...</span>';
-            agentBody.innerHTML = '<span class="compare-placeholder">Agent is planning and querying live data...</span>';
+            baselineBody.innerHTML = '<span class="compare-placeholder">RAG chatbot is retrieving document chunks...</span>';
+            agentBody.innerHTML = '<span class="compare-placeholder">Agent is traversing the knowledge graph and querying live data...</span>';
+            document.getElementById('baselineRetrieval').innerHTML = '';
             document.getElementById('compareTrace').innerHTML = '';
             document.getElementById('compareScorecard').style.display = 'none';
 
@@ -4227,9 +5717,10 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
                         } else if (ev.type === 'scorecard') {
                             renderScorecard(ev.scorecard);
                         } else if (ev.type === 'answer' && ev.side === 'baseline') {
-                            baselineBody.innerHTML = parseMarkdown(ev.text);
+                            renderRichAnswer(baselineBody, ev.text);
+                            renderBaselineRetrieval(ev.retrieval);
                         } else if (ev.type === 'answer' && ev.side === 'agent') {
-                            agentBody.innerHTML = parseMarkdown(ev.text);
+                            renderRichAnswer(agentBody, ev.text);
                         } else if (ev.side === 'agent') {
                             addCompareTrace(ev);
                         } else if (ev.type === 'error') {
@@ -5508,34 +6999,34 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
         {
             tag: 'COMMERCIAL',
             accent: '#D9662B',
-            source: 'installation_history & quotes_and_sales',
-            title: 'Leads, net sales & conversion',
-            question: 'Show me weekly total leads, net sales and sales conversion rate for the past 3 months. Present it as a table and call out any week that breaks the pattern.',
+            source: 'quotes_and_sales & installation_history',
+            title: 'Does discounting win us work?',
+            question: 'What is our quote-to-sale conversion rate, and does discounting actually improve it? Show conversion and revenue per lead across the discount bands.',
             followUps: [
-                'What is causing the dip in net sales that week? Investigate the root cause.',
-                'How much revenue did that dip cost us, and what should we change to stop it recurring?'
+                'How much are we giving away on discounts that buy us nothing, and what should the discount guardrail be?',
+                'If we hold price instead of discounting, what do we give the sales team to close with?'
             ]
         },
         {
-            tag: 'ASSET RELIABILITY',
+            tag: 'PRICING',
             accent: '#c084fc',
-            source: 'repair_history, fault_codes & weather',
-            title: 'Boiler fault types & weather link',
-            question: 'What types of boiler issues have we seen in the past 3 months, and which fault types have the highest occurrence? Use the fault descriptions, not just the codes.',
+            source: 'visit_outcome, parts_replaced & quotes_and_sales',
+            title: 'Is our installation price too low?',
+            question: 'Is our installation price too low? Show what an installation costs us to deliver and what a 5% price rise would be worth.',
             followUps: [
-                'Is there any relationship between those fault types and the weather? Quantify it.',
-                'Which regions were worst affected, and what should we pre-position to prepare for the next cold snap?'
+                'Is raising the price the best move, or would fixing what the job costs to deliver be worth more?',
+                'Which repairs are priced below what they actually cost to complete?'
             ]
         },
         {
-            tag: 'CAPACITY PLANNING',
+            tag: 'DEMAND FORECAST',
             accent: '#22c55e',
-            source: 'regional_capacity_forecast & regional_demand_forecast',
-            title: 'Available vs demand hours',
-            question: 'How much imbalance do we have between available engineer hours and planned demand hours by region for the next 3 months? Show the surplus or deficit per region.',
+            source: 'regional_demand_forecast, repair_history & service_history',
+            title: 'Weekly repair & service volumes',
+            question: 'How many repair jobs and service jobs does the plan expect each week for the next three months? Show the weekly numbers, and tell me whether that plan is right.',
             followUps: [
-                'How can we improve the plan to reduce that imbalance? Be specific about which regions to move capacity between.',
-                'Which skill types are short in the deficit regions?'
+                'What does that shortfall mean for the next quarter — how many engineers short are we, and how many jobs would we miss?',
+                'What should we do about it? Rank the options and tell me how much we can fix without hiring anyone.'
             ]
         }
     ];
@@ -6389,6 +7880,9 @@ Kickstarting a new project? I help teams discover required enterprise datasets, 
         }
         // Canvas colours are resolved from CSS tokens at init, so re-render the graph.
         if (typeof isGraphModalOpen !== 'undefined' && isGraphModalOpen) initCanvasGraph();
+        // Answer charts read their palette from the same tokens, and each theme has
+        // its own selected steps rather than an inverted copy - so redraw them too.
+        if (typeof rerenderAllCharts === 'function') rerenderAllCharts();
     }
 
     // Initialize theme from localStorage on load
