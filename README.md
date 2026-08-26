@@ -111,14 +111,6 @@ The system operates in two modes:
 │  query_graph_rag         query_live_metrics                      │
 │  query_business_ops      query_metric_definitions                │
 │  forecast_installations  check_data_access                       │
-│  raise_access_request                                            │
-└──────────┬────────────────────┬─────────────────────────────────┘
-           │                    │
-┌──────────▼───────────┐ ┌──────▼────────────────────────────────┐
-│  KnowledgeGraphService│ │  DataService                          │
-│  (graph_service.py)   │ │  (data_service.py)                    │
-│                        │ │                                       │
-│  NetworkX DiGraph       │ │  Live_Metrics.xlsx                   │
 │  LangChain EntityGraph  │ │  Business_Operations.xlsx            │
 │  Knowledge_Base.xlsx    │ │  Metadata_Access.xlsx                │
 └───────────────────────┘ └───────────────────────────────────────┘
