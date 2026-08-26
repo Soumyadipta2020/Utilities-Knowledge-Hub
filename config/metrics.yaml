@@ -23,6 +23,14 @@ metrics:
       - "How many repair and service jobs does the plan expect each week?"
       - "Is our demand forecast accurate?"
 
+  - name: net_appointments
+    description: Weekly net completed appointments (excludes Cancelled and No Access).
+    model: visit_outcome
+    type: sum
+    sql: CASE WHEN visit_status NOT LIKE 'Cancelled%' AND visit_status <> 'No Access' THEN 1.0 ELSE 0.0 END
+    timestamp_column: visit_date
+
+
   - name: total_appointments
     description: Total number of scheduled appointments.
     model: appointment_schedule
@@ -78,3 +86,24 @@ metrics:
     type: avg
     sql: CASE WHEN sale_happened THEN 1.0 ELSE 0.0 END
     timestamp_column: lead_date
+
+  - name: sales_conversion
+    description: Weekly lead-to-sale conversion rate (alias for quote_to_sale_conversion_rate).
+    model: installation_history
+    type: avg
+    sql: CASE WHEN sale_happened THEN 1.0 ELSE 0.0 END
+    timestamp_column: lead_date
+
+  - name: net_sales
+    description: Weekly net sales (alias for total_sales but uses lead_date).
+    model: installation_history
+    type: sum
+    sql: CASE WHEN sale_happened THEN 1 ELSE 0 END
+    timestamp_column: lead_date
+
+  - name: emergency_repairs
+    description: Weekly emergency repair volume (alias for total_repairs).
+    model: repair_history
+    type: count
+    sql: job_id
+    timestamp_column: repair_date
