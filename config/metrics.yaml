@@ -71,3 +71,10 @@ metrics:
     type: avg
     sql: CASE WHEN sale_happened THEN 1.0 ELSE 0.0 END
     timestamp_column: lead_date
+
+  - name: lead_to_sale_conversion_rate
+    description: Percentage of quoted leads that resulted in a sale (alias for quote_to_sale_conversion_rate).
+    model: installation_history
+    type: avg
+    sql: CASE WHEN sale_happened THEN 1.0 ELSE 0.0 END
+    timestamp_column: lead_date
