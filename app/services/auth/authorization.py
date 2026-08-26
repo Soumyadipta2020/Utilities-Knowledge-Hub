@@ -22,7 +22,7 @@ class AuthorizationManager:
         self.role_permissions = {
             "admin": ["*"],
             "executive": ["metrics", "aggregated_data", "regional_demand", "engineer_productivity"],
-            "operations_manager": ["operational_data", "engineer_capacity", "work_orders", "engineer_productivity"],
+            "operations_manager": ["operational_data", "engineer_capacity", "work_orders", "engineer_productivity", "regional_demand"],
             "customer_service": ["customer_profile", "customer_history"],
             "engineer": ["own_work_orders", "knowledge_base"],
             "analyst": ["aggregated_data", "regional_demand"]
