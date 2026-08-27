@@ -329,6 +329,97 @@ The Knowledge Graph is constructed **100% deterministically using Python, Pandas
 
 ---
 
+## 📐 Does This App Follow a Linear Architecture?
+
+**No, this application does not follow a linear architecture.**
+
+Instead, it is engineered with a **non-linear, multi-agent, hybrid semantic graph and federated service architecture**.
+
+```
+┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                         NON-LINEAR RUNTIME TOPOLOGY VS. LINEAR INGESTION                         │
+│                                                                                                  │
+│  RUNTIME QUERY TOPOLOGY (Non-Linear, Dynamic, Graph-Based)                                       │
+│                                                                                                  │
+│                     ┌──────────────────────────┐                                                 │
+│                     │      User Question       │                                                 │
+│                     └────────────┬─────────────┘                                                 │
+│                                  │                                                               │
+│                                  ▼                                                               │
+│                     ┌──────────────────────────┐                                                 │
+│                     │   AI Supervisor Router   │                                                 │
+│                     └──────┬──────┬──────┬─────┘                                                 │
+│            ┌───────────────┘      │      └────────────────┐                                      │
+│            ▼                      ▼                       ▼                                      │
+│   ┌─────────────────┐   ┌───────────────────┐   ┌───────────────────┐                            │
+│   │Commercial Agent │   │ Demand Forecast   │   │ Reliability Agent │  (6 Domain Specialists)    │
+│   └────────┬────────┘   └─────────┬─────────┘   └─────────┬─────────┘                            │
+│            │                      │                       │                                      │
+│            └───────────────┬──────┴───────────────────────┘                                      │
+│                            ▼                                                                     │
+│           ┌───────────────────────────────────┐                                                  │
+│           │ Federated Gateway (Parallel/Mesh) │                                                  │
+│           │  • Semantic Knowledge Graph       │                                                  │
+│           │  • DuckDB Analytical SQL Pushdown │                                                  │
+│           │  • Vector + Lexical Hybrid RAG    │                                                  │
+│           │  • Multi-Tier Cache (L1/L2)       │                                                  │
+│           └────────────────┬──────────────────┘                                                  │
+│                            │                                                                     │
+│                            ▼                                                                     │
+│           ┌───────────────────────────────────┐        ┌───────────────────────────────┐         │
+│           │ Dual-Pass Claim Verification Loop │ ◄────► │ Human-in-the-Loop Action Queue│         │
+│           └────────────────┬──────────────────┘        └───────────────────────────────┘         │
+│                            │                                                                     │
+│                            ▼                                                                     │
+│           ┌───────────────────────────────────┐                                                  │
+│           │ Verified Output + Interactive Map │                                                  │
+│           └───────────────────────────────────┘                                                  │
+│                                                                                                  │
+│  ══════════════════════════════════════════════════════════════════════════════════════════════  │
+│  OFFLINE INGESTION ONLY (Sequential / Linear ETL Pipeline)                                       │
+│                                                                                                  │
+│  [Raw Files] ──> [Normalize] ──> [Chunk] ──> [Entities] ──> [Taxonomy] ──> [Graph/Index Cache]  │
+└──────────────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+### 🔍 Key Architectural Dimensions
+
+#### 1. Runtime Query Flow: Dynamic Multi-Agent Orchestration (Non-Linear)
+- Rather than a linear sequence of processing steps, queries enter an **AI Supervisor** (`app/agent/specialists.py`) that dynamically classifies intent and routes across 6 specialized domain agents (*Commercial, Demand Forecasting, Pricing, Reliability, Capacity, Governance*).
+- Specialists operate with adaptive tool execution loops (`AgentRuntime`), invoking tools dynamically, combining multi-source outputs, and branching based on intermediate observations.
+
+#### 2. Data & Knowledge Representation: Multi-Hop Knowledge Graph (Graph Topology)
+- Cross-dataset lineage, domain taxonomies, and equipment fault diagnostic trees are modeled as a **Directed Graph (`NetworkX DiGraph`)** in `app/services/graph_service.py`.
+- Traversal is multi-directional and multi-hop (`query_knowledge_graph`), supporting non-linear entity joins (`customer_id`, `boiler_id`, `job_id`, `lead_id`) and cyclic relationships.
+
+#### 3. Data Retrieval: Federated Semantic Gateway (Multi-Modal / Mesh)
+- The system federates queries simultaneously across multiple decoupled analytical backends via the **MCP Gateway**:
+  - **In-Memory Analytical SQL**: High-speed aggregation and mathematical execution via DuckDB (`sql_service.py`).
+  - **Hybrid Document RAG**: Dual-channel vector similarity and BM25 lexical search (`rag_service.py`).
+  - **Semantic Cache & Query Planner**: Multi-tiered cache resolution (L1 schema / L2 result TTL) with parallel query planning.
+
+#### 4. Verification & Governance: Dual-Pass Feedback Loops (Cyclic)
+- Output does not simply flow in a one-way pipeline; it passes through an independent **Dual-Pass Claim Verifier** (`verifier.py`) that executes independent SQL derivations against agent assertions to guarantee zero hallucinations.
+- Operational interventions (e.g., price book adjustments, workforce reallocation) are routed into an asynchronous **Human-in-the-Loop approval queue** (`HubStore`).
+
+---
+
+### 📦 Where Linear Patterns Exist in the System
+The only component following a linear structure is the **12-Stage Data Harnessing & Ingestion Pipeline** (`pipeline_service.py`):
+$$\text{File Ingestion} \rightarrow \text{Normalization} \rightarrow \text{Chunking} \rightarrow \text{Entity Extraction} \rightarrow \dots \rightarrow \text{Graph Serialization}$$
+
+This is strictly an **offline/batch ETL pipeline** used to populate the Knowledge Graph and search indices before runtime queries are served.
+
+---
+
+### 📱 Distinction from "Linear.app" Architecture (Local-First / Sync Engine)
+If referring to the **Linear.app pattern** (local-first SQLite/IndexedDB in the browser, optimistic UI updates, and CRDT/WebSocket delta synchronization):
+- This application utilizes an **enterprise server-orchestrated architecture** built on Python/Flask, Server-Sent Events (SSE) streaming for agent thought traces, DuckDB analytical engines, and MCP integration, rather than a client-side local-first sync engine.
+
+---
+
 ## ⚔️ Architectural Comparison: Standard RAG / Organizational Chatbots vs. Utilities Knowledge Hub
 
 ```
