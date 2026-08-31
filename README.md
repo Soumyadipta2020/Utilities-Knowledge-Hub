@@ -15,7 +15,8 @@
 
 - [Overview](#-overview)
 - [Key Features](#-key-features)
-- [Architecture](#-architecture)
+- [Architecture & Interaction Flow](#%EF%B8%8F-architecture--interaction-flow)
+- [Enterprise Architecture Evolution](#-enterprise-architecture-evolution)
 - [Project Structure](#-project-structure)
 - [Tech Stack](#-tech-stack)
 - [Getting Started](#-getting-started)
@@ -35,7 +36,10 @@
 - [Deployment](#-deployment)
   - [Render (Recommended)](#render-recommended)
   - [Posit Connect Cloud](#posit-connect-cloud)
-- [Configuration Reference](#-configuration-reference)
+- [Multi-Cloud & Databricks Migration](#%EF%B8%8F-multi-cloud--databricks-migration)
+- [Enterprise MCP Server & Client Setup](#-enterprise-mcp-server--client-setup)
+- [Competitive Differentiation](#-competitive-differentiation)
+- [Configuration Reference](#%EF%B8%8F-configuration-reference)
 - [Contributing](#-contributing)
 - [License](#-license)
 
@@ -73,56 +77,164 @@ The system operates in two modes:
 
 ---
 
-## 🏗️ Architecture
+## 🏗️ Architecture & Interaction Flow
+
+The Utilities Knowledge Hub is structured in an enterprise-grade, multi-tiered architecture that seamlessly connects client interfaces, intelligent orchestration, specialized sub-agents, an **Enterprise MCP Gateway**, and zero-trust verification.
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                    Browser / Client UI                          │
-│              (Single-page chat interface - index.html)          │
-└──────────────────────┬──────────────────────────────────────────┘
-                       │ HTTP / REST
-┌──────────────────────▼──────────────────────────────────────────┐
-│                    Flask Web Application                        │
-│                         (app/main.py)                           │
-│                                                                 │
-│   POST /api/chat          GET /api/graph/data                   │
-│   POST /api/pipeline/run  GET /                                 │
-└──────────┬───────────────────────┬──────────────────────────────┘
-           │                       │
-┌──────────▼───────────┐  ┌────────▼──────────────────────────────┐
-│   Agent Layer        │  │   Graph Data Export API               │
-│  (agent_builder.py)  │  │   Nodes + Edges → JSON                │
-│                      │  └───────────────────────────────────────┘
-│  ┌───────────────┐   │
-│  │  Deterministic│   │
-│  │  Rule Engine  │   │
-│  └───────┬───────┘   │
-│          │           │
-│  ┌───────▼───────┐   │
-│  │  LangChain    │   │
-│  │  LLM (opt.)   │   │
-│  └───────────────┘   │
-└──────────┬───────────┘
-           │ Tool Calls
-┌──────────▼───────────────────────────────────────────────────────┐
-│                        Tools Layer (tools.py)                   │
-│                                                                  │
-│  query_knowledge_graph   search_knowledge_base_rag               │
-│  query_graph_rag         query_live_metrics                      │
-│  query_business_ops      query_metric_definitions                │
-│  forecast_installations  check_data_access                       │
-│  raise_access_request                                            │
-└──────────┬────────────────────┬─────────────────────────────────┘
-           │                    │
-┌──────────▼───────────┐ ┌──────▼────────────────────────────────┐
-│  KnowledgeGraphService│ │  DataService                          │
-│  (graph_service.py)   │ │  (data_service.py)                    │
-│                        │ │                                       │
-│  NetworkX DiGraph       │ │  Live_Metrics.xlsx                   │
-│  LangChain EntityGraph  │ │  Business_Operations.xlsx            │
-│  Knowledge_Base.xlsx    │ │  Metadata_Access.xlsx                │
-└───────────────────────┘ └───────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────┐
+│                 Web / Teams / Mobile / API                  │
+└──────────────────────────────┬──────────────────────────────┘
+                               │
+                               ▼
+┌─────────────────────────────────────────────────────────────┐
+│                         API Gateway                         │
+│                      Auth / RateLimit                       │
+└──────────────────────────────┬──────────────────────────────┘
+                               │
+                               ▼
+┌─────────────────────────────────────────────────────────────┐
+│                       AI Orchestrator                       │
+│                   Intent ➔ Plan ➔ Execute                 │
+└──────────────────────────────┬──────────────────────────────┘
+                               │
+         ┌───────────────┬─────┴─────────┬───────────────┐
+         ▼               ▼               ▼               ▼
+   ┌───────────┐   ┌───────────┐   ┌───────────┐   ┌───────────┐
+   │ SQL Agent │   │Graph Agent│   │ RAG Agent │   │ Analytics │
+   └─────┬─────┘   └─────┬─────┘   └─────┬─────┘   └─────┬─────┘
+         │               │               │               │
+         └───────────────┴─────┬─────────┴───────────────┘
+                               │
+                               ▼
+┌─────────────────────────────────────────────────────────────┐
+│                         MCP Gateway                         │
+│       Auth • Policy • Audit • RateLimit • Tool Routing      │
+└──────────────────────────────┬──────────────────────────────┘
+                               │
+                               ▼
+┌─────────────────────────────────────────────────────────────┐
+│                  Enterprise Data Platforms                  │
+│             DuckDB / CSV / Databricks / Delta               │
+└──────────────────────────────┬──────────────────────────────┘
+                               │
+                               ▼
+┌─────────────────────────────────────────────────────────────┐
+│              Verification & Human-in-the-Loop               │
+│               Dual-Pass Check • Action Sign-Off             │
+└─────────────────────────────────────────────────────────────┘
 ```
+
+---
+
+### 🔄 End-to-End System Flow (Mermaid)
+
+```mermaid
+flowchart TD
+    Client["Web / Teams / Mobile / API"]
+    
+    APIGateway["API Gateway<br/>Auth / RateLimit"]
+    
+    Orchestrator["AI Orchestrator<br/>Intent ➔ Plan ➔ Execute"]
+    
+    SQLAgent["SQL Agent"]
+    GraphAgent["Graph Agent"]
+    RAGAgent["RAG Agent"]
+    AnalyticsAgent["Analytics Agent"]
+    
+    MCPGateway["MCP Gateway<br/>Auth • Policy • Audit • RateLimit • Tool Routing"]
+    
+    DataSources[("Enterprise Data Platforms<br/>DuckDB / CSV / Databricks / Delta")]
+    
+    Verification["Verification & Human-in-the-Loop<br/>Dual-Pass Check • Action Approval"]
+
+    Client --> APIGateway
+    APIGateway --> Orchestrator
+    
+    Orchestrator --> SQLAgent
+    Orchestrator --> GraphAgent
+    Orchestrator --> RAGAgent
+    Orchestrator --> AnalyticsAgent
+    
+    SQLAgent --> MCPGateway
+    GraphAgent --> MCPGateway
+    RAGAgent --> MCPGateway
+    AnalyticsAgent --> MCPGateway
+    
+    MCPGateway --> DataSources
+    DataSources --> Verification
+    Verification -.->|Verified Result| Client
+```
+
+---
+
+### 🧩 How Agents, Relation Graph, RAG, and MCP Work Together
+
+Each component solves a specific dimension of enterprise reasoning. When combined, they eliminate the limitations of flat vector search and ungrounded LLM hallucination:
+
+```
+┌──────────────────────────────────────────────────────────────────────────────────────────┐
+│                                   USER QUERY                                             │
+│       "Why did boiler repair productivity decline in London despite sufficient capacity?"│
+└────────────────────────────────────────────┬─────────────────────────────────────────────┘
+                                             │
+                       ┌─────────────────────▼─────────────────────┐
+                       │               AI AGENT                    │
+                       │   (Intent Analysis & Multi-Step Reasoning)│
+                       └───────┬──────────────┬─────────────┬──────┘
+                               │              │             │
+        ┌──────────────────────┘              │             └──────────────────────┐
+        ▼                                     ▼                                    ▼
+┌──────────────┐                     ┌─────────────────┐                  ┌────────────────┐
+│RELATION GRAPH│                     │   RAG SERVICE   │                  │  MCP GATEWAY   │
+│(NetworkX KG) │                     │ (Docs & Manuals)│                  │(Structured DB) │
+└───────┬──────┘                     └────────┬────────┘                  └────────┬───────┘
+        │                                     │                                    │
+        │ • Maps failure modes & codes        │ • Retrieves technical boiler specs │ • Applies RBAC/ABAC (London)
+        │ • Traverses dataset dependencies    │ • Explains cold-weather procedures │ • Query pushdown via DuckDB
+        │ • Identifies SME owners & lineage   │ • Provides maintenance guidance    │ • L1/L2 Semantic Caching
+        │                                     │                                    │
+        └──────────────────────┬──────────────┴─────────────┬──────────────────────┘
+                               │                            │
+                               ▼                            ▼
+                      ┌──────────────────────────────────────────────┐
+                      │             GROUNDED ANSWER SYNTHESIS        │
+                      │  • Lineage Subgraph displayed in UI          │
+                      │  • Dual-Pass Verification of headline claims │
+                      │  • Human-in-the-Loop Action Proposal queued  │
+                      └──────────────────────────────────────────────┘
+```
+
+#### 1. 🤖 AI Agent Loop (`AgentRuntime` & `QueryPlanner`)
+* **Role**: The conductor and reasoning engine.
+* **How it works**: When a question arrives, the `QueryPlanner` decomposes complex, multi-part questions into discrete execution steps. The agent loop iteratively selects tools, inspects returns, self-corrects on edge cases, and chains calls across systems before synthesizing the answer.
+* **Coordination**: The agent does not guess numbers or schema structures. It routes document inquiries to **RAG**, relationship and lineage questions to the **Knowledge Graph**, and KPI/metric queries to the **MCP Gateway**.
+
+#### 2. 🕸️ Relation Graph (`KnowledgeGraphService` / NetworkX)
+* **Role**: Structural connectivity, entity relationships, and governance lineage.
+* **How it works**: Maintained as an in-memory multidimensional `DiGraph` containing entities (e.g., Boilers, Faults, Error Codes, Datasets, SME Owners, Mitigation Steps) and typed edges (`CAUSES`, `RESOLVED_BY`, `DOCUMENTED_IN`, `OWNED_BY`).
+* **Coordination with RAG & MCP**:
+  - When RAG identifies an error code (e.g., `F.28`), the Relation Graph instantly traces which physical datasets capture its telemetry, which parts are required, and which SME data steward governs that domain.
+  - Generates the interactive **Grounding Lineage Subgraph** returned with every chat answer to visually prove how the answer was derived.
+
+#### 3. 📚 Document RAG Service (`rag_service.py`)
+* **Role**: Unstructured contextual knowledge retrieval.
+* **How it works**: Performs vector and BM25 similarity search across boiler technical manuals, operational standard operating procedures (SOPs), and OEM documentation.
+* **Coordination with Graph & Agent**:
+  - Provides the qualitative "how" and "why" behind equipment behavior.
+  - The agent cross-references RAG text extracts against the Relation Graph to verify that manual recommendations match active enterprise inventory and policies.
+
+#### 4. 🛡️ Enterprise MCP Gateway (`app/services/mcp_gateway`)
+* **Role**: Governed, secure, high-performance structured data access.
+* **How it works**:
+  - **Semantic Business Layer**: Translates high-level business metrics (e.g. `quote_to_sale_conversion_rate`, `net_appointments`) into optimized physical SQL queries.
+  - **Zero-Trust ABAC / RBAC**: Enforces data entitlement boundaries (e.g., an Operations Manager for London automatically has `region = 'London'` pushed down into their query).
+  - **Context Minimization & Pushdown**: Executes filtering and aggregation directly in the DuckDB SQL engine and returns capped result sets (`MAX_MCP_ROWS`), preventing LLM context window overflow.
+  - **Multi-Level Semantic Caching**: L1 (entity schema/metadata) and L2 (query results with TTL) eliminate redundant database queries.
+
+#### 5. 🔍 Dual Verification & Human-in-the-Loop Governance
+* **Independent Claim Derivation (`verifier.py`)**: After the agent generates an answer, an isolated verification worker re-runs SQL derivations against the underlying datasets to independently prove all quoted numbers.
+* **Action Approval Queue (`HubStore`)**: When analysis suggests operational modifications (e.g., capacity shift, price changes, forecast overrides), the agent queues a proposed action requiring explicit human sign-off (`Approve` / `Reject`) before any change record is logged.
 
 ---
 
@@ -357,50 +469,6 @@ Export the full Knowledge Graph as nodes and edges for frontend rendering.
 | `Error` | ⚠️ | EA_Error, F2_Error, E9_Error |
 | `Equipment` | 🔧 | Worcester Bosch 4000, Baxi Combi |
 | `Metric` | 📈 | Grid Pressure, Flame Current |
-
----
-
-## 📊 Dataset Schema
-
-All datasets are stored as `.xlsx` files in `app/data/` and auto-generated on first launch.
-
-### `Knowledge_Base.xlsx`
-
-| Column | Type | Description |
-|---|---|---|
-| `source` | string | Source entity (e.g. `Worcester Bosch 4000`) |
-| `relationship` | string | Edge label (e.g. `has_error_code`, `managed_by`) |
-| `target` | string | Target entity (e.g. `EA_Error`) |
-| `details` | string | Human-readable description of the relationship |
-
-### `Live_Metrics.xlsx`
-
-| Column | Description |
-|---|---|
-| `metric_name` | Metric identifier (e.g. `grid_pressure_psi`) |
-| `value` | Current reading |
-| `unit` | Unit of measurement (e.g. `PSI`, `°C`, `L/min`) |
-| `status` | `Normal` / `Warning` / `Critical` |
-| `description` | Human-readable metric description |
-
-### `Business_Operations.xlsx`
-
-| Column | Description |
-|---|---|
-| `dataset` | Source dataset name |
-| `metric` | Metric name (e.g. `total_leads`, `net_sales`) |
-| `value` | Numeric value |
-| `period` | Reporting period |
-
-### `Metadata_Access.xlsx`
-
-| Column | Description |
-|---|---|
-| `user_role` | `Customer` / `Employee` / `Admin` |
-| `data_source` | Dataset name |
-| `access_granted` | `True` / `False` |
-| `description` | Policy description |
-| `reason` | Denial reason (if applicable) |
 
 ---
 
@@ -681,6 +749,69 @@ if __name__ == "__main__":
 
 ---
 
+## ☁️ Multi-Cloud & Databricks Migration
+
+The Utilities Knowledge Hub is designed for zero-code migration between local demo environments (DuckDB / CSV) and enterprise cloud data platforms:
+
+### 1. Databricks Unity Catalog Migration
+To switch the data backend to Databricks Delta Lake:
+1. In `.env`, set:
+   ```env
+   DATA_BACKEND=databricks
+   DATABRICKS_HOST=https://your-workspace.cloud.databricks.com
+   DATABRICKS_TOKEN=dapi...your-pat-token
+   WAREHOUSE_ID=your-sql-warehouse-id
+   ```
+2. The `BaseDataConnector` abstraction automatically routes all SQL pushdown and metadata queries directly to your Databricks SQL Warehouse without changing agent logic or prompt structures.
+
+### 2. Multi-Cloud Target Architecture
+* **Microsoft Azure**: Deploy on Azure Container Apps / App Service with Azure Entra ID authentication and Azure Data Lake Storage (ADLS Gen2) / OneLake integration.
+* **Amazon Web Services (AWS)**: Deploy on AWS ECS / Fargate with AWS IAM and S3 / Glue / Athena data catalog integration.
+
+---
+
+## 🔌 Enterprise MCP Server & Client Setup
+
+The repository includes a standalone FastMCP server in `mcp_server/` that exposes enterprise data tools, prompts, and document resources.
+
+### Running FastMCP Standalone
+```bash
+pip install -e .
+python -m mcp_server.server
+```
+
+### Claude Desktop Integration
+Add the following snippet to your `claude_desktop_config.json`:
+```json
+{
+  "mcpServers": {
+    "utilities-knowledge-hub": {
+      "command": "python",
+      "args": ["-m", "mcp_server.server"],
+      "env": {
+        "DATABRICKS_HOST": "<YOUR_DATABRICKS_HOST>",
+        "DATABRICKS_TOKEN": "<YOUR_TOKEN>",
+        "WAREHOUSE_ID": "<YOUR_WAREHOUSE_ID>"
+      }
+    }
+  }
+}
+```
+
+---
+
+## 🏆 Competitive Differentiation
+
+| Capability | Standard RAG Chatbots | Utilities Knowledge Hub |
+|---|---|---|
+| **Architectural Model** | Single-shot vector RAG only | Hybrid: Knowledge Graph + Document RAG + Multi-Agent + MCP Gateway |
+| **Offline Resilience** | ❌ None (fails without cloud LLM) | ✅ 100% offline deterministic rule-based engine fallback |
+| **Relationship Traversal**| ❌ Isolated flat text chunks | ✅ Multi-hop graph traversal (Boilers ↔ Codes ↔ Faults ↔ Datasets ↔ SMEs) |
+| **Data Pushdown** | ❌ Pulls heavy raw datasets into LLM | ✅ DuckDB / SQL query pushdown & context minimization |
+| **Audit & Governance** | ❌ Ungrounded probabilistic answers | ✅ Dual-pass claim verification & Human-in-the-Loop action approval |
+
+---
+
 ## ⚙️ Configuration Reference
 
 | Variable | Default | Description |
@@ -688,6 +819,10 @@ if __name__ == "__main__":
 | `OPENROUTER_API_KEY` | `""` | OpenRouter (or OpenAI) API key. If unset, deterministic fallback is used. |
 | `OPENROUTER_MODEL_NAME` | `openai/gpt-4o-mini` | LLM model ID for OpenRouter |
 | `OPENROUTER_BASE_URL` | `https://openrouter.ai/api/v1` | API base URL (OpenAI-compatible) |
+| `DATA_BACKEND` | `csv` | Data connector mode: `csv` (local DuckDB) or `databricks` |
+| `DATABRICKS_HOST` | `""` | Databricks workspace URL (when using Databricks backend) |
+| `DATABRICKS_TOKEN` | `""` | Personal Access Token for Databricks |
+| `WAREHOUSE_ID` | `""` | Databricks SQL Warehouse ID |
 | `FLASK_HOST` | `127.0.0.1` | Host address for the Flask dev server |
 | `FLASK_PORT` | `5000` | Port for the Flask dev server |
 | `SECRET_KEY` | *(auto-generated)* | Flask session secret key |

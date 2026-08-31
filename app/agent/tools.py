@@ -11,6 +11,7 @@ from app.agent import demand_forecast as demand_engine
 from app.agent import evidence
 from app.agent import pricing as pricing_engine
 from app.agent.analytics import gbp, join_plain, num, signed_pct
+from app.agent.business_tools import get_business_tools
 
 try:
     from langchain_core.tools import tool
@@ -1394,4 +1395,4 @@ def get_all_tools():
         raise_access_request,
         execute_pandas_query,
         query_business_metric,
-    ]
+    ] + get_business_tools()

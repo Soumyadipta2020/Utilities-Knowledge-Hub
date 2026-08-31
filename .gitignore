@@ -42,11 +42,12 @@ htmlcov/
 .nox/
 .coverage
 .coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-*.py.cover
+# Database / cache files
+*.duckdb
+metadata_cache.duckdb
+*.db
+!data/*.db
+
 .hypothesis/
 .pytest_cache/
 cover/
