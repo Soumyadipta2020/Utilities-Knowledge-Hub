@@ -138,41 +138,65 @@ The Utilities Knowledge Hub is structured in an enterprise-grade, multi-tiered a
 
 ---
 
-### 🔄 End-to-End System Flow (Mermaid)
+### 🔄 End-to-End System Flow
 
-```mermaid
-flowchart TD
-    Client["Web / Teams / Mobile / API"]
-    APIGateway["API Gateway (Auth & RateLimit)"]
-    Classifier["Deterministic Query Router (0 Tokens, Fast)"]
-    Orchestrator["AI Orchestrator (SLM / LLM)"]
-    
-    SQLAgent["SQL Agent"]
-    GraphAgent["Graph Agent"]
-    RAGAgent["RAG Agent"]
-    AnalyticsAgent["Analytics Agent"]
-    
-    MCPGateway["MCP Gateway (Auth, Policy, Audit, Tool Routing)"]
-    DataSources[("Enterprise Data Platforms: DuckDB, CSV, Databricks")]
-    Verification["Selective Dual-Pass Verification (LLM only)"]
-
-    Client --> APIGateway
-    APIGateway --> Classifier
-    Classifier -- "Route SLM or LLM" --> Orchestrator
-    
-    Orchestrator --> SQLAgent
-    Orchestrator --> GraphAgent
-    Orchestrator --> RAGAgent
-    Orchestrator --> AnalyticsAgent
-    
-    SQLAgent --> MCPGateway
-    GraphAgent --> MCPGateway
-    RAGAgent --> MCPGateway
-    AnalyticsAgent --> MCPGateway
-    
-    MCPGateway --> DataSources
-    DataSources --> Verification
-    Verification -. "Verified Result" .-> Client
+```text
+┌─────────────────────────────────────────────────────────────────────────────────────────────┐
+│                                 Web / Teams / Mobile / API                                  │
+└──────────────────────────────────────────────┬──────────────────────────────────────────────┘
+                                               │
+                                               │ [ Natural Language Query ]
+                                               ▼
+┌─────────────────────────────────────────────────────────────────────────────────────────────┐
+│                                    API Gateway & Auth                                       │
+│                               JWT Validation • Rate Limiting                                │
+└──────────────────────────────────────────────┬──────────────────────────────────────────────┘
+                                               │
+                                               ▼
+┌─────────────────────────────────────────────────────────────────────────────────────────────┐
+│                    Deterministic Query Classifier (0 Tokens, <1ms)                          │
+│                Intent Analysis • Multi-Dataset Join Check • Pattern Matching                 │
+│                   ├─► Simple Intent  ➔ Small Language Model (SLM)                           │
+│                   └─► Complex Intent ➔ Large Language Model (LLM)                           │
+└──────────────────────────────────────────────┬──────────────────────────────────────────────┘
+                                               │
+                                               ▼
+┌─────────────────────────────────────────────────────────────────────────────────────────────┐
+│                                 AI Orchestrator & Agents                                    │
+│                       Adaptive Planning • Multi-Step Tool Execution                         │
+│                                                                                             │
+│       ┌───────────────┐     ┌───────────────┐     ┌───────────────┐     ┌───────────────┐   │
+│       │   SQL Agent   │     │  Graph Agent  │     │   RAG Agent   │     │Analytics Agent│   │
+│       │ (Quantitative │     │  (Lineage &   │     │ (OEM Manuals  │     │  (Forecasts & │   │
+│       │  Calculations)│     │ Diagnostics)  │     │    & SOPs)    │     │   Metrics)    │   │
+│       └───────┬───────┘     └───────┬───────┘     └───────┬───────┘     └───────┬───────┘   │
+│               │                     │                     │                     │           │
+│               └─────────────────────┴──────────┬──────────┴─────────────────────┘           │
+└────────────────────────────────────────────────┼────────────────────────────────────────────┘
+                                                 │
+                                                 ▼
+┌─────────────────────────────────────────────────────────────────────────────────────────────┐
+│                                   Enterprise MCP Gateway                                    │
+│             Zero-Trust RBAC & ABAC • L1/L2 Semantic Caching • Audit Logging                 │
+└────────────────────────────────────────────────┬────────────────────────────────────────────┘
+                                                 │
+                                                 ▼
+┌─────────────────────────────────────────────────────────────────────────────────────────────┐
+│                                 Enterprise Data Platforms                                   │
+│                     DuckDB (In-Memory) • CSV Files • Databricks / Delta                      │
+└────────────────────────────────────────────────┬────────────────────────────────────────────┘
+                                                 │
+                                                 ▼
+┌─────────────────────────────────────────────────────────────────────────────────────────────┐
+│                              Verification & HITL Governance                                 │
+│        • Selective Dual-Pass Claim Verification (Triggered for Complex LLM Queries)         │
+│        • Verification Bypassed for Fast SLM Responses                                       │
+│        • Human-in-the-Loop Action Approval Queue (Pricing, Forecasts, Reallocations)         │
+└────────────────────────────────────────────────┬────────────────────────────────────────────┘
+                                                 │
+                                                 │ [ Verified Answer + Interactive Lineage ]
+                                                 ▼
+                                     ( Delivered to Client )
 ```
 
 ---
