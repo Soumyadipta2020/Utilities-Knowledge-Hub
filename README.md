@@ -144,22 +144,22 @@ The Utilities Knowledge Hub is structured in an enterprise-grade, multi-tiered a
 flowchart TD
     Client["Web / Teams / Mobile / API"]
     
-    APIGateway["API Gateway<br/>Auth / RateLimit"]
+    APIGateway["API Gateway<br>Auth / RateLimit"]
     
-    Classifier["Deterministic Query Router<br/>0 Tokens • <1ms • Heuristic Pattern"]
+    Classifier["Deterministic Query Router<br>0 Tokens • Sub-millisecond • Heuristics"]
     
-    Orchestrator["AI Orchestrator<br/>SLM (Simple) / LLM (Complex)"]
+    Orchestrator["AI Orchestrator<br>SLM (Simple) / LLM (Complex)"]
     
     SQLAgent["SQL Agent"]
     GraphAgent["Graph Agent"]
     RAGAgent["RAG Agent"]
     AnalyticsAgent["Analytics Agent"]
     
-    MCPGateway["MCP Gateway<br/>Auth • Policy • Audit • RateLimit • Tool Routing"]
+    MCPGateway["MCP Gateway<br>Auth • Policy • Audit • RateLimit • Tool Routing"]
     
-    DataSources[("Enterprise Data Platforms<br/>DuckDB / CSV / Databricks / Delta")]
+    DataSources[("Enterprise Data Platforms<br>DuckDB / CSV / Databricks / Delta")]
     
-    Verification["Selective Dual-Pass Verification<br/>Active for LLM • Bypassed for SLM"]
+    Verification["Selective Dual-Pass Verification<br>Active for LLM • Bypassed for SLM"]
 
     Client --> APIGateway
     APIGateway --> Classifier
