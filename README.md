@@ -84,62 +84,6 @@ The system operates in two modes:
 
 The Utilities Knowledge Hub is structured in an enterprise-grade, multi-tiered architecture that seamlessly connects client interfaces, intelligent orchestration, specialized sub-agents, an **Enterprise MCP Gateway**, and zero-trust verification.
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                 Web / Teams / Mobile / API                  │
-└──────────────────────────────┬──────────────────────────────┘
-                               │
-                               ▼
-┌─────────────────────────────────────────────────────────────┐
-│                         API Gateway                         │
-│                      Auth / RateLimit                       │
-└──────────────────────────────┬──────────────────────────────┘
-                               │
-                               ▼
-┌─────────────────────────────────────────────────────────────┐
-│            Deterministic Query Classifier (0 Tokens)        │
-│       Intent • Dataset Join Check • <1ms Heuristics         │
-│          ├─► Simple Intent  ➔ Small Language Model (SLM)    │
-│          └─► Complex Intent ➔ Large Language Model (LLM)    │
-└──────────────────────────────┬──────────────────────────────┘
-                               │
-                               ▼
-┌─────────────────────────────────────────────────────────────┐
-│                       AI Orchestrator                       │
-│                   Intent ➔ Plan ➔ Execute                   │
-└──────────────────────────────┬──────────────────────────────┘
-                               │
-         ┌───────────────┬─────┴─────────┬───────────────┐
-         ▼               ▼               ▼               ▼
-   ┌───────────┐   ┌───────────┐   ┌───────────┐   ┌───────────┐
-   │ SQL Agent │   │Graph Agent│   │ RAG Agent │   │ Analytics │
-   └─────┬─────┘   └─────┬─────┘   └─────┬─────┘   └─────┬─────┘
-         │               │               │               │
-         └───────────────┴─────┬─────────┴───────────────┘
-                               │
-                               ▼
-┌─────────────────────────────────────────────────────────────┐
-│                         MCP Gateway                         │
-│       Auth • Policy • Audit • RateLimit • Tool Routing      │
-└──────────────────────────────┬──────────────────────────────┘
-                               │
-                               ▼
-┌─────────────────────────────────────────────────────────────┐
-│                  Enterprise Data Platforms                  │
-│             DuckDB / CSV / Databricks / Delta               │
-└──────────────────────────────┬──────────────────────────────┘
-                               │
-                               ▼
-┌─────────────────────────────────────────────────────────────┐
-│              Verification & Human-in-the-Loop               │
-│     Selective Dual-Pass Check (LLM only) • Action Sign-Off  │
-└─────────────────────────────────────────────────────────────┘
-```
-
----
-
-### 🔄 End-to-End System Flow
-
 ```text
 ┌─────────────────────────────────────────────────────────────────────────────────────────────┐
 │                                 Web / Teams / Mobile / API                                  │
