@@ -22,9 +22,14 @@ SECRET_KEY = os.getenv("SECRET_KEY", "utilities-knowledge-hub-secret-key-2026")
 
 # OpenRouter / LLM Settings
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", os.getenv("OPENAI_API_KEY", ""))
-OPENROUTER_MODEL_NAME = os.getenv("OPENROUTER_MODEL_NAME", os.getenv("LLM_MODEL", "google/gemma-4-26b-a4b-it:free"))
 OPENROUTER_BASE_URL = os.getenv("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1")
+
+ROUTER_MODE = os.getenv("ROUTER_MODE", "deterministic").strip().lower()
+CLASSIFIER_MODEL_NAME = os.getenv("CLASSIFIER_MODEL_NAME", "meta-llama/llama-3-8b-instruct:free")
+SLM_MODEL_NAME = os.getenv("SLM_MODEL_NAME", "meta-llama/llama-3-8b-instruct:free")
+LLM_MODEL_NAME = os.getenv("LLM_MODEL_NAME", "google/gemini-pro-1.5-exp")
+SLM_FALLBACK_MODEL_NAME = os.getenv("SLM_FALLBACK_MODEL_NAME", "nvidia/nemotron-3.5-lightning:free")
+LLM_FALLBACK_MODEL_NAME = os.getenv("LLM_FALLBACK_MODEL_NAME", "anthropic/claude-3-haiku")
 
 # Legacy aliases for backwards compatibility
 OPENAI_API_KEY = OPENROUTER_API_KEY
-DEFAULT_MODEL_NAME = OPENROUTER_MODEL_NAME

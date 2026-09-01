@@ -26,7 +26,6 @@ from app.config import (
     SECRET_KEY,
     TEMPLATES_DIR,
     OPENROUTER_API_KEY,
-    OPENROUTER_MODEL_NAME,
     OPENROUTER_BASE_URL,
     DATA_DIR,
 )
@@ -123,12 +122,22 @@ def _warm_planning_agents() -> None:
 threading.Thread(target=_warm_planning_agents, name="planning-warm", daemon=True).start()
 
 # Build LangChain executor (if OpenRouter API key exists)
-agent_executor = build_agent_executor(OPENROUTER_API_KEY, OPENROUTER_MODEL_NAME, OPENROUTER_BASE_URL)
+def _build_runtime(model_name: str, fallback_model_name: str = "") -> AgentRuntime:
+    executor = build_agent_executor(OPENROUTER_API_KEY, model_name, OPENROUTER_BASE_URL, fallback_model_name)
+    return AgentRuntime(
+        executor, get_all_tools(), DATA_DIR, sql_service=sql_service, store=hub_store
+    )
 
-# Compile the agent graph and cache dataset schemas once, at boot.
-agent_runtime = AgentRuntime(
-    agent_executor, get_all_tools(), DATA_DIR, sql_service=sql_service, store=hub_store
-)
+print("\n--- Initializing AI Model Pipelines ---")
+print(f"[Boot] SLM Config: Primary='{model_router.slm_model}' | Fallback='{model_router.slm_fallback}'")
+slm_runtime = _build_runtime(model_router.slm_model, model_router.slm_fallback)
+
+print(f"[Boot] LLM Config: Primary='{model_router.llm_model}' | Fallback='{model_router.llm_fallback}'")
+llm_runtime = _build_runtime(model_router.llm_model, model_router.llm_fallback)
+print("----------------------------------------\n")
+
+# Default for watchtower/verifier
+agent_runtime = llm_runtime
 
 # Conversation history lives server-side so the streaming endpoint can append to
 # it after the response has already started (Flask sessions cannot be written
@@ -497,12 +506,17 @@ def chat_api():
         session["conversation_scope"] = user_email.casefold()
         chat_history = _get_history(user_email)
 
+        route_info = model_router.route_request(user_message)
+        complexity = route_info["complexity"]
+        selected_runtime = llm_runtime if complexity == "complex" else slm_runtime
+        print(f"[Chat API] Processing request with {complexity.upper()} pipeline ({route_info['selected_model']})")
+
         # Run the agent loop; the deterministic router answers only as fallback.
         agent_response = process_chat_message(
             user_input=user_message,
             user_email=user_email,
             chat_history=chat_history,
-            runtime=agent_runtime,
+            runtime=selected_runtime,
         )
 
         agent_response, _ = charts_module.sanitize_answer(agent_response)
@@ -554,6 +568,11 @@ def chat_stream_api():
     session["conversation_scope"] = user_email.casefold()
     chat_history = _get_history(user_email)
 
+    route_info = model_router.route_request(user_message)
+    complexity = route_info["complexity"]
+    selected_runtime = llm_runtime if complexity == "complex" else slm_runtime
+    print(f"[Chat Stream] Processing stream request with {complexity.upper()} pipeline ({route_info['selected_model']})")
+
     def generate():
         def sse(event: dict) -> str:
             return f"data: {json.dumps(event, default=str)}\n\n"
@@ -561,7 +580,7 @@ def chat_stream_api():
         answer = ""
         proposed_ids: list[str] = []
         try:
-            for event in agent_runtime.stream(user_message, user_email, chat_history):
+            for event in selected_runtime.stream(user_message, user_email, chat_history):
                 if event.get("type") == "done":
                     proposed_ids = (event.get("evidence") or {}).get("proposed_action_ids", [])
                 if event.get("type") == "answer":
@@ -590,11 +609,13 @@ def chat_stream_api():
 
             # Independent second derivation of the load-bearing numbers. Runs
             # after the answer is already on screen so it never delays it.
+            # Only needed for complex queries handled by LLM, skipped for simple SLM queries.
             verification = {"checked": 0, "confidence": "unchecked", "results": []}
-            if answer and VERIFY_ANSWERS and agent_runtime.available:
+            if answer and VERIFY_ANSWERS and selected_runtime.available and complexity == "complex":
+                print(f"[Verification] Complex query detected - verifying headline figures with LLM: {route_info['selected_model']}")
                 yield sse({"type": "status", "state": "verifying",
                            "text": "Independently re-deriving the headline figures"})
-                verification = verifier_module.verify_answer(agent_executor, agent_runtime, answer)
+                verification = verifier_module.verify_answer(selected_runtime.llm, selected_runtime, answer)
                 # Persisted before it is streamed so each claim carries an id the
                 # accept/discard buttons can decide against.
                 if verification.get("results"):
@@ -605,6 +626,8 @@ def chat_stream_api():
                         results=verification["results"],
                     )
                 yield sse({"type": "verification", **verification})
+            elif complexity != "complex":
+                print("[Verification] Simple query (SLM) - verification skipped.")
 
             # Recommendations are surfaced only AFTER verification, and only the
             # ones this answer actually proposed - showing every still-pending
@@ -783,7 +806,7 @@ def generate_briefing_api():
             material = briefing_module.material_from_thread(_get_history(user_email))
             title = str(payload.get("title") or "Analysis Briefing")
 
-        text = briefing_module.generate_briefing(agent_executor, title, material, audience)
+        text = briefing_module.generate_briefing(agent_runtime.llm, title, material, audience)
         return jsonify({"success": True, "briefing": text, "source": source})
     except Exception as error:  # noqa: BLE001
         print(f"[Briefing API Error]: {error}")
@@ -1061,7 +1084,7 @@ def compare_stream_api():
         # the agent and surface it as soon as it lands rather than serialising.
         pool = ThreadPoolExecutor(max_workers=1)
         baseline_future = pool.submit(
-            run_baseline_chat, agent_executor, user_message, baseline_history, rag_service
+            run_baseline_chat, agent_runtime.llm, user_message, baseline_history, rag_service
         )
 
         agent_answer = ""
@@ -1848,7 +1871,7 @@ def suggest_graph_relation_api():
             }), 400
 
         context = graph_service.get_relation_suggestion_context(source, target)
-        suggestion = suggest_graph_relationship(context, executor=agent_executor)
+        suggestion = suggest_graph_relationship(context, executor=agent_runtime.llm)
 
         def summarize_object(object_context):
             return {

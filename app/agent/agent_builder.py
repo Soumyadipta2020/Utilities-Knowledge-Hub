@@ -11,6 +11,7 @@ from typing import Any, Callable, Sequence
 try:
     from langchain_openai import ChatOpenAI
     from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
+    from langchain_core.callbacks import BaseCallbackHandler
     HAS_LANGCHAIN = True
 except ImportError:
     HAS_LANGCHAIN = False
@@ -18,6 +19,23 @@ except ImportError:
     HumanMessage = None
     SystemMessage = None
     AIMessage = None
+    BaseCallbackHandler = object
+
+
+class ModelLoggingHandler(BaseCallbackHandler):
+    """Logs LLM calls and fallbacks to console."""
+
+    def __init__(self, model_tag: str = ""):
+        super().__init__()
+        self.model_tag = model_tag
+
+    def on_llm_start(self, serialized: dict[str, Any], prompts: list[str], *, invocation_params: dict[str, Any] | None = None, **kwargs: Any) -> None:
+        model = (invocation_params or {}).get("model") or (invocation_params or {}).get("model_name") or self.model_tag or "unknown"
+        print(f"[Model Execution] Model in use: '{model}'")
+
+    def on_llm_error(self, error: BaseException, **kwargs: Any) -> None:
+        tag = f" '{self.model_tag}'" if self.model_tag else ""
+        print(f"[Model Execution] Model{tag} encountered error: {error}. Falling back...")
 
 from app.agent.tools import (
     check_data_access,
@@ -171,6 +189,7 @@ def build_agent_executor(
     api_key: str = "",
     model_name: str = "",
     base_url: str = "",
+    fallback_model_name: str = "",
 ) -> Any:
     """Build LangChain AgentExecutor for OpenRouter / OpenAI models if API key is provided."""
     if not HAS_LANGCHAIN:
@@ -181,7 +200,7 @@ def build_agent_executor(
         print("[AgentBuilder] Info: No valid OpenRouter API key provided. Using deterministic fallback engine.")
         return None
 
-    model = model_name or os.getenv("OPENROUTER_MODEL_NAME") or os.getenv("LLM_MODEL", "openai/gpt-4o-mini")
+    model = model_name or os.getenv("LLM_MODEL_NAME", "openai/gpt-4o-mini")
     url = base_url or os.getenv("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1")
 
     try:
@@ -190,15 +209,8 @@ def build_agent_executor(
             "model": model,
             "temperature": 0.1,
             "base_url": url,
-            # Gateways return transient 429/503 under load. Without retries a
-            # single blip aborts the whole agent run and discards the tool work
-            # already done, dropping the answer to the deterministic fallback.
             "max_retries": int(os.getenv("LLM_MAX_RETRIES", "5")),
             "timeout": float(os.getenv("LLM_TIMEOUT_SECONDS", "90")),
-            # Gateways reserve credit against max_tokens, not actual usage. Left
-            # unset this defaults to the model's full window (64k+), which makes
-            # a limited key return "402 - requires more credits" even when the
-            # answer needs a fraction of it. Answers here run well under 4k.
             "max_tokens": int(os.getenv("LLM_MAX_TOKENS", "4096")),
         }
         if "openrouter.ai" in url:
@@ -207,7 +219,21 @@ def build_agent_executor(
                 "X-Title": "Utilities Knowledge Hub Chatbot",
             }
 
-        llm = ChatOpenAI(**kwargs)
+        primary_kwargs = dict(kwargs)
+        if HAS_LANGCHAIN and BaseCallbackHandler is not object:
+            primary_kwargs["callbacks"] = [ModelLoggingHandler(model_tag=model)]
+
+        llm = ChatOpenAI(**primary_kwargs)
+        
+        if fallback_model_name:
+            fallback_kwargs = dict(kwargs)
+            fallback_kwargs["model"] = fallback_model_name
+            if HAS_LANGCHAIN and BaseCallbackHandler is not object:
+                fallback_kwargs["callbacks"] = [ModelLoggingHandler(model_tag=f"{fallback_model_name} (fallback)")]
+            fallback_llm = ChatOpenAI(**fallback_kwargs)
+            llm = llm.with_fallbacks([fallback_llm])
+            
+        print(f"[AgentBuilder] Initialized ChatOpenAI: Primary='{model}' | Fallback='{fallback_model_name or 'None'}'")
         return llm
     except Exception as e:
         print(f"[AgentBuilder] Warning: Could not initialize OpenRouter ChatAgent ({e}). Using rule-based engine.")

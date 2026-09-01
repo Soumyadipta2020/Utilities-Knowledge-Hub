@@ -64,6 +64,9 @@ The system operates in two modes:
 
 | Feature | Description |
 |---|---|
+| ⚡ **Adaptive SLM/LLM Routing** | Zero-token deterministic classifier (<1ms) routes simple queries to SLMs and complex multi-dataset queries to LLMs |
+| 🛡️ **Dual-Model Fallback Resilience** | Automatic failover to secondary models per tier, with rule-based deterministic fallback for offline durability |
+| 🔍 **Selective Dual-Pass Verifier** | Verifies headline numbers on complex LLM queries; bypasses simple SLM queries for sub-second speed |
 | 🕸️ **Knowledge Graph RAG** | NetworkX + LangChain `NetworkxEntityGraph` for hybrid document + graph retrieval |
 | 🤖 **AI Agentic Chatbot** | LangChain-powered agent with 9 custom tools and a deterministic fallback engine |
 | 🔒 **Role-Based Access Control** | `Customer / Employee / Admin` permission tiers enforced per dataset |
@@ -94,8 +97,16 @@ The Utilities Knowledge Hub is structured in an enterprise-grade, multi-tiered a
                                │
                                ▼
 ┌─────────────────────────────────────────────────────────────┐
+│            Deterministic Query Classifier (0 Tokens)        │
+│       Intent • Dataset Join Check • <1ms Heuristics         │
+│          ├─► Simple Intent  ➔ Small Language Model (SLM)    │
+│          └─► Complex Intent ➔ Large Language Model (LLM)    │
+└──────────────────────────────┬──────────────────────────────┘
+                               │
+                               ▼
+┌─────────────────────────────────────────────────────────────┐
 │                       AI Orchestrator                       │
-│                   Intent ➔ Plan ➔ Execute                 │
+│                   Intent ➔ Plan ➔ Execute                   │
 └──────────────────────────────┬──────────────────────────────┘
                                │
          ┌───────────────┬─────┴─────────┬───────────────┐
@@ -121,7 +132,7 @@ The Utilities Knowledge Hub is structured in an enterprise-grade, multi-tiered a
                                ▼
 ┌─────────────────────────────────────────────────────────────┐
 │              Verification & Human-in-the-Loop               │
-│               Dual-Pass Check • Action Sign-Off             │
+│     Selective Dual-Pass Check (LLM only) • Action Sign-Off  │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -135,7 +146,9 @@ flowchart TD
     
     APIGateway["API Gateway<br/>Auth / RateLimit"]
     
-    Orchestrator["AI Orchestrator<br/>Intent ➔ Plan ➔ Execute"]
+    Classifier["Deterministic Query Router<br/>0 Tokens • <1ms • Heuristic Pattern"]
+    
+    Orchestrator["AI Orchestrator<br/>SLM (Simple) / LLM (Complex)"]
     
     SQLAgent["SQL Agent"]
     GraphAgent["Graph Agent"]
@@ -146,10 +159,11 @@ flowchart TD
     
     DataSources[("Enterprise Data Platforms<br/>DuckDB / CSV / Databricks / Delta")]
     
-    Verification["Verification & Human-in-the-Loop<br/>Dual-Pass Check • Action Approval"]
+    Verification["Selective Dual-Pass Verification<br/>Active for LLM • Bypassed for SLM"]
 
     Client --> APIGateway
-    APIGateway --> Orchestrator
+    APIGateway --> Classifier
+    Classifier -->|Route to SLM or LLM| Orchestrator
     
     Orchestrator --> SQLAgent
     Orchestrator --> GraphAgent
@@ -336,8 +350,15 @@ cp .env.example .env
 # Required for LLM-augmented mode (optional — app works without this)
 OPENROUTER_API_KEY=your_openrouter_api_key_here
 
-# Default model — any OpenRouter-compatible model ID
-OPENROUTER_MODEL_NAME=openai/gpt-4o-mini
+# Query Router Mode: deterministic (0 tokens, instant) or llm (uses classifier model)
+ROUTER_MODE=deterministic
+
+# Models
+SLM_MODEL_NAME=nvidia/nemotron-3.5-lightning:free
+SLM_FALLBACK_MODEL_NAME=liquid/lfm-2.5-2.6b:free
+
+LLM_MODEL_NAME=google/gemma-4-26b-a4b-it:free
+LLM_FALLBACK_MODEL_NAME=nvidia/nemotron-3-super-120b-a12b:free
 
 # OpenRouter API base URL
 OPENROUTER_BASE_URL=https://openrouter.ai/api/v1
@@ -733,7 +754,7 @@ services:
 3. Connect your GitHub repo.
 4. Add the following **Environment Variables** in Render:
    - `OPENROUTER_API_KEY` — your OpenRouter API key
-   - `OPENROUTER_MODEL_NAME` — (optional) e.g. `openai/gpt-4o-mini`
+   - `CLASSIFIER_MODEL_NAME`, `SLM_MODEL_NAME`, `LLM_MODEL_NAME` — (optional) explicitly specify models
 5. Deploy — Render will use `render.yaml` automatically.
 
 ### Posit Connect Cloud
@@ -817,7 +838,11 @@ Add the following snippet to your `claude_desktop_config.json`:
 | Variable | Default | Description |
 |---|---|---|
 | `OPENROUTER_API_KEY` | `""` | OpenRouter (or OpenAI) API key. If unset, deterministic fallback is used. |
-| `OPENROUTER_MODEL_NAME` | `openai/gpt-4o-mini` | LLM model ID for OpenRouter |
+| `ROUTER_MODE` | `deterministic` | Routing mode: `deterministic` (0 tokens, <1ms) or `llm` |
+| `SLM_MODEL_NAME` | `nvidia/nemotron-3.5-lightning:free` | Model ID for simple queries (SLM) |
+| `SLM_FALLBACK_MODEL_NAME` | `liquid/lfm-2.5-2.6b:free` | Automatic fallback model for SLM tier |
+| `LLM_MODEL_NAME` | `google/gemma-4-26b-a4b-it:free` | Model ID for complex analytical queries (LLM) |
+| `LLM_FALLBACK_MODEL_NAME` | `nvidia/nemotron-3-super-120b-a12b:free` | Automatic fallback model for LLM tier |
 | `OPENROUTER_BASE_URL` | `https://openrouter.ai/api/v1` | API base URL (OpenAI-compatible) |
 | `DATA_BACKEND` | `csv` | Data connector mode: `csv` (local DuckDB) or `databricks` |
 | `DATABRICKS_HOST` | `""` | Databricks workspace URL (when using Databricks backend) |

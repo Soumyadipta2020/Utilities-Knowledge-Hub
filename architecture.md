@@ -9,10 +9,11 @@
 
 The **Utilities Knowledge Hub** is an enterprise AI decision intelligence and operations platform built specifically for gas, heating, and utility service providers. It transitions enterprise AI from basic unstructured document search (chatbots) into an **auditable, deterministic, and governed operational co-pilot**.
 
-Traditional AI chatbots suffer from hallucinations, lack of business context, and unverified calculations. The Utilities Knowledge Hub solves this through a **tri-tier hybrid architecture**:
+Traditional AI chatbots suffer from hallucinations, lack of business context, and unverified calculations. The Utilities Knowledge Hub solves this through a **quad-tier hybrid architecture**:
 1. **Multi-Agent Orchestration & Domain Specialists**: Autonomous reasoning agents with specialized business briefs (Commercial, Demand Forecasting, Pricing, Capacity, Reliability, Governance).
 2. **Semantic Knowledge Graph**: A dynamically synthesized relational graph that unifies cross-silo lineage, domain taxonomies, shared entity keys (`customer_id`, `boiler_id`, etc.), and equipment diagnostic trees.
 3. **Enterprise MCP Gateway (Model Context Protocol)**: A secure, zero-trust semantic data layer that provides governed, cached, and role-restricted query execution into high-speed analytical engines (DuckDB/SQL) with complete auditability.
+4. **Adaptive SLM/LLM Model Routing & Verification**: A zero-token deterministic classifier that routes simple inquiries to Small Language Models (SLMs) and complex multi-dataset investigations to Large Language Models (LLMs), with automated per-tier fallbacks and selective dual-pass reverification.
 
 ---
 
@@ -27,7 +28,16 @@ Traditional AI chatbots suffer from hallucinations, lack of business context, an
                                                  │ [ Natural Language Business Query ]
                                                  ▼
 ┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
-│                         2. AI SUPERVISOR & INTENT CLASSIFICATION LAYER                          │
+│                   2. ZERO-TOKEN DETERMINISTIC QUERY CLASSIFIER & ROUTER                         │
+│       Instantaneous (<1ms) heuristic analysis of intent, keywords, & multi-dataset joins       │
+│               • SIMPLE: Routed to Small Language Model (SLM) [Bypasses Reverification]          │
+│               • COMPLEX: Routed to Large Language Model (LLM) [Enables Claim Reverification]    │
+│               • Per-Tier Fallback: Auto-failover to backup model, then deterministic engine     │
+└────────────────────────────────────────────────┬────────────────────────────────────────────────┘
+                                                 │
+                                                 ▼
+┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                         3. AI SUPERVISOR & INTENT CLASSIFICATION LAYER                          │
 │               Analyzes business intent (commercial, pricing, demand, reliability)               │
 │               and routes inquiry to the dedicated domain expert specialist                      │
 └────────────────────────────────────────────────┬────────────────────────────────────────────────┘
@@ -50,7 +60,7 @@ Traditional AI chatbots suffer from hallucinations, lack of business context, an
                                                  │
                                                  ▼
 ┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
-│                    3. UNIFIED KNOWLEDGE & SEMANTIC DATA ACCESS GATEWAY                          │
+│                    4. UNIFIED KNOWLEDGE & SEMANTIC DATA ACCESS GATEWAY                          │
 │                                                                                                 │
 │  ┌──────────────────────────┐  ┌──────────────────────────┐  ┌───────────────────────────────┐  │
 │  │     KNOWLEDGE GRAPH      │  │       DOCUMENT RAG       │  │    ENTERPRISE MCP GATEWAY     │  │
@@ -65,7 +75,7 @@ Traditional AI chatbots suffer from hallucinations, lack of business context, an
                 │                             │                                │
                 ▼                             ▼                                ▼
 ┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
-│                           4. ENTERPRISE DATA & REPOSITORY LAYER                                 │
+│                           5. ENTERPRISE DATA & REPOSITORY LAYER                                 │
 │   ┌──────────────────────────┐  ┌──────────────────────────┐  ┌──────────────────────────────┐  │
 │   │    DuckDB SQL Engine     │  │ Operational Data (CSV)   │  │   Security & Audit Logs      │  │
 │   │ (High-Speed In-Memory)   │  │ Telemetry / Quotes / ERP │  │  Complete Query Tracing      │  │
@@ -74,12 +84,12 @@ Traditional AI chatbots suffer from hallucinations, lack of business context, an
                                                  │
                                                  ▼
 ┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
-│                     5. VERIFICATION & HUMAN-IN-THE-LOOP GOVERNANCE                              │
+│                     6. VERIFICATION & HUMAN-IN-THE-LOOP GOVERNANCE                              │
 │                                                                                                 │
 │   ┌──────────────────────────────────────────────┐ ┌──────────────────────────────────────────┐ │
-│   │        Dual-Pass Claim Verifier 🔍           │ │     Human-in-the-Loop Action Queue 🚦    │ │
-│   │  Re-executes independent SQL derivations to  │ │  Operational moves (pricing, forecasts,  │ │
-│   │  guarantee zero-hallucination metric facts   │ │  capacity shifts) require human approval │ │
+│   │    Selective Dual-Pass Claim Verifier 🔍     │ │     Human-in-the-Loop Action Queue 🚦    │ │
+│   │  Re-executes independent SQL derivations for │ │  Operational moves (pricing, forecasts,  │ │
+│   │  complex LLM queries (bypassed for SLMs)     │ │  capacity shifts) require human approval │ │
 │   └──────────────────────┬───────────────────────┘ └────────────────────┬─────────────────────┘ │
 └──────────────────────────┼──────────────────────────────────────────────┼───────────────────────┘
                            │                                              │
@@ -241,10 +251,69 @@ When a user asks a question, the LLM retrieves information through an orchestrat
    - **Knowledge Graph Traversal (`query_knowledge_graph`)**: Multi-hop graph lookups that reveal non-obvious entity linkages (e.g., which SME data steward manages the database backing a particular field metric).
 3. **Unstructured Document Access (Qualitative Guidelines)**:
    - **Document RAG (`rag_service.py`)**: Hybrid vector and lexical search across technical manuals, manufacturer SOPs, and warranty terms.
-4. **Dual-Pass Verification (`verifier.py`)**:
-   - Every headline number or financial assertion generated by the LLM is passed through an independent programmatic verification check to ensure mathematical accuracy before reaching the user.
+4. **Selective Dual-Pass Verification (`verifier.py`)**:
+   - Headline numbers and financial assertions generated for **complex queries (LLM)** undergo an independent programmatic verification check against raw DuckDB tables.
+   - For **simple queries (SLM)**, verification is automatically bypassed to eliminate unnecessary model calls and achieve sub-second latency.
 5. **Interactive Lineage Subgraphs**:
    - The UI automatically renders an interactive visual graph alongside the answer, demonstrating the exact data files, metrics, and relationships used to construct the response.
+
+---
+
+### 5. Adaptive Model Routing: Zero-Token Deterministic SLM/LLM Engine
+
+To maximize cost efficiency and operational speed, the platform replaces one-size-fits-all model routing with an **instantaneous, zero-token deterministic query classifier** (`DeterministicClassifier` in `app/services/router/model_router.py`):
+
+```
+                                  ┌───────────────────────────────┐
+                                  │      Incoming User Query      │
+                                  └───────────────┬───────────────┘
+                                                  │
+                                                  ▼
+                                  ┌───────────────────────────────┐
+                                  │   Deterministic Classifier    │
+                                  │   • Intent & Regex Pattern    │
+                                  │   • Multi-Dataset Join Check  │
+                                  │   • Analytical Keyword Scan   │
+                                  │   • 0 Tokens  •  <1ms Latency │
+                                  └───────┬───────────────┬───────┘
+                                          │               │
+                     ┌────────────────────┘               └────────────────────┐
+                     ▼ [SIMPLE Intent]                                         ▼ [COMPLEX Intent]
+        ┌─────────────────────────┐                               ┌─────────────────────────┐
+        │ Small Language Model    │                               │ Large Language Model    │
+        │ (SLM_MODEL_NAME)        │                               │ (LLM_MODEL_NAME)        │
+        └────────────┬────────────┘                               └────────────┬────────────┘
+                     │ Failover                                                │ Failover
+                     ▼                                                         ▼
+        ┌─────────────────────────┐                               ┌─────────────────────────┐
+        │ SLM Fallback Model      │                               │ LLM Fallback Model      │
+        │ (SLM_FALLBACK_MODEL)    │                               │ (LLM_FALLBACK_MODEL)    │
+        └────────────┬────────────┘                               └────────────┬────────────┘
+                     │                                                         │
+                     ▼                                                         ▼
+        ┌─────────────────────────┐                               ┌─────────────────────────┐
+        │ Fast Response           │                               │ Deep Reasoning Loop     │
+        │ [Skip Reverification]   │                               │ + Dual-Pass Verifier    │
+        └─────────────────────────┘                               └─────────────────────────┘
+```
+
+#### How the Deterministic Classification Logic Works:
+- **Zero-Token Operation**: Unlike model-based routers that consume 100–300 tokens and add 1–2 seconds of network round-trip time just to classify a question, the deterministic classifier executes in `<1ms` in Python without sending any API calls.
+- **Fast-Path to Simple (SLM)**:
+  - *Conversational*: Greetings (`hi`, `hello`), help, or capability checks.
+  - *Access & Permissions*: Direct entitlement questions (`check access`, `do I have access`, `raise ticket`).
+  - *Governance & Metadata*: Owner/SME lookups (`who is the sme`, `who owns dataset X`, `storage provider`).
+  - *Direct Entity Lookup*: Specific record identifiers (`CUST00007`, `ENG014`, `JOB000001`) with short length ($\le 14$ words).
+  - *Previews & Definitions*: `sample`, `preview`, `glimpse`, or basic metric definitions (`what is boiler pressure`).
+- **Triggers for Complex (LLM)**:
+  - *Multi-Dataset Joins*: Detects when $\ge 2$ enterprise datasets are referenced simultaneously (e.g., `appointment_schedule` + `visit_outcome`), indicating a relational join is needed.
+  - *Causality & Root-Cause*: Keywords like `why`, `root cause`, `investigate`, `what caused`, `explain the dip`.
+  - *Comparative & Forecasting*: `compare`, `versus`, `forecast`, `projection`, `trend`, `seasonality`.
+  - *Financial & Operational Impact*: `sensitivity`, `cost to serve`, `lost revenue`, `deferred revenue`, `jobs at risk`.
+  - *Compound Questions*: Multiple question marks ($\ge 2$) or questions with high token density ($> 18$ words).
+- **Automated Dual Fallback Resilience**:
+  - Each tier is equipped with a backup model via LangChain's `.with_fallbacks()` mechanism (e.g. if the primary LLM/SLM encounters a 404, 429 rate limit, or timeout, it automatically and silently failovers to the backup model).
+  - If all external API models fail, the system falls back to the **offline deterministic rule-based engine**, ensuring zero user-facing outages.
 
 ---
 
@@ -461,6 +530,7 @@ If referring to the **Linear.app pattern** (local-first SQLite/IndexedDB in the 
 | **6. Auditability & Lineage Explainability** | **Opaque "Black Box" Citations**.<br>Quotes generic document filenames or text snippets without proving data provenance. | **Interactive Lineage Subgraphs**.<br>Every answer generates a visual sub-graph displaying the exact data files, join keys (`lead_id`, `boiler_id`), and Subject Matter Expert (SME) data stewards. | **Complete transparency**. Regulators and auditors can trace any metric back to its original database and data owner. |
 | **7. Operational Actionability** | **Passive Read-Only Responses**.<br>Provides conversational answers but cannot propose, queue, or trigger governed operational workflows. | **Human-in-the-Loop (HITL) Action Proposals**.<br>Identifies required business interventions (e.g. price book updates, stock reallocations) and queues structured **Proposed Action Cards** for executive approval. | Bridges the gap between passive insight and active operational execution while keeping human leaders firmly in control. |
 | **8. Offline & Enterprise Resilience** | **Cloud-Dependent / Single Point of Failure**.<br>If the external LLM API experiences an outage, rate limit, or internet disruption, the chatbot fails entirely. | **Dual-Mode Engine (Deterministic Fallback)**.<br>Operates fully offline without an API key using rule-based and Knowledge Graph routing, or switches to LLM mode when connected. | **Zero downtime**. Field technicians and operations centers retain access to diagnostic knowledge and data metrics 24/7/365. |
+| **9. Model Routing & Scale Efficiency** | **Monolithic One-Size-Fits-All Model**.<br>Routes every greeting, access request, and complex SQL query through the same expensive, slow LLM. | **Adaptive SLM/LLM Routing with Fallbacks**.<br>Zero-token deterministic classifier (<1ms) routes simple questions to lightweight SLMs and complex multi-dataset joins to LLMs, with auto-fallback on error and selective verification. | **Drastically reduced API token spend**, instant response times for common queries, and resilience against model downtime. |
 
 ---
 
