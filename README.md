@@ -143,27 +143,22 @@ The Utilities Knowledge Hub is structured in an enterprise-grade, multi-tiered a
 ```mermaid
 flowchart TD
     Client["Web / Teams / Mobile / API"]
-    
-    APIGateway["API Gateway<br>Auth / RateLimit"]
-    
-    Classifier["Deterministic Query Router<br>0 Tokens • Sub-millisecond • Heuristics"]
-    
-    Orchestrator["AI Orchestrator<br>SLM (Simple) / LLM (Complex)"]
+    APIGateway["API Gateway (Auth & RateLimit)"]
+    Classifier["Deterministic Query Router (0 Tokens, Fast)"]
+    Orchestrator["AI Orchestrator (SLM / LLM)"]
     
     SQLAgent["SQL Agent"]
     GraphAgent["Graph Agent"]
     RAGAgent["RAG Agent"]
     AnalyticsAgent["Analytics Agent"]
     
-    MCPGateway["MCP Gateway<br>Auth • Policy • Audit • RateLimit • Tool Routing"]
-    
-    DataSources[("Enterprise Data Platforms<br>DuckDB / CSV / Databricks / Delta")]
-    
-    Verification["Selective Dual-Pass Verification<br>Active for LLM • Bypassed for SLM"]
+    MCPGateway["MCP Gateway (Auth, Policy, Audit, Tool Routing)"]
+    DataSources[("Enterprise Data Platforms: DuckDB, CSV, Databricks")]
+    Verification["Selective Dual-Pass Verification (LLM only)"]
 
     Client --> APIGateway
     APIGateway --> Classifier
-    Classifier -->|Route to SLM or LLM| Orchestrator
+    Classifier -- "Route SLM or LLM" --> Orchestrator
     
     Orchestrator --> SQLAgent
     Orchestrator --> GraphAgent
@@ -177,7 +172,7 @@ flowchart TD
     
     MCPGateway --> DataSources
     DataSources --> Verification
-    Verification -.->|Verified Result| Client
+    Verification -. "Verified Result" .-> Client
 ```
 
 ---
